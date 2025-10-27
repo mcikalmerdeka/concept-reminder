@@ -138,3 +138,74 @@ correlation_matrix, _ = np.corrcoef(data, rowvar=False)
 data = np.array([[1, 2], [3, 4], [5, 6]])
 # Returns correlation matrix between columns
 ```
+
+------------------------------------------------------------------------------------------------
+
+Source: https://claude.ai/chat/93f8ed6d-cedc-4727-abe1-7dcf3c789bc6
+
+Here are real-world examples of using `_` as a throwaway variable in loops:
+
+## 1. **Creating Multiple Objects**
+```python
+# Creating 5 empty user accounts
+users = [create_user() for _ in range(5)]
+
+# Creating a connection pool with 10 connections
+connections = [DatabaseConnection() for _ in range(10)]
+```
+
+## 2. **Repeating an Action N Times**
+```python
+# Retry a failed API call 3 times
+for _ in range(3):
+    try:
+        response = api.fetch_data()
+        break
+    except APIError:
+        time.sleep(1)
+
+# Flash an LED 10 times
+for _ in range(10):
+    led.on()
+    time.sleep(0.5)
+    led.off()
+    time.sleep(0.5)
+```
+
+## 3. **Game Development**
+```python
+# Spawn 20 enemy units at random positions
+for _ in range(20):
+    enemy = Enemy(x=random.randint(0, 800), y=random.randint(0, 600))
+    enemies.append(enemy)
+
+# Generate 100 particles for explosion effect
+particles = [Particle(position=center, velocity=random_velocity()) 
+             for _ in range(100)]
+```
+
+## 4. **Testing/Benchmarking**
+```python
+# Run benchmark 1000 times to get average
+total_time = 0
+for _ in range(1000):
+    start = time.time()
+    process_data()
+    total_time += time.time() - start
+
+# Stress test: create and destroy objects repeatedly
+for _ in range(10000):
+    obj = HeavyObject()
+    obj.cleanup()
+```
+
+## 5. **Waiting/Polling**
+```python
+# Check server status every second for 60 seconds
+for _ in range(60):
+    if server.is_ready():
+        break
+    time.sleep(1)
+```
+
+The key point: you use `_` when you need to loop a specific number of times but **don't care about the iteration number itself**. The underscore signals to other developers "this value is intentionally unused."
