@@ -1,0 +1,50 @@
+Source: https://claude.ai/chat/e2f33845-29ec-49d9-a68e-de323b0870a5
+
+------------------------------------------------------------------------------------------------
+
+how do i select the kernel of python environment from my jupyter notebook if it is located in a sub folders. like for example i have this main folder called langchain-academy right and then inside that there are several course folders and one of them called langchain-essentials. i have the virtual environment called .venv inside that langchain-essentials but how do i select for that to be activated for my jupyter notebook. note that i am using cursor here which is similar to vscode
+
+To select a Python kernel from a virtual environment in a subfolder using Cursor (or VS Code), here's what you need to do:
+
+## Quick Steps:
+
+1. **Open the Command Palette**
+   - Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac)
+
+2. **Select the kernel**
+   - Type and select: `Notebook: Select Notebook Kernel`
+   - Or click the kernel name in the top-right corner of your notebook
+
+3. **Choose your environment**
+   - Select `Python Environments...`
+   - Browse and find your `.venv` folder at `langchain-academy/langchain-essentials/.venv`
+   - Select the Python interpreter from that path
+
+## If the virtual environment doesn't appear:
+
+**Option 1: Install ipykernel in your virtual environment**
+```bash
+# Navigate to your folder
+cd langchain-academy/langchain-essentials
+
+# Activate the virtual environment
+# On Windows:
+.venv\Scripts\activate
+# On Mac/Linux:
+source .venv/bin/activate
+
+# Install ipykernel
+pip install ipykernel
+
+# Register the kernel
+python -m ipykernel install --user --name=langchain-essentials --display-name "Python (langchain-essentials)"
+```
+
+After this, the kernel should appear in the kernel selection menu as "Python (langchain-essentials)".
+
+**Option 2: Point directly to the Python executable**
+When selecting the kernel, choose `Select Another Kernel...` → `Python Environments...` → `+ Enter the path to a Python interpreter`, then navigate to:
+- Windows: `langchain-academy/langchain-essentials/.venv/Scripts/python.exe`
+- Mac/Linux: `langchain-academy/langchain-essentials/.venv/bin/python`
+
+The first option (installing ipykernel) is generally more reliable and makes the kernel easily accessible for future notebooks.
