@@ -1,0 +1,66 @@
+Source: https://claude.ai/chat/97e9bebf-424b-4c7f-98c7-c76108032070
+
+------------------------------------------------------------------------------------------------
+
+docker run -d `
+  -e POSTGRES_DB=ai `
+  -e POSTGRES_USER=ai `
+  -e POSTGRES_PASSWORD=ai `
+  -e PGDATA=/var/lib/postgresql/data/pgdata `
+  -v pgvolume:/var/lib/postgresql/data `
+  -p 5532:5432 `
+  --name pgvector `
+  agnohq/pgvector:16
+
+how can i check this postgres database in the pgadmin
+
+To connect to this PostgreSQL database in pgAdmin, follow these steps:
+
+## 1. Get the Database Connection Details
+
+From your Docker command, here are the connection details:
+- **Host**: `localhost` (or your Docker host IP)
+- **Port**: `5532` (mapped from container's 5432)
+- **Database**: `ai`
+- **Username**: `ai`
+- **Password**: `ai`
+
+## 2. Add Server in pgAdmin
+
+1. **Open pgAdmin** and right-click on "Servers" in the left panel
+2. Select **Register → Server**
+
+3. **In the "General" tab**:
+   - Name: `pgvector` (or any name you prefer)
+
+4. **In the "Connection" tab**:
+   - Host name/address: `localhost`
+   - Port: `5532`
+   - Maintenance database: `ai`
+   - Username: `ai`
+   - Password: `ai`
+   - ☑️ Check "Save password" (optional)
+
+5. Click **Save**
+
+## 3. Alternative: Check Container Status First
+
+Before connecting, verify the container is running:
+
+```bash
+# Check if container is running
+docker ps | grep pgvector
+
+# View container logs
+docker logs pgvector
+```
+
+## Troubleshooting
+
+If you can't connect:
+
+- **If using Docker Desktop on Windows/Mac**: Try `host.docker.internal` instead of `localhost`
+- **Check firewall**: Ensure port 5532 is not blocked
+- **Container network**: If pgAdmin is also in Docker, you may need to use the container name and internal port instead
+
+The database should now appear in pgAdmin's server list, and you can explore tables, run queries, and manage the database!
