@@ -1,0 +1,68 @@
+Source: https://claude.ai/chat/f647b847-3c66-499d-8b46-1cb76994ab9e
+
+------------------------------------------------------------------------------------------------
+
+If my project is using uv as the package manager, when I am using docker is it recommended to use the industry standards pip or I can just use uv for running the application. Research the internet for this
+
+Great question! The short answer is: **yes, keep using uv in Docker — it's now an industry-recommended approach**, not just a local dev convenience. Here's what the community and official sources say:
+
+---
+
+### ✅ uv is production-ready in Docker
+
+Real-world benchmarks show a 75% reduction in Docker build times and 80–115x faster installations with warm cache compared to pip, making uv a strong choice for containerized Python applications. This is no longer just a local dev tool — it's being adopted in serious production pipelines.
+
+---
+
+### 🏗️ The recommended pattern: Multi-stage builds
+
+The consensus across Astral's own docs and the broader community is to use **multi-stage Docker builds**:
+
+A two-step build process is recommended to eliminate uv from the final image size — meaning uv is used in the **builder stage** to install deps, but the **runtime stage** only contains the `.venv` and your app code. You don't ship the build tool itself.
+
+A production-ready Dockerfile looks roughly like this:
+
+```dockerfile
+# --- Build stage ---
+FROM python:3.13-slim AS build
+COPY --from=ghcr.io/astral-sh/uv:0.8.21 /uv /uvx /bin/
+
+WORKDIR /app
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+
+# Cache dependency layer separately from app code
+COPY uv.lock pyproject.toml ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-install-project --no-dev
+
+COPY . .
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
+
+# --- Runtime stage ---
+FROM python:3.13-slim AS runtime
+ENV PATH="/app/.venv/bin:$PATH"
+
+WORKDIR /app
+COPY --from=build /app .
+
+ENTRYPOINT ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+---
+
+### 🔑 Key practices to follow
+
+**Layer caching** — copy `uv.lock` and `pyproject.toml` first, then install dependencies before copying the rest of your source. This way, dependencies are only reinstalled when those files change, making rebuilds much faster.
+
+**Lock file discipline** — the `--frozen` flag ensures that the exact versions from `uv.lock` are used, and `--no-install-project` avoids installing the project itself, focusing solely on dependencies in the caching layer.
+
+**Bytecode compilation** — setting `UV_COMPILE_BYTECODE=1` speeds up container startup at the cost of a slightly bigger image, which is a worthwhile trade-off in production.
+
+**`.dockerignore`** — it's best practice to add `.venv` to your `.dockerignore` file to prevent your local environment from being accidentally copied into the image.
+
+---
+
+### Bottom line
+
+You don't need to switch to pip when using Docker. uv is **fully compatible with Docker**, actively maintained with official Docker images (`ghcr.io/astral-sh/uv`), and the community has largely moved toward it as the modern standard. Just follow the multi-stage build pattern and you're good to go.
