@@ -59,20 +59,43 @@ docker system df
 
 ### Method 3: WSL Compact (Advanced - Recommended way to reclaim space while keeping all your images and containers)
 
+Just follow the correct sequence:
+
+**Step 1 — Prune unused data first**
 ```powershell
-# Stop Docker first and run this command (NOT as Administrator yet)
+docker system prune -a --volumes
+```
+This deletes stopped containers, unused images, dangling volumes, and build cache. Your active/running containers and their images are untouched. This shrinks the *logical* content inside the vhdx before you compact it.
+
+**Step 2 — Fully quit Docker Desktop**
+Right-click the tray icon → Quit Docker Desktop. Don't just close the window.
+
+**Step 3 — Shut down WSL**
+```powershell
 wsl --shutdown
+```
 
-# Run diskpart as Administrator
+**Step 4 — Compact the disk (as Administrator)**
+Open a new terminal as Administrator, then:
+```
 diskpart
-
-# In diskpart console:
+```
+Inside diskpart:
+```
 select vdisk file="C:\Users\Cikal Merdeka\AppData\Local\Docker\wsl\disk\docker_data.vhdx"
 compact vdisk
 detach vdisk
 exit
 ```
-Restart the Docker Desktop again.
+
+**Step 5 — Restart Docker Desktop** and verify with `docker system df` and WizTree.
+
+---
+
+A few things to set expectations:
+- The compact step will likely take **30–60 minutes** given your vhdx is ~100GB
+- You should recover most of that ~93GB gap between actual Docker data (~6GB) and the vhdx size
+- Don't interrupt the compact mid-process — just let it run
 
 ### Method 4: Complete Removal
 If Docker is no longer needed:
