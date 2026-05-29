@@ -1,0 +1,265 @@
+Source: https://claude.ai/chat/7a16987a-b9c8-48eb-95f0-0194ba49214e
+
+------------------------------------------------------------------------------------------------
+
+## Cohort Analysis & Retention
+
+**Cohort analysis** is a way to group users by *when they started*, then track what they do over time.
+
+A **cohort** = a group of users who share the same starting point — usually the week or month they first signed up or made their first purchase.
+
+---
+
+### The Core Idea
+
+Instead of looking at *all* your users as one blob, you split them into time-based groups and ask: **"Of the people who joined in Month X, how many are still around in Month X+1, X+2, X+3?"**
+
+That's retention — the percentage of a cohort that *comes back*.
+
+---
+
+### A Simple Example
+
+| Cohort (Joined) | Month 0 | Month 1 | Month 2 | Month 3 |
+|---|---|---|---|---|
+| January | 100% | 60% | 45% | 40% |
+| February | 100% | 55% | 38% | 30% |
+| March | 100% | 70% | 58% | 50% |
+
+Reading this: of all users who joined in **January**, 60% came back in Month 1, 45% in Month 2, and so on. March cohort is clearly retaining much better — something must have improved.
+
+---
+
+### Why It's Useful
+
+- **Spot trends over time** — Is your product getting better or worse at keeping users?
+- **Isolate the cause** — If a March cohort retains better, maybe a feature launch in March helped.
+- **Avoid averages lying to you** — Overall DAU/MAU can look stable even while new cohorts are churning fast, because old loyal users mask the problem.
+
+---
+
+### The Relation to Retention
+
+Cohort analysis *is* the standard way to **measure retention properly**. Without grouping by cohort:
+
+- You can't tell if retention is improving or declining over product versions
+- New user growth can artificially inflate your numbers
+- You can't diagnose *when* users drop off (Day 1? Day 7? Day 30?)
+
+A healthy retention curve flattens out (users stabilize). A bad one keeps dropping toward 0% — meaning you're running a "leaky bucket" and no amount of new user acquisition will save you.
+
+---
+
+**In short**: cohort analysis is the *lens*, retention is the *metric* you're measuring through it.
+
+------------------------------------------------------------------------------------------------
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
+import seaborn as sns
+from datetime import datetime, timedelta
+import random
+
+# ─────────────────────────────────────────────
+# 1. DUMMY DATA GENERATION
+# ─────────────────────────────────────────────
+random.seed(42)
+np.random.seed(42)
+
+# Simulate 1500 users signing up between Jan 2024 – Jun 2024
+n_users = 1500
+start_date = datetime(2024, 1, 1)
+end_date = datetime(2024, 6, 30)
+date_range = (end_date - start_date).days
+
+user_ids = range(1, n_users + 1)
+signup_dates = [start_date + timedelta(days=random.randint(0, date_range)) for _ in user_ids]
+
+# Build a raw events DataFrame: each user visits multiple times after signup
+# Retention probability drops over months (realistic decay curve)
+retention_probs = [1.0, 0.55, 0.38, 0.28, 0.22, 0.18, 0.15]
+
+records = []
+for uid, signup in zip(user_ids, signup_dates):
+    for month_offset, prob in enumerate(retention_probs):
+        if random.random() < prob:
+            visit_date = signup + timedelta(days=month_offset * 30 + random.randint(0, 10))
+            records.append({"user_id": uid, "signup_date": signup, "activity_date": visit_date})
+
+df = pd.DataFrame(records)
+df["signup_month"] = df["signup_date"].dt.to_period("M")
+df["activity_month"] = df["activity_date"].dt.to_period("M")
+
+print("✅ Raw data shape:", df.shape)
+print(df.head(10))
+
+# ─────────────────────────────────────────────
+# 2. BUILD THE COHORT TABLE
+# ─────────────────────────────────────────────
+
+# Count unique users per cohort month
+cohort_sizes = df.groupby("signup_month")["user_id"].nunique().rename("cohort_size")
+
+# Calculate month number (0 = signup month, 1 = 1st month after, etc.)
+df["cohort_month_number"] = (
+    df["activity_month"] - df["signup_month"]
+).apply(lambda x: x.n)
+
+# Count retained users per cohort × month number
+cohort_data = (
+    df.groupby(["signup_month", "cohort_month_number"])["user_id"]
+    .nunique()
+    .reset_index()
+    .rename(columns={"user_id": "n_users"})
+)
+
+# Pivot to matrix form
+cohort_pivot = cohort_data.pivot_table(
+    index="signup_month", columns="cohort_month_number", values="n_users"
+)
+
+# Compute retention % relative to cohort size (Month 0 = 100%)
+cohort_size_series = cohort_pivot[0]
+retention_matrix = cohort_pivot.divide(cohort_size_series, axis=0) * 100
+
+# Clean up index for display
+retention_matrix.index = retention_matrix.index.astype(str)
+cohort_pivot.index = cohort_pivot.index.astype(str)
+cohort_size_series.index = cohort_size_series.index.astype(str)
+
+print("\n✅ Retention matrix (%):")
+print(retention_matrix.round(1))
+
+# ─────────────────────────────────────────────
+# 3. VISUALIZATION — HEATMAP WITH ANNOTATIONS
+# ─────────────────────────────────────────────
+
+fig, axes = plt.subplots(
+    2, 1,
+    figsize=(14, 11),
+    gridspec_kw={"height_ratios": [1, 0.08]},
+)
+fig.patch.set_facecolor("#0f1117")
+
+ax = axes[0]
+ax.set_facecolor("#0f1117")
+
+# --- Annotation: show % for retention cells, raw count for month 0
+annot_matrix = retention_matrix.copy()
+annot_text = annot_matrix.applymap(
+    lambda v: f"{v:.0f}%" if not pd.isna(v) else ""
+)
+
+# Custom colormap: dark → vibrant teal
+cmap = sns.color_palette("YlOrRd", as_cmap=True)
+
+mask = retention_matrix.isnull()
+
+heatmap = sns.heatmap(
+    retention_matrix,
+    ax=ax,
+    mask=mask,
+    cmap="YlOrRd",
+    annot=annot_text,
+    fmt="",
+    linewidths=0.5,
+    linecolor="#0f1117",
+    cbar=False,
+    vmin=0,
+    vmax=100,
+    annot_kws={"size": 11, "weight": "bold", "color": "#1a1a2e"},
+)
+
+# ── Labels & Titles ──
+ax.set_title(
+    "Cohort Retention Analysis",
+    fontsize=20,
+    fontweight="bold",
+    color="white",
+    pad=20,
+    loc="left",
+)
+ax.set_xlabel("Month Number After Signup", fontsize=12, color="#aaaaaa", labelpad=10)
+ax.set_ylabel("Signup Cohort", fontsize=12, color="#aaaaaa", labelpad=10)
+
+ax.tick_params(colors="white", labelsize=10)
+for spine in ax.spines.values():
+    spine.set_visible(False)
+
+# ── Month-number x-axis labels ──
+n_cols = len(retention_matrix.columns)
+ax.set_xticks(np.arange(n_cols) + 0.5)
+ax.set_xticklabels(
+    [f"M+{int(c)}" if c > 0 else "M0\n(signup)" for c in retention_matrix.columns],
+    color="white",
+    fontsize=9,
+)
+
+# ── Cohort size annotation on the left ──
+for i, cohort in enumerate(retention_matrix.index):
+    size = int(cohort_size_series[cohort])
+    ax.text(
+        -0.6, i + 0.5,
+        f"n={size}",
+        va="center", ha="right",
+        color="#888888", fontsize=8.5,
+    )
+
+# ── Colorbar (manual, bottom strip) ──
+ax_cb = axes[1]
+cb_data = np.linspace(0, 100, 256).reshape(1, -1)
+ax_cb.imshow(cb_data, aspect="auto", cmap="YlOrRd", extent=[0, 100, 0, 1])
+ax_cb.set_yticks([])
+ax_cb.set_xticks([0, 25, 50, 75, 100])
+ax_cb.set_xticklabels(["0%", "25%", "50%", "75%", "100%"], color="white", fontsize=9)
+ax_cb.set_xlabel("Retention Rate", color="#aaaaaa", fontsize=10)
+ax_cb.tick_params(colors="white")
+for spine in ax_cb.spines.values():
+    spine.set_visible(False)
+ax_cb.set_facecolor("#0f1117")
+
+plt.tight_layout(pad=2.5)
+plt.savefig("cohort_heatmap.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
+plt.show()
+print("\n✅ Saved as cohort_heatmap.png")
+
+# ─────────────────────────────────────────────
+# 4. BONUS — AVERAGE RETENTION BY MONTH
+# ─────────────────────────────────────────────
+
+avg_retention = retention_matrix.mean()
+
+fig2, ax2 = plt.subplots(figsize=(10, 4))
+fig2.patch.set_facecolor("#0f1117")
+ax2.set_facecolor("#0f1117")
+
+ax2.plot(
+    avg_retention.index, avg_retention.values,
+    marker="o", color="#f4a261", linewidth=2.5, markersize=7,
+)
+ax2.fill_between(avg_retention.index, avg_retention.values, alpha=0.15, color="#f4a261")
+
+for x, y in zip(avg_retention.index, avg_retention.values):
+    ax2.annotate(
+        f"{y:.1f}%", (x, y),
+        textcoords="offset points", xytext=(0, 10),
+        ha="center", fontsize=9, color="white",
+    )
+
+ax2.set_title("Average Retention Curve Across All Cohorts", fontsize=15, color="white", fontweight="bold", loc="left")
+ax2.set_xlabel("Month Number After Signup", color="#aaaaaa")
+ax2.set_ylabel("Avg Retention Rate (%)", color="#aaaaaa")
+ax2.tick_params(colors="white")
+ax2.set_xticks(avg_retention.index)
+ax2.set_xticklabels([f"M+{int(c)}" if c > 0 else "M0" for c in avg_retention.index], color="white")
+ax2.yaxis.set_major_formatter(mtick.PercentFormatter())
+ax2.set_ylim(0, 110)
+for spine in ax2.spines.values():
+    spine.set_color("#333333")
+
+plt.tight_layout()
+plt.savefig("cohort_avg_curve.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
+plt.show()
+print("✅ Saved as cohort_avg_curve.png")
