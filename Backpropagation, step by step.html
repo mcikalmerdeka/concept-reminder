@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Backpropagation, step by step</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f7f4;--card:#fff;--fg:#1b2420;--muted:#66726b;--line:#d9ded8;--pos:#1f6fd1;--neg:#e0752b;--ink:#0f766e;--grad:#c2255c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121815;--card:#1b2420;--fg:#e8efe9;--muted:#93a299;--line:#2c3832;--pos:#5aa2ff;--neg:#ff9a55;--ink:#4fd1c0;--grad:#ff6b9d}}
+:root[data-theme="dark"]{--bg:#121815;--card:#1b2420;--fg:#e8efe9;--muted:#93a299;--line:#2c3832;--pos:#5aa2ff;--neg:#ff9a55;--ink:#4fd1c0;--grad:#ff6b9d}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 "Source Serif 4",Georgia,serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 40px}
+h1{font:700 28px/1.2 "Space Grotesk",system-ui,sans-serif;margin:0 0 6px}
+p.lead{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:14px}
+svg{width:100%;height:auto;display:block}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+button{font:600 14px "Space Grotesk",system-ui,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--fg);padding:8px 12px;border-radius:6px;cursor:pointer}
+button:hover{border-color:var(--ink)}button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.pill{font:600 13px "Space Grotesk",system-ui,sans-serif;padding:4px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.pill.cur{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#explain{min-height:96px;margin:6px 0 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font:14px "Space Grotesk",system-ui,sans-serif}
+td,th{padding:4px 6px;text-align:left;border-bottom:1px solid var(--line)}
+h2{font:700 17px "Space Grotesk",system-ui,sans-serif;margin:0 0 6px}
+.small{font-size:13px;color:var(--muted)}
+label{font:14px "Space Grotesk",system-ui,sans-serif}
+.flowF{stroke-dasharray:6 6;animation:f 0.8s linear infinite}
+.flowB{stroke-dasharray:6 6;animation:b 0.8s linear infinite}
+@keyframes f{to{stroke-dashoffset:-12}}@keyframes b{to{stroke-dashoffset:12}}
+@media(prefers-reduced-motion:reduce){.flowF,.flowB{animation:none}}
+text{font-family:"Space Grotesk",system-ui,sans-serif}
+#detail{margin-top:10px;font:14px/1.7 "Space Grotesk",system-ui,sans-serif}
+#detail .blk{border-left:3px solid var(--ink);padding:3px 10px;margin:8px 0;background:var(--bg);border-radius:4px;overflow-x:auto}
+#detail .blk.b{border-color:var(--grad)}
+#detail .blk div{white-space:nowrap}
+#detail h3{font:700 15px "Space Grotesk",system-ui,sans-serif;margin:14px 0 2px}
+#detail .n{color:var(--ink);font-weight:700}
+#detail .b .n{color:var(--grad)}
+</style>
+</head>
+<body>
+<main>
+<h1>How a network learns: backpropagation</h1>
+<p class="lead">A tiny network learns XOR (output 1 when exactly one input is 1). Step through one training example, then let it train.</p>
+
+<div class="card">
+  <div class="row" id="samples" role="group" aria-label="Training example"></div>
+  <div class="steps" id="steps"></div>
+  <svg id="net" viewBox="0 0 700 340" role="img" aria-label="Neural network diagram"></svg>
+  <p id="explain"></p>
+  <div id="detail"></div>
+  <div class="row">
+    <button class="primary" id="next">Next step</button>
+    <label>Learning rate <input type="range" id="lr" min="0.1" max="2" step="0.1" value="1"> <b id="lrv">1.0</b></label>
+  </div>
+  <p class="small">Blue lines are positive weights, orange are negative, thicker means larger. Dashes show which way information is flowing.</p>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Let it learn</h2>
+    <div class="row">
+      <button id="e1">+1 epoch</button><button id="e500" class="primary">+500 epochs</button><button id="reset">Reset weights</button>
+    </div>
+    <p class="small" id="ecount"></p>
+    <svg id="chart" viewBox="0 0 300 120" aria-label="Loss over epochs"></svg>
+    <p class="small">Average loss over all 4 examples. An epoch is one pass through all of them.</p>
+  </div>
+  <div class="card">
+    <h2>What it predicts now</h2>
+    <table id="pred"></table>
+    <p class="small">Predictions start near 0.5 (a guess) and move toward the targets as the weights update.</p>
+  </div>
+</div>
+</main>
+<script>
+const S=x=>1/(1+Math.exp(-x));
+const data=[[0,0,0],[0,1,1],[1,0,1],[1,1,0]];
+const NAMES=["Forward pass","Loss","Backward pass","Update"];
+let old,lrU,net,losses=[],sel=1,stage=0,c=null,g=null,epochs=0,lr=1;
+const $=id=>document.getElementById(id);
+const f=(v,d=2)=>(v<0?"-":"")+Math.abs(v).toFixed(d);
+function init(){
+  const r=()=>(Math.random()*2-1)*1.2;
+  net={W1:[0,1,2].map(()=>[r(),r()]),b1:[0,0,0],W2:[r(),r(),r()],b2:0};
+  losses=[];epochs=0;stage=0;c=g=null;losses.push(total());
+}
+function fwd(x){
+  const z1=net.W1.map((w,j)=>w[0]*x[0]+w[1]*x[1]+net.b1[j]);
+  const a1=z1.map(S);
+  const z2=a1.reduce((s,a,j)=>s+a*net.W2[j],net.b2);
+  return {x,z1,a1,z2,y:S(z2)};
+}
+function bwd(c,t){
+  const dy=c.y-t,dz2=dy*c.y*(1-c.y);
+  const dz1=c.a1.map((a,j)=>dz2*net.W2[j]*a*(1-a));
+  return {dy,dz2,dW2:c.a1.map(a=>dz2*a),dz1,dW1:dz1.map(d=>[d*c.x[0],d*c.x[1]])};
+}
+function apply(g){
+  for(let j=0;j<3;j++){
+    net.W2[j]-=lr*g.dW2[j];net.b1[j]-=lr*g.dz1[j];
+    net.W1[j][0]-=lr*g.dW1[j][0];net.W1[j][1]-=lr*g.dW1[j][1];
+  }
+  net.b2-=lr*g.dz2;
+}
+function total(){return data.reduce((s,d)=>s+.5*(fwd(d).y-d[2])**2,0)/4}
+function epoch(){data.forEach(d=>apply(bwd(fwd(d),d[2])));epochs++}
+function train(n){for(let i=0;i<n;i++){epoch();losses.push(total())}stage=0;c=g=null;render()}
+
+const IN=[[90,115],[90,225]],HID=[[350,60],[350,170],[350,280]],OUT=[[610,170]];
+function edge(p,q,w,label,cls,col){
+  const t=.36,lx=p[0]+(q[0]-p[0])*t,ly=p[1]+(q[1]-p[1])*t;
+  const color=w>=0?"var(--pos)":"var(--neg)",sw=Math.min(8,.8+Math.abs(w)*1.5);
+  return `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${color}" stroke-width="${sw}" opacity=".75" class="${cls}"/>`+
+  `<text x="${lx}" y="${ly}" font-size="12" font-weight="700" text-anchor="middle" fill="${col}" stroke="var(--card)" stroke-width="4" paint-order="stroke">${label}</text>`;
+}
+function node(p,val,name,delta){
+  return `<circle cx="${p[0]}" cy="${p[1]}" r="27" fill="var(--card)" stroke="var(--ink)" stroke-width="2"/>`+
+  `<text x="${p[0]}" y="${p[1]+5}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fg)">${val}</text>`+
+  `<text x="${p[0]}" y="${p[1]-34}" text-anchor="middle" font-size="12" fill="var(--muted)">${name}</text>`+
+  (delta!=null?`<text x="${p[0]}" y="${p[1]+46}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--grad)">δ ${f(delta,3)}</text>`:"");
+}
+function render(){
+  const d=data[sel],x=[d[0],d[1]],t=d[2];
+  $("samples").innerHTML=data.map((s,i)=>`<button class="${i==sel?"on":""}" data-i="${i}">Inputs ${s[0]}, ${s[1]} → target ${s[2]}</button>`).join("");
+  $("steps").innerHTML=NAMES.map((n,i)=>`<span class="pill ${stage==i+1?"cur":""}">${i+1}. ${n}</span>`).join("");
+  const fl=stage==1?"flowF":stage==3?"flowB":"";
+  const showG=stage==3;
+  let s="";
+  for(let j=0;j<3;j++)for(let k=0;k<2;k++)
+    s+=edge(IN[k],HID[j],net.W1[j][k],showG?f(g.dW1[j][k],3):f(net.W1[j][k]),fl,showG?"var(--grad)":"var(--fg)");
+  for(let j=0;j<3;j++)
+    s+=edge(HID[j],OUT[0],net.W2[j],showG?f(g.dW2[j],3):f(net.W2[j]),fl,showG?"var(--grad)":"var(--fg)");
+  const has=stage>=1&&c;
+  IN.forEach((p,k)=>s+=node(p,x[k],"input "+(k+1),null));
+  HID.forEach((p,j)=>s+=node(p,has?f(c.a1[j]):"?","hidden "+(j+1),showG?g.dz1[j]:null));
+  s+=node(OUT[0],has?f(c.y):"?","output",showG?g.dz2:null);
+  s+=`<text x="610" y="236" text-anchor="middle" font-size="13" fill="var(--muted)">target ${t}</text>`;
+  if(stage>=2)s+=`<text x="610" y="258" text-anchor="middle" font-size="13" font-weight="700" fill="var(--grad)">loss ${f(.5*(c.y-t)**2,3)}</text>`;
+  if(stage==3)s+=`<text x="350" y="326" text-anchor="middle" font-size="12" fill="var(--grad)">pink numbers: δ on neurons, gradient ∂L/∂w on lines</text>`;
+  $("net").innerHTML=s;
+  const E=[
+   `Example: inputs (${x[0]}, ${x[1]}), target ${t}. The weights are random, so the network is just guessing. Press Next step to send the inputs through.`,
+   `Forward pass. Each hidden neuron adds up its inputs times the weights (plus a bias) and squashes the sum with a sigmoid. The output neuron does the same with the hidden values. Prediction: ${f(has?c.y:0,3)}.`,
+   `Loss = ½(prediction − target)² = ½(${f(has?c.y:0,3)} − ${t})² = ${f(has?.5*(c.y-t)**2:0,3)}. One number says how wrong we are. Now we need to know which weights to blame.`,
+   `Backward pass. The error starts at the output (δ = ${f(g?g.dz2:0,3)}) and flows backward along the same lines. At each neuron it is multiplied by the connecting weight and the sigmoid slope (the chain rule). Each line now shows its gradient: how much the loss changes if that weight changes.`,
+   `Update. Every weight moves against its gradient: w ← w − ${lr.toFixed(1)} × gradient. The lines above show the new weights. The new prediction for this example is ${f(fwd(x).y,3)} (target ${t}). Repeat for all examples, many times, and the network learns.`
+  ];
+  $("explain").textContent=E[stage];
+  $("detail").innerHTML=detail(x,t);
+  $("next").textContent=stage==0?"Next step: forward pass":stage==1?"Next step: compute loss":stage==2?"Next step: backward pass":stage==3?"Next step: update weights":"Try another round";
+  $("ecount").textContent=`Epochs trained: ${epochs}. Loss now: ${f(losses[losses.length-1],4)}`;
+  $("pred").innerHTML="<tr><th>Inputs</th><th>Target</th><th>Prediction</th></tr>"+data.map(r=>{const y=fwd(r).y;return `<tr><td>${r[0]}, ${r[1]}</td><td>${r[2]}</td><td><b>${f(y,3)}</b> <span style="display:inline-block;height:6px;width:${Math.round(y*70)}px;background:var(--ink);border-radius:3px"></span></td></tr>`}).join("");
+  drawChart();
+}
+function detail(x,t){
+  if(stage<1||!c)return `<p class="small">Press Next step. The full arithmetic for every neuron appears here, stage by stage, with the real numbers plugged in (rounded to 3 decimals).</p>`;
+  const W=stage==4?old:net,N=v=>`<span class="n">${f(v,3)}</span>`,B=v=>`(${N(v)})`;
+  let h=`<h3>Sigmoid, the activation function</h3><div class="blk"><div>σ(z) = 1 / (1 + e<sup>−z</sup>), squashes any number into the range 0 to 1</div><div>slope: σ′(z) = σ(z) × (1 − σ(z)), used on the way back</div></div><h3>1. Forward pass</h3>`;
+  for(let j=0;j<3;j++)h+=`<div class="blk"><div>hidden ${j+1}: z = w₁x₁ + w₂x₂ + b = ${B(W.W1[j][0])}×${x[0]} + ${B(W.W1[j][1])}×${x[1]} + ${B(W.b1[j])} = ${N(c.z1[j])}</div><div>a = σ(z) = 1 / (1 + e<sup>−${B(c.z1[j])}</sup>) = ${N(c.a1[j])}</div></div>`;
+  h+=`<div class="blk"><div>output: z = a₁w₁ + a₂w₂ + a₃w₃ + b = ${[0,1,2].map(j=>`${B(c.a1[j])}×${B(W.W2[j])}`).join(" + ")} + ${B(W.b2)} = ${N(c.z2)}</div><div>ŷ = σ(z) = 1 / (1 + e<sup>−${B(c.z2)}</sup>) = ${N(c.y)}</div></div>`;
+  if(stage>=2)h+=`<h3>2. Loss</h3><div class="blk"><div>L = ½ (ŷ − t)² = ½ × (${N(c.y)} − ${t})² = ½ × ${N((c.y-t)**2)} = ${N(.5*(c.y-t)**2)}</div></div>`;
+  if(stage>=3){
+    const o=c.y*(1-c.y);
+    h+=`<h3>3. Backward pass (chain rule)</h3><div class="blk b"><div>∂L/∂ŷ = ŷ − t = ${N(c.y)} − ${t} = ${N(g.dy)}</div><div>σ′ at output = ŷ(1 − ŷ) = ${N(c.y)} × (1 − ${N(c.y)}) = ${N(o)}</div><div>δ_out = ∂L/∂ŷ × σ′ = ${B(g.dy)} × ${B(o)} = ${N(g.dz2)}</div></div>`;
+    h+=`<div class="blk b">`+[0,1,2].map(j=>`<div>∂L/∂w(h${j+1}→out) = δ_out × a${j+1} = ${B(g.dz2)} × ${B(c.a1[j])} = ${N(g.dW2[j])}</div>`).join("")+`<div>∂L/∂b(out) = δ_out = ${N(g.dz2)}</div></div>`;
+    for(let j=0;j<3;j++){const s=c.a1[j]*(1-c.a1[j]);h+=`<div class="blk b"><div>δ_h${j+1} = δ_out × w(h${j+1}→out) × a(1 − a) = ${B(g.dz2)} × ${B(W.W2[j])} × ${B(s)} = ${N(g.dz1[j])}</div><div>∂L/∂w(x₁→h${j+1}) = δ_h${j+1} × x₁ = ${B(g.dz1[j])} × ${x[0]} = ${N(g.dW1[j][0])}</div><div>∂L/∂w(x₂→h${j+1}) = δ_h${j+1} × x₂ = ${B(g.dz1[j])} × ${x[1]} = ${N(g.dW1[j][1])}</div><div>∂L/∂b(h${j+1}) = δ_h${j+1} = ${N(g.dz1[j])}</div></div>`}
+  }
+  if(stage==4){
+    const u=(nm,o,gr,nw)=>`<div>${nm}: ${N(o)} − ${lrU.toFixed(1)} × ${B(gr)} = ${N(nw)}</div>`;
+    h+=`<h3>4. Update: new = old − learning rate × gradient</h3><div class="blk">`;
+    for(let j=0;j<3;j++){h+=u(`w(x₁→h${j+1})`,old.W1[j][0],g.dW1[j][0],net.W1[j][0])+u(`w(x₂→h${j+1})`,old.W1[j][1],g.dW1[j][1],net.W1[j][1])+u(`b(h${j+1})`,old.b1[j],g.dz1[j],net.b1[j])}
+    for(let j=0;j<3;j++)h+=u(`w(h${j+1}→out)`,old.W2[j],g.dW2[j],net.W2[j]);
+    h+=u("b(out)",old.b2,g.dz2,net.b2)+`</div>`;
+  }
+  return h;
+}
+function drawChart(){
+  const n=losses.length,max=Math.max(...losses,.001),step=Math.max(1,Math.ceil(n/150));
+  let pts=[];for(let i=0;i<n;i+=step)pts.push(`${(10+i/(Math.max(n-1,1))*280).toFixed(1)},${(110-losses[i]/max*100).toFixed(1)}`);
+  if(n==1)pts.push("10,"+(110-losses[0]/max*100));
+  $("chart").innerHTML=`<line x1="10" y1="110" x2="290" y2="110" stroke="var(--line)"/><line x1="10" y1="10" x2="10" y2="110" stroke="var(--line)"/>`+
+   `<polyline points="${pts.join(" ")}" fill="none" stroke="var(--grad)" stroke-width="2"/>`+
+   `<text x="14" y="20" font-size="10" fill="var(--muted)">${f(max,3)}</text><text x="290" y="124" text-anchor="end" font-size="10" fill="var(--muted)">epochs</text>`;
+}
+$("next").onclick=()=>{
+  const d=data[sel],x=[d[0],d[1]];
+  if(stage==0||stage==4){if(stage==4){sel=(sel+1)%4}c=fwd([data[sel][0],data[sel][1]]);stage=1}
+  else if(stage==1){stage=2}
+  else if(stage==2){g=bwd(c,d[2]);stage=3}
+  else if(stage==3){old=JSON.parse(JSON.stringify(net));lrU=lr;apply(g);losses.push(total());stage=4}
+  render();
+};
+$("samples").onclick=e=>{const b=e.target.closest("button");if(!b)return;sel=+b.dataset.i;stage=0;c=g=null;render()};
+$("lr").oninput=e=>{lr=+e.target.value;$("lrv").textContent=lr.toFixed(1);render()};
+$("e1").onclick=()=>train(1);$("e500").onclick=()=>train(500);
+$("reset").onclick=()=>{init();render()};
+init();render();
+</script>
+</body>
+</html>
