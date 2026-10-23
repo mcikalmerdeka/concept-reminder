@@ -1,0 +1,85 @@
+# How to Download Individual Files from GitHub
+
+Here are three methods to download individual files from GitHub without cloning the entire repository.
+
+## Method 1: Manual Download through Web Interface
+1. Navigate to the file in GitHub
+2. Click on the file to open it
+3. Click the "Raw" button
+4. Right-click and select "Save link as..." to download
+
+For example, to download the Iris dataset:
+1. Go to [scikit-learn/scikit-learn/blob/main/sklearn/datasets/data/iris.csv](https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/datasets/data/iris.csv)
+2. Click "Raw"
+3. Save the file
+
+## Method 2: Using Command Line Tools
+You can use wget or curl in either Command Prompt or Jupyter Notebook:
+
+### In Command Prompt:
+```bash
+# Using wget
+wget https://raw.githubusercontent.com/scikit-learn/scikit-learn/main/sklearn/datasets/data/iris.csv
+
+# Using curl
+curl -O https://raw.githubusercontent.com/scikit-learn/scikit-learn/main/sklearn/datasets/data/iris.csv
+```
+
+### In Jupyter Notebook:
+```python
+# Using wget
+!wget https://raw.githubusercontent.com/scikit-learn/scikit-learn/main/sklearn/datasets/data/iris.csv
+
+# Using curl
+!curl -O https://raw.githubusercontent.com/scikit-learn/scikit-learn/main/sklearn/datasets/data/iris.csv
+```
+
+## Method 3: Using Python
+```python
+import requests
+import pandas as pd
+
+# General file download
+def download_github_file(url, save_path):
+    # Convert regular GitHub URL to raw URL
+    if 'github.com' in url and '/blob/' in url:
+        url = url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/')
+    
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(save_path, 'wb') as f:
+            f.write(response.content)
+        print(f"File successfully downloaded to {save_path}")
+    else:
+        print(f"Failed to download file. Status code: {response.status_code}")
+
+# Example 1: Download CSV file
+url = "https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/datasets/data/iris.csv"
+download_github_file(url, "iris.csv")
+
+# Example 2: Directly read CSV into pandas DataFrame
+df = pd.read_csv("https://raw.githubusercontent.com/scikit-learn/scikit-learn/main/sklearn/datasets/data/iris.csv")
+```
+
+## Tips and Notes
+- The raw URL is essential for downloading. Convert regular GitHub URLs to raw URLs by:
+  - Replacing `github.com` with `raw.githubusercontent.com`
+  - Removing `/blob/` from the path
+- For curl commands:
+  - `-O` (capital O) saves the file with its original name
+  - `-o filename` (lowercase o) lets you specify a different name:
+    ```bash
+    curl -o my_iris.csv https://raw.githubusercontent.com/scikit-learn/scikit-learn/main/sklearn/datasets/data/iris.csv
+    ```
+- If wget is not recognized in Jupyter, install it:
+  ```python
+  !pip install wget
+  ```
+
+## Common Issues
+- 404 errors usually mean the URL is incorrect
+- Ensure you have permissions to access the repository
+- For private repositories, authentication is required
+
+Quick example
+curl https://www.w3.org/TR/PNG/iso_8859-1.txt -o "C:\Users\Cikal Merdeka\Desktop\random_file.txt"

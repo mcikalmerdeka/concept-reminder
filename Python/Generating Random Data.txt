@@ -1,0 +1,77 @@
+import pandas as pd
+import numpy as np
+import random
+import string
+import hashlib
+from faker import Faker
+
+# Initialize Faker
+fake = Faker()
+
+def generate_random_data(df, methods='all'):
+    """
+    Generate random data based on existing DataFrame columns.
+    
+    Parameters:
+    df (pandas.DataFrame): Input DataFrame with at least a full_name column
+    methods (str or list): 'all' or list of methods to apply ['hash', 'id', 'faker', 'code']
+    
+    Returns:
+    pandas.DataFrame: DataFrame with new random columns
+    """
+    # Create a copy to avoid modifying original
+    result_df = df.copy()
+    
+    if methods == 'all':
+        methods = ['hash', 'id', 'faker', 'code']
+    
+    for method in methods:
+        if method == 'hash':
+            # Generate SHA-256 hash based on name
+            result_df['name_hash'] = result_df['full_name'].apply(
+                lambda x: hashlib.sha256(str(x).encode()).hexdigest()[:8]
+            )
+            
+        elif method == 'id':
+            # Generate random numeric ID
+            used_ids = set()
+            def generate_unique_id():
+                while True:
+                    new_id = random.randint(10000, 99999)
+                    if new_id not in used_ids:
+                        used_ids.add(new_id)
+                        return new_id
+            
+            result_df['random_id'] = [generate_unique_id() for _ in range(len(df))]
+            
+        elif method == 'faker':
+            # Generate alternative random names using Faker
+            result_df['alternative_name'] = [fake.name() for _ in range(len(df))]
+            
+        elif method == 'code':
+            # Generate alphanumeric code
+            def generate_code():
+                letters = ''.join(random.choices(string.ascii_uppercase, k=2))
+                numbers = ''.join(random.choices(string.digits, k=4))
+                return f"{letters}-{numbers}"
+            
+            result_df['reference_code'] = [generate_code() for _ in range(len(df))]
+    
+    return result_df
+
+# Example usage
+if __name__ == "__main__":
+    # Create sample DataFrame
+    sample_df = pd.DataFrame({
+        'full_name': ['John Doe', 'Jane Smith', 'Bob Johnson']
+    })
+    
+    # Generate all random data types
+    result = generate_random_data(sample_df)
+    print("\nAll methods:")
+    display(result)
+    
+    # Generate only specific random data types
+    result_specific = generate_random_data(sample_df, methods=['hash', 'code'])
+    print("\nSpecific methods (hash and code only):")
+    display(result_specific)

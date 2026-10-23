@@ -1,0 +1,164 @@
+Source: https://chatgpt.com/c/6824d96d-9224-800a-bb4a-de006c711ca8 (at the end of conversation)
+
+---------------------------------------------------------------------------------------------------
+
+crawl4ai-implementation) PS E:\NLP Learning\NLP-Learning\Crawl4ai Implementation> uv run .\main.py
+=== Comprehensive Crawl4AI Demo ===
+Note: Some examples require API keys or other configuration
+
+ ===== 2. Parallel web crawling =====
+[INIT].... ΓåÆ Crawl4AI 0.6.3
+[FETCH]... Γåô https://example.com/                                                                                 | Γ£ô | ΓÅ▒: 1.10s 
+[SCRAPE].. Γùå https://example.com/                                                                                 | Γ£ô | ΓÅ▒: 0.00s 
+[COMPLETE] ΓùÅ https://example.com/                                                                                 | Γ£ô | ΓÅ▒: 1.10s
+[FETCH]... Γåô https://news.ycombinator.com/                                                                        | Γ£ô | ΓÅ▒: 1.09s 
+[SCRAPE].. Γùå https://news.ycombinator.com/                                                                        | Γ£ô | ΓÅ▒: 0.07s 
+[COMPLETE] ΓùÅ https://news.ycombinator.com/                                                                        | Γ£ô | ΓÅ▒: 1.17s 
+[FETCH]... Γåô https://httpbin.org/html                                                                             | Γ£ô | ΓÅ▒: 2.08s 
+[SCRAPE].. Γùå https://httpbin.org/html                                                                             | Γ£ô | ΓÅ▒: 0.00s 
+[COMPLETE] ΓùÅ https://httpbin.org/html                                                                             | Γ£ô | ΓÅ▒: 2.09s
+Crawled 3 URLs in parallel
+ 1. https://example.com/ - Sucess
+ 2. https://news.ycombinator.com/ - Sucess
+ 3. https://httpbin.org/html - Sucess
+
+ ===== Demo Completed =====
+Check for any generated files (screenshots, PDFs, etc.) in the current directory
+
+
+can you help me solve this problem in my windows pc like why is it that my terminal have this weird language instead of english?
+
+
+To **permanently set `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8`** in PowerShell, you need to add it to your **PowerShell profile**, which is a startup script that runs every time a new terminal session opens.
+
+Here’s how to do it:
+
+---
+
+### ✅ Step-by-step: Make UTF-8 OutputEncoding Permanent in PowerShell
+
+1. **Check if your PowerShell profile exists:**
+
+   ```powershell
+   Test-Path $PROFILE
+   ```
+
+   If it returns `False`, create it with:
+
+   ```powershell
+   New-Item -Path $PROFILE -ItemType File -Force
+   ```
+
+2. **Open your profile in Notepad:**
+
+   ```powershell
+   notepad $PROFILE
+   ```
+
+3. **Add this line to the bottom:**
+
+   ```powershell
+   [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+   ```
+
+4. **Save and close Notepad.**
+
+5. **Restart your PowerShell terminal.**
+
+---
+
+Now every new PowerShell window will automatically use UTF-8 output encoding, so you'll no longer see garbled characters like `Γåô`.
+
+---
+
+### 🔍 Optional: Confirm It Works
+
+After restarting, run:
+
+```powershell
+[Console]::OutputEncoding
+```
+
+It should return:
+
+```text
+System.Text.UTF8Encoding
+```
+
+Let me know if you’re using **Windows Terminal**, **VSCode**, or something else and want this applied there too — it works the same, but I can help tailor the config.
+
+
+Thanks for sharing your `$PROFILE` contents!
+
+You can safely add the UTF-8 line **anywhere after the existing content**, but a good practice is to place it **at the end** of the file.
+
+---
+
+### ✅ Just add this at the bottom of your profile file:
+
+```powershell
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+```
+
+So the full file will look like this after the addition:
+
+```powershell
+Set-PSReadlineKeyHandler -Key Tab -Function Complete
+# Import the Chocolatey Profile that contains the necessary code to enable
+# tab-completions to function for `choco`.
+# Be aware that if you are missing these lines from your profile, tab completion
+# for `choco` will not function.
+# See https://ch0.co/tab-completion for details.
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+  Import-Module "$ChocolateyProfile"
+}
+
+# Set output encoding to UTF-8 to fix weird characters in terminal
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+```
+
+---
+
+### 💡 After saving:
+
+* **Restart PowerShell**, and your encoding should now default to UTF-8.
+* To confirm:
+
+  ```powershell
+  [Console]::OutputEncoding
+  ```
+
+  Should return something like:
+
+  ```
+  System.Text.UTF8Encoding
+  ```
+
+Let me know if you're also using VSCode or Windows Terminal — sometimes we can also set encoding at the terminal level too for extra reliability.
+
+---------------------------------------------------------------------------------------------------
+The output result now looks something like this
+
+(crawl4ai-implementation) PS E:\NLP Learning\NLP-Learning\Crawl4ai Implementation> uv run .\main.py
+=== Comprehensive Crawl4AI Demo ===
+Note: Some examples require API keys or other configuration
+
+ ===== 2. Parallel web crawling =====
+[INIT].... → Crawl4AI 0.6.3
+[FETCH]... ↓ https://example.com/                                                                                 | ✓ | ⏱: 1.08s 
+[SCRAPE].. ◆ https://example.com/                                                                                 | ✓ | ⏱: 0.00s 
+[COMPLETE] ● https://example.com/                                                                                 | ✓ | ⏱: 1.09s
+[FETCH]... ↓ https://news.ycombinator.com/                                                                        | ✓ | ⏱: 1.09s 
+[SCRAPE].. ◆ https://news.ycombinator.com/                                                                        | ✓ | ⏱: 0.07s 
+[COMPLETE] ● https://news.ycombinator.com/                                                                        | ✓ | ⏱: 1.17s 
+[FETCH]... ↓ https://httpbin.org/html                                                                             | ✓ | ⏱: 5.17s 
+[SCRAPE].. ◆ https://httpbin.org/html                                                                             | ✓ | ⏱: 0.00s 
+[COMPLETE] ● https://httpbin.org/html                                                                             | ✓ | ⏱: 5.18s
+Crawled 3 URLs in parallel
+ 1. https://example.com/ - Sucess
+ 2. https://news.ycombinator.com/ - Sucess
+ 3. https://httpbin.org/html - Sucess
+
+ ===== Demo Completed =====
+Check for any generated files (screenshots, PDFs, etc.) in the current directory

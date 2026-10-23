@@ -1,0 +1,102 @@
+# Python Global Environment Cleanup Guide
+
+## Overview
+This guide shows how to clean up your global Python environment when transitioning to project-specific virtual environments using uv package manager on Windows.
+
+## Step-by-Step Process
+
+### 1. Check Current Global Packages
+```powershell
+uv pip list
+# or
+pip list
+```
+
+### 2. Create List of Packages to Keep
+Create a text file with essential packages that should remain global:
+
+```powershell
+# Save to desktop
+"pip" | Out-File -FilePath "$env:USERPROFILE\Desktop\keep_global.txt" -Encoding UTF8
+"setuptools" | Add-Content -Path "$env:USERPROFILE\Desktop\keep_global.txt" -Encoding UTF8
+"uv" | Add-Content -Path "$env:USERPROFILE\Desktop\keep_global.txt" -Encoding UTF8
+
+# Optional: Add other tools you use globally
+"build" | Add-Content -Path "$env:USERPROFILE\Desktop\keep_global.txt" -Encoding UTF8
+```
+
+### 3. Generate Full Package List
+```powershell
+uv pip freeze > "$env:USERPROFILE\Desktop\all_packages.txt"
+```
+
+### 4. Create Removal List
+Filter out packages you want to keep and problematic entries:
+
+```powershell
+Get-Content "$env:USERPROFILE\Desktop\all_packages.txt" | Where-Object { $_ -notmatch "^(pip|setuptools|uv|build)" -and $_ -notmatch "^-e file:" } > "$env:USERPROFILE\Desktop\packages_to_remove.txt"
+```
+
+### 5. Manual Review
+**Important**: Open `packages_to_remove.txt` and manually remove:
+- Any editable installs (lines starting with `-e file:///`)
+- Any other packages you realize you need globally
+
+### 6. Uninstall Packages
+```powershell
+# Using pip (recommended for global cleanup)
+pip uninstall -r "$env:USERPROFILE\Desktop\packages_to_remove.txt" -y
+
+# Alternative with uv (requires --system flag)
+uv pip uninstall --python 3.11 --system -r "$env:USERPROFILE\Desktop\packages_to_remove.txt" -y
+```
+
+### 7. Handle Editable Installs Separately
+For any editable installs (like `dagster_university`):
+```powershell
+pip uninstall package_name
+```
+
+### 8. Verify Cleanup
+```powershell
+pip list
+```
+
+## What to Keep Global
+- **Essential**: `pip`, `setuptools`, `uv`
+- **Optional**: `build`, `pytest` (if used across projects)
+- **Development tools**: Jupyter ecosystem (if you use notebooks globally)
+
+## What to Remove
+- All project-specific dependencies (pandas, numpy, fastapi, etc.)
+- Framework-specific packages (dagster, dbt, etc.)
+- Database connectors, cloud SDKs, ML libraries
+- Any package you only use in specific projects
+
+## Going Forward
+After cleanup, always use virtual environments:
+
+```powershell
+# For new projects
+uv init my-project
+cd my-project
+uv add package-name
+
+# For existing projects
+cd existing-project
+uv venv
+uv add package-name
+```
+
+## Troubleshooting
+- If you get Python interpreter errors, use `--python 3.11` flag
+- If virtual environment errors occur, add `--system` flag with uv
+- For broken installs, use regular `pip` instead of `uv pip`
+- Always remove editable installs manually first
+
+## Files Created During Process
+- `keep_global.txt` - Packages to preserve
+- `all_packages.txt` - Complete package list from pip freeze
+- `packages_to_remove.txt` - Filtered list for removal
+
+Keep these files as reference for future cleanups!

@@ -1,0 +1,148 @@
+# Docker Desktop Storage Cleanup Guide
+
+## Problem Identified
+- C drive showing high usage (208GB/295GB) with unaccounted space
+- Used **WizTree** disk analyzer and found large file: `C:\Users\[Username]\AppData\Local\Docker\wsl\disk\docker_data.vhdx` (99.7GB)
+- `docker system df` only showed ~6.6GB of Docker data, indicating virtual disk bloat
+
+## Understanding docker_data.vhdx
+- **What it is**: Docker Desktop's Virtual Hard Disk file containing all Docker images, containers, volumes, and filesystem
+- **Why it's large**: Virtual disk files can grow but don't automatically shrink when data is deleted
+- **Safe to delete directly**: ❌ **NO** - This would corrupt Docker and destroy all data
+
+## Investigation Commands
+
+### Check Docker Space Usage
+```powershell
+docker system df
+```
+Shows breakdown of:
+- Images (active vs reclaimable)
+- Containers (active vs reclaimable) 
+- Local Volumes (active vs reclaimable)
+- Build Cache
+
+### Example Output Analysis
+```
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          6         6         4.368GB   8.311MB (0%)
+Containers      6         0         681MB     681MB (100%)
+Local Volumes   6         6         1.537GB   0B (0%)
+Build Cache     0         0         0B        0B
+```
+- **Containers at 100% reclaimable** = All stopped, safe to remove
+- **Large discrepancy** between `docker system df` (~6GB) and `.vhdx` file (99GB) = Virtual disk bloat
+
+## Safe Cleanup Methods
+
+### Method 1: Incremental Cleanup (Conservative)
+```powershell
+# Remove stopped containers
+docker container prune -f
+
+# Remove unused images, containers, networks, and build cache
+docker system prune -a --volumes
+
+# Check space usage after
+docker system df
+```
+
+### Method 2: Docker Desktop Reset (Recommended for Major Cleanup)
+**Navigation**: Docker Desktop > Settings > Troubleshoot > Clean / Purge data
+
+**Options to select**:
+- ✅ **Hyper-V** - Cleans Hyper-V backend data
+- ✅ **WSL 2** - Cleans WSL 2 backend data (likely main culprit)
+- ✅ **Windows Containers** - Cleans Windows container data
+
+**Select all three** for maximum space recovery.
+
+### Method 3: WSL Compact (Advanced - Recommended way to reclaim space while keeping all your images and containers)
+
+Just follow the correct sequence:
+
+**Step 1 — Prune unused data first**
+```powershell
+docker system prune -a --volumes
+```
+This deletes stopped containers, unused images, dangling volumes, and build cache. Your active/running containers and their images are untouched. This shrinks the *logical* content inside the vhdx before you compact it.
+
+**Step 2 — Fully quit Docker Desktop**
+Right-click the tray icon → Quit Docker Desktop. Don't just close the window.
+
+**Step 3 — Shut down WSL**
+```powershell
+wsl --shutdown
+```
+
+**Step 4 — Compact the disk (as Administrator)**
+Open a new terminal as Administrator, then:
+```
+diskpart
+```
+Inside diskpart:
+```
+select vdisk file="C:\Users\Cikal Merdeka\AppData\Local\Docker\wsl\disk\docker_data.vhdx"
+compact vdisk
+detach vdisk
+exit
+```
+
+**Step 5 — Restart Docker Desktop** and verify with `docker system df` and WizTree.
+
+---
+
+A few things to set expectations:
+- The compact step will likely take **30–60 minutes** given your vhdx is ~100GB
+- You should recover most of that ~93GB gap between actual Docker data (~6GB) and the vhdx size
+- Don't interrupt the compact mid-process — just let it run
+
+### Method 4: Complete Removal
+If Docker is no longer needed:
+1. Uninstall Docker Desktop through **Windows Settings > Apps**
+2. `.vhdx` file automatically removed
+3. Reclaims all 99.7GB safely
+
+## Before Major Cleanup - Backup Important Data
+
+If you have critical Docker data, backup first:
+```powershell
+# Save Docker images
+docker save -o backup.tar image_name
+
+# Export containers
+docker export container_name > container_backup.tar
+
+# List what you have
+docker images
+docker container ls -a
+docker volume ls
+```
+
+## Expected Results
+
+**After Reset/Cleanup**:
+- ✅ `docker_data.vhdx` file shrinks significantly (from 99.7GB to much smaller)
+- ✅ C drive space reclaimed
+- ✅ Docker reset to clean state
+- ❌ All previous Docker images, containers, and volumes removed
+
+## Key Takeaways
+
+1. **Never delete `.vhdx` files directly** - Always use Docker's cleanup tools
+2. **Virtual disk bloat is common** - Files don't automatically shrink
+3. **Use disk analyzers** like WizTree to identify large hidden files
+4. **Factory reset is most effective** for major space recovery
+5. **Check docker system df regularly** to monitor Docker space usage
+
+## Prevention
+
+- Run `docker system prune` regularly
+- Remove unused images: `docker image prune -a`
+- Monitor disk usage: `docker system df`
+- Consider setting Docker resource limits in Docker Desktop settings
+
+## Tools Used
+- **WizTree**: Fast disk space analyzer to identify large files
+- **Docker Desktop**: Built-in cleanup and reset options
+- **Command line**: Docker CLI for granular cleanup

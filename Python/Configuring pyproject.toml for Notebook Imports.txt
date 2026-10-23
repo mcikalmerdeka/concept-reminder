@@ -1,0 +1,190 @@
+Source: https://claude.ai/chat/a8e3592c-556e-4254-85d9-79fc57fc4f48
+
+------------------------------------------------------------------------------------------------
+
+so in my classification.ipynb file i added these 2 line of code so that i could import the utils/ folder since i am running the notebook from the notebooks/ folder, 
+
+# Add root folder to path (for module imports)
+sys.path.insert(0, str(Path.cwd().parent))
+
+# Change working directory (for I/O operations)
+os.chdir(Path.cwd().parent)
+
+do you think there are something that i could add to my pyproject.toml file which located in the root of the repo, the notebooks and utils are in their dedicated folders, so that i could easily run the code file without have to specify the path?
+
+The error is because `hatchling` can't find a package matching your project name. The issue is that your project is named `data-science-utils` (with hyphens) but your folder is named `utils`. Here's how to fix it:
+
+## Option 1: Tell hatchling where your package is (Recommended)
+
+Update your `pyproject.toml`:
+
+```toml
+[project]
+name = "data-science-utils"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ipykernel>=7.1.0",
+    "matplotlib>=3.10.7",
+    "numpy>=2.3.5",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "scipy>=1.16.3",
+    "seaborn>=0.13.2",
+    "statsmodels>=0.14.5",
+    "tqdm>=4.67.1",
+    "xgboost>=3.1.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["utils"]
+```
+
+Then run:
+```bash
+uv pip install -e .
+```
+
+## Option 2: Use setuptools instead (simpler for your case)
+
+If you prefer the setuptools approach the other AI suggested:
+
+```toml
+[project]
+name = "data-science-utils"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ipykernel>=7.1.0",
+    "matplotlib>=3.10.7",
+    "numpy>=2.3.5",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "scipy>=1.16.3",
+    "seaborn>=0.13.2",
+    "statsmodels>=0.14.5",
+    "tqdm>=4.67.1",
+    "xgboost>=3.1.2",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["utils"]
+```
+
+Then run:
+```bash
+uv pip install -e .
+```
+
+Both will work! Option 1 is more modern, Option 2 is what the other AI suggested. Either way, after installation you can import from `utils` in your notebooks without any `sys.path` modifications.
+
+------------------------------------------------------------------------------------------------
+
+but what if i got other folders where  i want to use the scripts from
+
+Good question! If you have multiple folders with reusable code, you can specify all of them. Here's how:
+
+## Option 1: With hatchling
+
+```toml
+[project]
+name = "data-science-utils"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ipykernel>=7.1.0",
+    "matplotlib>=3.10.7",
+    "numpy>=2.3.5",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "scipy>=1.16.3",
+    "seaborn>=0.13.2",
+    "statsmodels>=0.14.5",
+    "tqdm>=4.67.1",
+    "xgboost>=3.1.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["utils", "preprocessing", "models", "visualization"]  # Add all your folders here
+```
+
+## Option 2: With setuptools
+
+```toml
+[project]
+name = "data-science-utils"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ipykernel>=7.1.0",
+    "matplotlib>=3.10.7",
+    "numpy>=2.3.5",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "scipy>=1.16.3",
+    "seaborn>=0.13.2",
+    "statsmodels>=0.14.5",
+    "tqdm>=4.67.1",
+    "xgboost>=3.1.2",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["utils", "preprocessing", "models", "visualization"]  # Add all your folders here
+```
+
+## Usage in notebooks
+
+After installing with `uv pip install -e .`, you can import from any of these folders:
+
+```python
+from utils import some_function
+from preprocessing import clean_data
+from models import train_model
+from visualization import plot_results
+```
+
+## Important: Make sure each folder is a proper Python package
+
+Each folder needs an `__init__.py` file (can be empty) to be recognized as a package:
+
+```
+your-project/
+├── pyproject.toml
+├── utils/
+│   ├── __init__.py
+│   └── your_module.py
+├── preprocessing/
+│   ├── __init__.py
+│   └── clean.py
+├── models/
+│   ├── __init__.py
+│   └── train.py
+└── notebooks/
+    └── classification.ipynb
+```
+
+Just list all the folders you want to be importable in the `packages` list!

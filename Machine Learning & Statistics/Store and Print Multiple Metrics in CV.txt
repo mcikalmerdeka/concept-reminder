@@ -1,0 +1,54 @@
+You can store and print multiple metrics by adjusting the `scoring` parameter in the `cross_validate` function. The `scoring` parameter can accept a list of metric names, and the results will be stored in the output dictionary under keys corresponding to these metrics.
+
+Here's how you can modify your code to store additional metrics such as precision, recall, and F1-score along with accuracy:
+
+```python
+from sklearn.model_selection import cross_validate, RepeatedStratifiedKFold
+from sklearn.metrics import make_scorer, accuracy_score, precision_score, recall_score, f1_score
+
+# Example model and data
+# from sklearn.linear_model import LogisticRegression
+# model = LogisticRegression()
+# x1_train, y1_train = ... # Your training data
+
+# Define cross-validation strategy
+cv = RepeatedStratifiedKFold(random_state=42, n_repeats=5)
+
+# Define scoring metrics
+scoring = {
+    'accuracy': 'accuracy',
+    'precision': 'precision',
+    'recall': 'recall',
+    'f1': 'f1'
+}
+
+# Perform cross-validation
+scores = cross_validate(model, x1_train, y1_train, cv=cv, scoring=scoring, return_train_score=True)
+
+# Print mean scores for each metric
+print(f"Accuracy (Crossval Test): {scores['test_accuracy'].mean() * 100:.2f}")
+print(f"Accuracy (Crossval Train): {scores['train_accuracy'].mean() * 100:.2f}")
+
+print(f"Precision (Crossval Test): {scores['test_precision'].mean() * 100:.2f}")
+print(f"Precision (Crossval Train): {scores['train_precision'].mean() * 100:.2f}")
+
+print(f"Recall (Crossval Test): {scores['test_recall'].mean() * 100:.2f}")
+print(f"Recall (Crossval Train): {scores['train_recall'].mean() * 100:.2f}")
+
+print(f"F1 Score (Crossval Test): {scores['test_f1'].mean() * 100:.2f}")
+print(f"F1 Score (Crossval Train): {scores['train_f1'].mean() * 100:.2f}")
+```
+
+### Explanation
+
+1. **Define the Scoring Metrics**: We define a dictionary `scoring` that maps metric names to their corresponding scoring methods.
+   - `'accuracy'`: Computes accuracy.
+   - `'precision'`: Computes precision.
+   - `'recall'`: Computes recall.
+   - `'f1'`: Computes the F1 score.
+
+2. **Perform Cross-Validation**: The `cross_validate` function is called with the `scoring` parameter set to our dictionary of metrics. This will result in the cross-validation process calculating and storing each of these metrics.
+
+3. **Access and Print the Results**: The results are stored in the dictionary `scores`, with keys for each metric in the format `train_<metric>` and `test_<metric>`. We then print the mean values for the train and test sets.
+
+By following this approach, you can easily extend the list of metrics and ensure that you are evaluating your model's performance comprehensively.

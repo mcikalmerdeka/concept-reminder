@@ -1,0 +1,181 @@
+I'll walk you through several useful Power Query data transformations with examples. Let me show you some common and powerful transformations:
+
+1. Unpivoting Tables (as you mentioned)
+Original Table:
+```
+Product    Jan    Feb    Mar    Apr
+Laptop     100    150    200    175
+Phone      300    280    310    290
+Tablet     150    160    140    165
+```
+
+After Unpivoting:
+```
+Product    Month    Sales
+Laptop     Jan      100
+Laptop     Feb      150
+Laptop     Mar      200
+Laptop     Apr      175
+Phone      Jan      300
+Phone      Feb      280
+Phone      Mar      310
+Phone      Apr      290
+Tablet     Jan      150
+Tablet     Feb      160
+Tablet     Mar      140
+Tablet     Apr      165
+```
+
+2. Pivoting Data
+Original Table:
+```
+Date         Category    Sales
+2024-01-01   Food        100
+2024-01-01   Drinks       50
+2024-01-02   Food        120
+2024-01-02   Drinks       60
+```
+
+After Pivoting (Category columns):
+```
+Date         Food    Drinks
+2024-01-01   100     50
+2024-01-02   120     60
+```
+
+3. Merging Columns
+Original Table:
+```
+FirstName    LastName    City        Country
+John         Smith       New York    USA
+Maria        Garcia      Madrid      Spain
+```
+
+After Merging (Full Name + Location):
+```
+FullName          Location
+John Smith        New York, USA
+Maria Garcia      Madrid, Spain
+```
+
+4. Splitting Columns
+Original Table:
+```
+FullAddress
+123 Main St, Chicago, IL 60601
+456 Park Ave, New York, NY 10022
+```
+
+After Splitting:
+```
+Street           City        State    ZIP
+123 Main St      Chicago     IL       60601
+456 Park Ave     New York    NY       10022
+```
+
+5. Conditional Column
+Original Table:
+```
+Product    Sales    
+Laptop     1500    
+Phone      800     
+Tablet     400     
+```
+
+After Adding Conditional Column:
+```
+Product    Sales    Performance
+Laptop     1500     High
+Phone      800      Medium
+Tablet     400      Low
+```
+
+6. Group By
+Original Table:
+```
+Date         Product    Sales
+2024-01-01   Laptop     1500
+2024-01-01   Phone      800
+2024-01-02   Laptop     1200
+2024-01-02   Phone      900
+```
+
+After Grouping by Product:
+```
+Product    TotalSales    AverageSales
+Laptop     2700          1350
+Phone      1700          850
+```
+
+7. Fill Down/Up
+Original Table (with blanks):
+```
+Region    Sales
+North     100
+          150
+          200
+South     300
+          250
+```
+
+After Fill Down:
+```
+Region    Sales
+North     100
+North     150
+North     200
+South     300
+South     250
+```
+
+8. Transpose
+Original Table:
+```
+Metric     Q1    Q2    Q3    Q4
+Sales      100   120   140   160
+Costs      80    85    90    95
+```
+
+After Transpose:
+```
+Quarter    Sales    Costs
+Q1         100      80
+Q2         120      85
+Q3         140      90
+Q4         160      95
+```
+
+9. Remove Duplicates
+Original Table:
+```
+CustomerID    Name      City
+1            John      NY
+2            Maria     LA
+2            Maria     LA
+3            Steve     CHI
+```
+
+After Removing Duplicates:
+```
+CustomerID    Name      City
+1            John      NY
+2            Maria     LA
+3            Steve     CHI
+```
+
+10. Extract Text
+Original Table:
+```
+Email
+john.smith@company.com
+maria.garcia@company.com
+```
+
+After Extracting (Username):
+```
+Email                     Username
+john.smith@company.com    john.smith
+maria.garcia@company.com  maria.garcia
+```
+
+These transformations can be combined in Power Query to handle complex data reshaping needs.

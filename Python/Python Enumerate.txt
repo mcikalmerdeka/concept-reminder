@@ -1,0 +1,3 @@
+https://revou.co/panduan-teknis/enumerate-python
+
+https://www.geeksforgeeks.org/enumerate-in-python/

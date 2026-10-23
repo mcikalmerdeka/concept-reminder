@@ -1,0 +1,5 @@
+Naive Bayes is primarily used for classification tasks, and it's not directly applicable to regression tasks. The algorithm is designed to predict categorical labels based on input features, making it well-suited for tasks where the output is a class or category.
+
+In Naive Bayes, the underlying assumption of feature independence may not hold well for regression problems where the goal is to predict a continuous numerical value. For regression tasks, algorithms like linear regression, support vector regression, decision trees, or ensemble methods are more commonly employed.
+
+That said, there are extensions of Naive Bayes, such as Gaussian Naive Bayes, that can be adapted for regression-like tasks. However, these adaptations are not as standard or widely used as other regression-specific algorithms. It's generally recommended to use regression-specific algorithms for tasks where the goal is to predict a continuous outcome.

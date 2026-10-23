@@ -1,0 +1,81 @@
+Source: https://chatgpt.com/c/681b96db-8e10-800a-8783-7a17ab67b9a6
+
+---------------------------------------------------------------------------------------------------
+
+give me example of looping pandas dataframe using iterrows
+
+
+Sure! Here's a simple example of using `.iterrows()` to loop through a Pandas DataFrame:
+
+```python
+import pandas as pd
+
+# Create a sample DataFrame
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie'],
+    'Age': [25, 30, 35],
+    'City': ['New York', 'London', 'Paris']
+}
+
+df = pd.DataFrame(data)
+
+# Loop through the DataFrame using iterrows()
+for index, row in df.iterrows():
+    print(f"Index: {index}")
+    print(f"Name: {row['Name']}, Age: {row['Age']}, City: {row['City']}")
+    print("-" * 30)
+```
+
+This will output each row's content along with its index.
+
+---------------------------------------------------------------------------------------------------
+
+Great question! Let's break it down.
+
+### What `.iterrows()` means:
+
+`.iterrows()` is a **method** in Pandas that allows you to **iterate over the rows** of a DataFrame **one row at a time**. When you use it in a loop like this:
+
+```python
+for index, row in df.iterrows():
+```
+
+It returns two things on each iteration:
+
+1. **`index`** – the index label of the current row (e.g., 0, 1, 2).
+2. **`row`** – a Pandas **Series** object containing all the data in that row.
+
+---
+
+### Example data:
+
+From this DataFrame:
+
+```python
+   Name   Age      City
+0  Alice   25  New York
+1    Bob   30    London
+2 Charlie   35     Paris
+```
+
+Here’s what happens during iteration:
+
+#### First loop:
+
+* `index = 0`
+* `row =` Series with: `Name = 'Alice'`, `Age = 25`, `City = 'New York'`
+
+#### Second loop:
+
+* `index = 1`
+* `row =` Series with: `Name = 'Bob'`, `Age = 30`, `City = 'London'`
+
+#### Third loop:
+
+* `index = 2`
+* `row =` Series with: `Name = 'Charlie'`, `Age = 35`, `City = 'Paris'`
+
+Each `row` behaves like a dictionary where you can access values by column name:
+`row['Name']`, `row['Age']`, etc.
+
+---

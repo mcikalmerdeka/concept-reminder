@@ -1,0 +1,50 @@
+Agile is a flexible, iterative approach to project management and software development that emphasizes:
+1. Breaking work into small chunks 
+2. Frequent delivery and feedback
+3. Adapting to changes quickly
+4. Collaboration between teams
+
+Scrum is one of the most popular frameworks for implementing Agile. Think of it this way: Agile is like a mindset or philosophy, while Scrum is a specific way to put that philosophy into practice. Here's a practical example of how Agile/Scrum works in a data science project:
+
+Traditional (Non-Agile) Approach:
+6-month project plan:
+Month 1-2: Gather ALL requirements
+Month 2-3: Clean ALL data
+Month 3-4: Build COMPLETE model
+Month 4-5: Test EVERYTHING
+Month 5-6: Deploy FINAL version
+
+Agile/Scrum Approach:
+2-week sprints:
+Sprint 1: 
+- Build basic model with just 2 key features
+- Test and deploy this simple version
+- Get feedback from users
+
+
+Sprint 2:
+- Add 3 more features based on feedback
+- Improve model accuracy
+- Deploy updated version
+
+Sprint 3:
+- Add visualization dashboard
+- Fix bugs reported by users
+- Deploy new features
+
+Common Scrum elements you'll see in data jobs:
+1. Daily Standup: 15-minute team meeting to discuss progress
+2. Sprint Planning: Team decides what to accomplish in next 2 weeks
+3. Sprint Review: Demo completed work to stakeholders
+4. Sprint Retrospective: Team discusses what went well/poorly
+
+In data science roles, you might hear things like:
+- "We're using Agile methodologies to iterate on our recommendation algorithm"
+- "Join our daily Scrum to update on your feature engineering progress"
+- "Let's add this new data pipeline to next sprint's backlog"
+
+The reason many data jobs require Agile/Scrum knowledge is that it helps teams:
+- Deliver value faster through incremental improvements
+- Adapt to changing requirements or new data
+- Maintain clear communication between data scientists, engineers, and stakeholders
+- Track progress effectively

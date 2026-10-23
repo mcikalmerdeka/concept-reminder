@@ -1,0 +1,46 @@
+Source : https://chatgpt.com/c/67788ce5-5298-800a-97d1-bb5e8ab2ce28
+
+------------------------------------------------------------------------------------------------
+
+Sure! Let's think of **GET** and **POST** as two ways of sending a letter (request) to a website (server). Here's a beginner-friendly breakdown:
+
+---
+
+### **GET: Asking for Information**
+- **Purpose**: To get (retrieve) information from a website.
+- **Example**: Imagine you're asking your friend for their favorite book titles.
+  - You send them a postcard with the question written on it.
+  - They reply by showing you a list of books.
+
+- **Key Features**:
+  - The request is **visible**: The question (your query) is written on the postcard for anyone to see.
+  - It's **safe**: You're only asking for information; you're not changing or sending anything sensitive.
+  - Often used to **load a webpage** or **search** for something.
+  - Example in a URL:  
+    ```
+    https://example.com/search?query=best-books
+    ```
+
+---
+
+### **POST: Sending Information**
+- **Purpose**: To send data to a website, often to save or update something.
+- **Example**: Now imagine you're sending a private letter to your bank to update your address.
+  - You put your details in an envelope and mail it.
+  - The bank reads your letter and updates your records.
+
+- **Key Features**:
+  - The request is **hidden**: The data (your letter) is inside an envelope, so others can’t see it.
+  - Used for **sensitive** or **large amounts of data**, like passwords, credit card details, or uploading files.
+  - Often used when you fill out a form or submit information.
+  - The data is not visible in the URL.
+
+---
+
+### In Short:
+1. **GET**: Think of it as a postcard — asking for information and visible to everyone.
+2. **POST**: Think of it as an envelope — sending information that is private and secure. 
+
+---
+
+If you're coding, you might use GET for searching something and POST for submitting a login form.

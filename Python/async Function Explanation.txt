@@ -1,0 +1,157 @@
+Source: https://chatgpt.com/c/682377fd-f490-800a-ad15-afa8a6171e13
+
+---------------------------------------------------------------------------------------------------
+
+what does async functions means and what is the difference between that and a normal functions? can you give complete explanation of this async function
+
+Great question! Let's dive deep into **async functions** in Python — what they are, how they work, and how they differ from regular (synchronous) functions.
+
+---
+
+## 🔹 What is an `async` Function?
+
+An `async` function is a **special type of function** defined using the `async def` syntax. It is **asynchronous**, meaning it can pause execution to wait for other asynchronous operations **without blocking** the entire program.
+
+```python
+async def my_function():
+    return "Hello"
+```
+
+When you call an `async` function, **it doesn't immediately run** — it returns a **coroutine object**, which you must `await` to actually execute.
+
+---
+
+## 🟢 Regular Function vs Async Function
+
+| Feature               | Regular Function (`def`)               | Async Function (`async def`)                |
+| --------------------- | -------------------------------------- | ------------------------------------------- |
+| Execution style       | Synchronous (step-by-step, blocking)   | Asynchronous (non-blocking)                 |
+| Return value          | Returns a value                        | Returns a coroutine object                  |
+| Can use `await`?      | ❌ No                                   | ✅ Yes                                       |
+| Can run concurrently? | ❌ Only with threads or multiprocessing | ✅ Easily with `asyncio`                     |
+| Best for              | CPU-bound tasks                        | I/O-bound tasks (like APIs, DB calls, etc.) |
+
+---
+
+## 🔧 Basic Example
+
+### Regular Function
+
+```python
+def greet():
+    return "Hello"
+
+result = greet()
+print(result)  # "Hello"
+```
+
+### Async Function
+
+```python
+import asyncio
+
+async def greet():
+    return "Hello"
+
+async def main():
+    result = await greet()
+    print(result)
+
+asyncio.run(main())
+```
+
+🔍 `greet()` returns a coroutine. It needs `await` to run and return the result.
+
+---
+
+## 🧪 Example with `await` and `asyncio.sleep()`
+
+```python
+import asyncio
+
+async def say_hello():
+    print("Waiting...")
+    await asyncio.sleep(2)  # non-blocking delay
+    print("Hello after 2 seconds")
+
+async def main():
+    await say_hello()
+
+asyncio.run(main())
+```
+
+Here, `asyncio.sleep(2)` simulates an I/O wait — like downloading data — without blocking the entire program.
+
+---
+
+## 🧵 Why Use Async Functions?
+
+You use async functions when you want to:
+
+* Perform **non-blocking I/O** like:
+
+  * Calling APIs
+  * Reading/writing files
+  * Accessing databases
+  * Waiting on user input
+* Improve performance for **many concurrent tasks** (like 100 API calls)
+
+They are **not ideal for heavy CPU work**, which can block the event loop.
+
+---
+
+## ⛓️ Running Multiple Async Functions
+
+```python
+import asyncio
+
+async def task(name, seconds):
+    print(f"Start {name}")
+    await asyncio.sleep(seconds)
+    print(f"End {name}")
+
+async def main():
+    await asyncio.gather(
+        task("A", 2),
+        task("B", 1),
+        task("C", 3)
+    )
+
+asyncio.run(main())
+```
+
+This will run all tasks concurrently and complete in **about 3 seconds**, not 6 — thanks to async execution.
+
+---
+
+## 🚫 Common Mistake
+
+Calling an async function **without `await`** will just return a coroutine, not run it:
+
+```python
+async def say_hi():
+    return "Hi"
+
+result = say_hi()
+print(result)  # ❌ <coroutine object say_hi at ...>
+
+# ✅ Correct:
+async def main():
+    result = await say_hi()
+    print(result)
+
+asyncio.run(main())
+```
+
+---
+
+## ✅ Summary
+
+* `async def` defines an asynchronous function (coroutine).
+* Use `await` to pause and wait for async tasks inside it.
+* Ideal for I/O-bound operations and concurrent tasks.
+* Works with Python's `asyncio` library.
+* Helps you write efficient, non-blocking code — especially for web scraping, APIs, and servers.
+
+
+

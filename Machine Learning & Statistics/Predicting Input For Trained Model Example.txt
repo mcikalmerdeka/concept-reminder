@@ -1,0 +1,55 @@
+Certainly. Let's create an example using those specific features. We'll create a few sample inputs and use them to make predictions with your trained decision tree model.
+
+```python
+# Assuming you have your trained model in the variable 'decision_tree'
+
+# Sample input data
+sample_inputs = [
+    [35, 'USA', 5000, True, 'Married'],
+    [28, 'Canada', 4200, False, 'Single'],
+    [45, 'UK', 6500, True, 'Divorced']
+]
+
+# Convert categorical variables to numerical if necessary
+# This step depends on how you preprocessed your training data
+from sklearn.preprocessing import LabelEncoder
+
+le_country = LabelEncoder()
+le_marital = LabelEncoder()
+
+for sample in sample_inputs:
+    sample[1] = le_country.fit_transform([sample[1]])[0]
+    sample[3] = 1 if sample[3] else 0  # Convert boolean to 0 or 1
+    sample[4] = le_marital.fit_transform([sample[4]])[0]
+
+# Make predictions
+predictions = decision_tree.predict(sample_inputs)
+
+# Print the results
+feature_names = ['Age', 'Country', 'Monthly Salary', 'House Ownership', 'Marital Status']
+
+for i, (sample, prediction) in enumerate(zip(sample_inputs, predictions)):
+    print(f"Sample {i+1}:")
+    for feature, value in zip(feature_names, sample):
+        print(f"  {feature}: {value}")
+    print(f"Prediction: {prediction}")
+    print()
+```
+
+This script does the following:
+
+1. We define sample inputs using the features you specified: age, country, monthly_salary, house_ownership, and marital_status.
+
+2. We use LabelEncoder to convert categorical variables (country and marital status) to numerical values. This step is necessary because most machine learning models, including decision trees, require numerical inputs.
+
+3. We convert the boolean house_ownership to 0 or 1.
+
+4. We use the `predict()` method of our trained model to make predictions on these samples.
+
+5. We print out each sample's features and the corresponding prediction.
+
+Remember that this example assumes your model was trained on these exact features in this order. If your model was trained differently, you'll need to adjust the input format accordingly.
+
+Also, the preprocessing steps (like using LabelEncoder) should match exactly how you preprocessed your training data. If you used different preprocessing methods (like one-hot encoding for categorical variables), you'll need to apply those same methods here.
+
+Would you like me to explain any part of this code in more detail?

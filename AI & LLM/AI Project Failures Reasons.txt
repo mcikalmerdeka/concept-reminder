@@ -1,0 +1,116 @@
+Source:https://chatgpt.com/c/685f9e0e-f7f8-800a-9565-ef747680fe74
+
+---------------------------------------------------------------------------------------------------
+
+is that true that there are only a few percentage of AI or data science project that is successful in a company? can you explain to on this topic on why this happens? is it heavily related to the fact that the analysis of why the project needs to be done in the first place was not done completely?
+
+
+Yes, it’s absolutely true—most AI and data science projects in companies don’t make it to full deployment or deliver meaningful value. Here's a breakdown:
+
+---
+
+## 📉 Success Rates at a Glance
+
+* According to S\&P Global and Gartner, **42%** of AI initiatives will be scrapped in 2025 (up from 17% the year before), and about **46% of proof‑of‑concepts never reach production** ([reuters.com][1], [ciodive.com][2]).
+* RheoData reports **70–85%** of AI projects either fail, are abandoned, or don't fulfill objectives—even double the failure rate of typical IT projects ([rheodata.com][3]).
+* Gartner notes only **15–20% of data science projects are completed**, and just **8% generate business value**, implying success rates as low as \~2% ([fastdatascience.com][4]).
+* Another source says **85–90%** of AI projects never reach production or fail to provide value ([tajbrains.com][5]).
+
+---
+
+## Why So Many Projects Fail
+
+### 1. Solving the Wrong Problem
+
+Skipping the critical step of defining a true business challenge leads to launching tech projects without clear purpose.
+
+* Many projects begin with a tool in search of a problem—“let’s use AI”—instead of asking “what real pain point are we trying to address?” ([tajbrains.com][5]).
+* A Reddit data engineer sums it up:
+
+  > “Most analytics projects fail because teams start with 'we need a data warehouse'…instead of 'what problem are we actually solving?'” ([reddit.com][6]).
+
+### 2. Unclear Objectives & ROI Misalignment
+
+Without clear goals, KPIs, or success metrics, it's impossible to measure effectiveness.
+
+* Gartner and IDC found many CIOs don’t even know which POCs met their KPIs—and often 9 out of 10 custom AI apps fail at the POC stage ([cio.com][7]).
+* Executives often push AI pilots without concrete ROI or defined metrics ([wsj.com][8]).
+
+### 3. Poor Data Quality, Access & Governance
+
+AI depends on clean, well-integrated, high-quality data. Most organizations fall short here.
+
+* Chief challenges include low-quality, siloed, missing, or insufficient data .
+* Mismanaged data access and governance block model deployment ([rheodata.com][3]).
+
+### 4. Talent & Skill Gaps
+
+Teams often lack people who understand both technical nuances and business applications.
+
+* There's a major shortage of experienced data scientists, ML engineers, and domain experts ([en.wikipedia.org][9]).
+* Reliance on generic training (e.g. 4‑hour courses) often leaves teams underprepared .
+
+### 5. Unrealistic Expectations & Hype
+
+The “AI will solve everything” hype sets teams up for failure when performance doesn’t match expectations.
+
+* Many businesses expect near-magical outcomes from AI and fail when those expectations aren't met ([tajbrains.com][5]).
+
+### 6. Implementation Challenges
+
+Even after a successful POC, scaling the solution requires integration with existing systems, retraining, and maintenance.
+
+* Over **70% of generative AI projects** remain in pilot phase due to scalability, accuracy, and reliability issues ([wsj.com][8]).
+* One study noted only **26%** of large companies reported AI systems in widespread production—up from 12% previously—meaning many are stuck in trials ([sloanreview.mit.edu][10]).
+
+### 7. Lack of Change Management & Adoption
+
+Building a model is only part of the challenge. Teams need to trust, understand, and integrate it into daily operations.
+
+* Without transparency, user trust falters .
+* Cultural resistance and lack of adoption frameworks derail many initiatives ([reddit.com][11]).
+
+---
+
+## 🔍 Is Poor Problem Analysis the Core Issue?
+
+Absolutely. Many failed projects traced back to:
+
+* No clear problem definition or business case ([cio.com][12]).
+* Starting with “we want to use AI” rather than “this is the specific issue we need solved” .
+
+So yes, **weak upfront analysis—poor scoping, unclear objectives, insufficient business vetting—is a root cause**. It sets projects up for failure in later stages.
+
+---
+
+## 🛠 How to Boost Success Odds
+
+1. **Define your problem and business goal first** – with measurable KPIs.
+2. **Assess your data readiness** – quality, governance, accessibility.
+3. **Ensure the team includes domain experts + technical talent.**
+4. **Set realistic expectations** – understand AI’s capabilities and limitations.
+5. **Plan for scale early** – handle integration, infrastructure, maintenance.
+6. **Invest in change/change adoption** – transparency, training, trust building.
+
+When companies align AI initiatives tightly with business needs, data maturity, and execution capacity, the \~10–30% success range is achievable—though most still hover lower.
+
+---
+
+### Bottom Line
+
+Yes—success rates for AI and data science projects are shockingly low (often under 20%). The most critical failure point is usually **starting without a sound understanding of *what problem is being solved and why it’s worth solving***. Clear problem analysis, combined with strong governance, data, talent, and alignment, is essential to turn experiments into outcomes.
+
+Let me know if you'd like deeper insights into any of these pitfalls!
+
+[1]: https://www.reuters.com/business/over-40-agentic-ai-projects-will-be-scrapped-by-2027-gartner-says-2025-06-25/?utm_source=chatgpt.com "Over 40% of agentic AI projects will be scrapped by 2027, Gartner says"
+[2]: https://www.ciodive.com/news/AI-project-fail-data-SPGlobal/742590/?utm_source=chatgpt.com "AI project failure rates are on the rise: report | CIO Dive"
+[3]: https://rheodata.com/ai-failures-stats/?utm_source=chatgpt.com "AI Failure Statistics - RheoData"
+[4]: https://fastdatascience.com/data-science-project-management/why-do-data-science-projects-fail/?utm_source=chatgpt.com "10 reasons why data science projects fail | Fast Data Science"
+[5]: https://tajbrains.com/blog/why-ai-projects-fail?utm_source=chatgpt.com "Why 90% of AI Projects Fail (And How to Be in the 10%) | TajBrains"
+[6]: https://www.reddit.com/r/dataengineering/comments/1ht5swe?utm_source=chatgpt.com "hot take: most analytics projects fail bc they start w/ solutions not problems"
+[7]: https://www.cio.com/article/3617614/cios-lack-of-success-metrics-dooms-many-ai-projects.html?utm_source=chatgpt.com "CIOs’ lack of success metrics dooms many AI projects | CIO"
+[8]: https://www.wsj.com/articles/companies-had-fun-experimenting-with-ai-now-they-have-to-show-the-returns-2a683592?utm_source=chatgpt.com "Companies Had Fun Experimenting With AI. Now They Have to Show the Returns."
+[9]: https://en.wikipedia.org/wiki/Replication_crisis?utm_source=chatgpt.com "Replication crisis"
+[10]: https://sloanreview.mit.edu/article/companies-are-making-serious-money-with-ai/?utm_source=chatgpt.com "Companies Are Making Serious Money With AI"
+[11]: https://www.reddit.com/r/datascience/comments/1clzt18?utm_source=chatgpt.com "Is it true most ML/AI projects fail? Why is this?"
+[12]: https://www.cio.com/article/188830/8-reasons-data-science-projects-fail.html?utm_source=chatgpt.com "8 reasons data science projects fail | CIO"

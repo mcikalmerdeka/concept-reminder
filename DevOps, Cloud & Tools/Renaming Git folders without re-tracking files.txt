@@ -1,0 +1,19 @@
+Source: https://claude.ai/chat/ea5bffce-18ea-492e-8ca6-119637e2e55e
+
+---------------------------------------------------------------------------------------------------
+
+Yes, when you rename a folder in a Git repository, Git sees this as deleting the old folder and creating a new one with all the files inside it. This is why it appears that all the files need to be tracked again, even though you only changed the folder name.
+
+There's a simple way to handle this situation. You can use the `git mv` command to rename the folder, which tells Git explicitly that you're moving/renaming rather than deleting and creating:
+
+```bash
+git mv "task 1" "task 1 completed"
+```
+
+When you use `git mv`, Git will track this as a rename operation rather than as deleting and adding all the files. Then you only need to commit this single change:
+
+```bash
+git commit -m "Renamed 'task 1' folder to 'task 1 completed'"
+```
+
+This way, Git understands that you've just renamed the folder and all its contents remain the same. The history of all the PDF files will be preserved correctly, and Git will know they're the same files, just in a renamed folder.

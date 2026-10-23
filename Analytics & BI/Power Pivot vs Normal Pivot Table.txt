@@ -1,0 +1,26 @@
+what is the difference between power pivot and normal pivot table ?
+
+The main differences between Power Pivot and normal PivotTables in Excel are:
+
+1. **Data Volume and Complexity**:
+   - Normal PivotTables are limited in their ability to handle large volumes of data efficiently. They work well for relatively small datasets with simple structures.
+   - Power Pivot, on the other hand, can handle much larger volumes of data and more complex data models. It has a highly optimized, in-memory data engine that can handle millions of rows of data and complex relationships between tables.
+
+2. **Data Sources**:
+   - Normal PivotTables typically work directly with data stored in an Excel worksheet or external data sources that Excel can connect to (e.g., SQL databases, CSV files).
+   - Power Pivot allows you to import data from a wide range of sources (similar to Power Query), and it can also combine multiple data sources into a single data model.
+
+3. **Data Modeling**:
+   - Normal PivotTables rely on the data structure within the worksheet or connected data sources. They don't support creating relationships between different tables.
+   - Power Pivot includes a data modeling engine that allows you to define relationships between tables, create calculated columns and measures using DAX (Data Analysis Expressions), and build more sophisticated data models.
+
+4. **Calculations and Measures**:
+   - In normal PivotTables, calculations are typically limited to simple aggregations (sums, averages, counts) or basic calculations within the worksheet.
+   - Power Pivot enables you to create more complex calculations and measures using DAX, such as calculated columns, calculated fields, and sophisticated aggregations.
+
+5. **Performance**:
+   - Normal PivotTables can sometimes become sluggish or slow to update, especially with large datasets or complex calculations.
+   - Power Pivot is generally more efficient in handling large datasets and complex calculations due to its in-memory data engine and optimized processing.
+
+In summary, while both Power Pivot and normal PivotTables serve the purpose of data analysis and reporting within Excel, Power Pivot offers significantly enhanced capabilities for handling larger volumes of data, building more complex data models, and performing advanced calculations and analysis.
+

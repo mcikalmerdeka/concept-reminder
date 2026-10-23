@@ -1,0 +1,14 @@
+What is a z-score? What is a p-value?
+https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-statistics/what-is-a-z-score-what-is-a-p-value.htm
+
+P-Value: What It Is, How to Calculate It, and Why It Matters
+https://www.investopedia.com/terms/p/p-value.asp
+
+P-Value And Statistical Significance: What It Is & Why It Matters (Important!!)
+https://www.simplypsychology.org/p-value.html
+
+Everything you Should Know about p-value from Scratch for Data Science
+https://www.analyticsvidhya.com/blog/2019/09/everything-know-about-p-value-from-scratch-data-science/
+
+Hypothesis Testing: A Way to Accept or Reject Your Hypothesis Using p-value
+https://www.analyticsvidhya.com/blog/2020/07/hypothesis-testing-68351/

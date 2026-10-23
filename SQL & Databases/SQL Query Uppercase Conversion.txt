@@ -1,0 +1,298 @@
+Source: https://claude.ai/chat/d897d195-9401-4b00-a722-9b2be20f89b8
+
+-----------------------------------------------------------
+-- PostgreSQL Version
+CREATE OR REPLACE FUNCTION format_sql_pretty(query_text TEXT)
+RETURNS TEXT AS $$
+DECLARE
+    formatted_query TEXT;
+    keywords TEXT[] := ARRAY[
+        'select', 'from', 'where', 'and', 'or', 'order by', 'group by',
+        'having', 'limit', 'offset', 'join', 'left join', 'right join',
+        'inner join', 'outer join', 'cross join'
+    ];
+    keyword TEXT;
+BEGIN
+    -- First convert keywords to uppercase
+    formatted_query := query_text;
+    FOREACH keyword IN ARRAY keywords LOOP
+        formatted_query := regexp_replace(
+            formatted_query,
+            '\y' || keyword || '\y', 
+            upper(keyword),
+            'gi'
+        );
+    END LOOP;
+    
+    -- Add newlines and indentation after major clauses
+    formatted_query := regexp_replace(formatted_query, 'SELECT', E'SELECT\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'FROM', E'\nFROM\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'WHERE', E'\nWHERE\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'ORDER BY', E'\nORDER BY\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'GROUP BY', E'\nGROUP BY\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'HAVING', E'\nHAVING\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'LIMIT', E'\nLIMIT\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'OFFSET', E'\nOFFSET\n    ', 'gi');
+    
+    -- Format JOIN clauses
+    formatted_query := regexp_replace(formatted_query, '(LEFT|RIGHT|INNER|OUTER|CROSS)?\s*JOIN', E'\n\\1 JOIN\n    ', 'gi');
+    
+    -- Add indentation for AND/OR conditions
+    formatted_query := regexp_replace(formatted_query, ' AND ', E'\n    AND ', 'gi');
+    formatted_query := regexp_replace(formatted_query, ' OR ', E'\n    OR ', 'gi');
+    
+    RETURN formatted_query;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- MySQL Version
+DELIMITER //
+CREATE FUNCTION format_sql_pretty(query_text TEXT)
+RETURNS TEXT
+DETERMINISTIC
+BEGIN
+    DECLARE formatted_query TEXT;
+    
+    SET formatted_query = query_text;
+    
+    -- Convert keywords to uppercase
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\bselect\\b', 'SELECT', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\bfrom\\b', 'FROM', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\bwhere\\b', 'WHERE', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\border by\\b', 'ORDER BY', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\bgroup by\\b', 'GROUP BY', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\bhaving\\b', 'HAVING', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\blimit\\b', 'LIMIT', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\band\\b', 'AND', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\bor\\b', 'OR', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '\\bjoin\\b', 'JOIN', 1, 0, 'i');
+    
+    -- Add newlines and indentation
+    SET formatted_query = REGEXP_REPLACE(formatted_query, 'SELECT', 'SELECT\n    ', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, 'FROM', '\nFROM\n    ', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, 'WHERE', '\nWHERE\n    ', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, 'ORDER BY', '\nORDER BY\n    ', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, 'GROUP BY', '\nGROUP BY\n    ', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, 'HAVING', '\nHAVING\n    ', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, 'LIMIT', '\nLIMIT\n    ', 1, 0, 'i');
+    
+    -- Format JOIN clauses
+    SET formatted_query = REGEXP_REPLACE(formatted_query, '(LEFT|RIGHT|INNER|OUTER|CROSS)?\\s*JOIN', '\n\\1 JOIN\n    ', 1, 0, 'i');
+    
+    -- Format AND/OR conditions
+    SET formatted_query = REGEXP_REPLACE(formatted_query, ' AND ', '\n    AND ', 1, 0, 'i');
+    SET formatted_query = REGEXP_REPLACE(formatted_query, ' OR ', '\n    OR ', 1, 0, 'i');
+    
+    RETURN formatted_query;
+END //
+DELIMITER ;
+
+-- Microsoft SQL Server (T-SQL) Version
+CREATE FUNCTION dbo.format_sql_pretty
+(
+    @query_text NVARCHAR(MAX)
+)
+RETURNS NVARCHAR(MAX)
+AS
+BEGIN
+    DECLARE @formatted_query NVARCHAR(MAX)
+    SET @formatted_query = @query_text
+
+    -- Convert keywords to uppercase
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'select', 'SELECT')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'from', 'FROM')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'where', 'WHERE')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'order by', 'ORDER BY')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'group by', 'GROUP BY')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'having', 'HAVING')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), ' and ', ' AND ')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), ' or ', ' OR ')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'join', 'JOIN')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'left join', 'LEFT JOIN')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'right join', 'RIGHT JOIN')
+    SET @formatted_query = REPLACE(LOWER(@formatted_query), 'inner join', 'INNER JOIN')
+    
+    -- Add newlines and indentation
+    SET @formatted_query = REPLACE(@formatted_query, 'SELECT', 'SELECT' + CHAR(13) + CHAR(10) + '    ')
+    SET @formatted_query = REPLACE(@formatted_query, 'FROM', CHAR(13) + CHAR(10) + 'FROM' + CHAR(13) + CHAR(10) + '    ')
+    SET @formatted_query = REPLACE(@formatted_query, 'WHERE', CHAR(13) + CHAR(10) + 'WHERE' + CHAR(13) + CHAR(10) + '    ')
+    SET @formatted_query = REPLACE(@formatted_query, 'ORDER BY', CHAR(13) + CHAR(10) + 'ORDER BY' + CHAR(13) + CHAR(10) + '    ')
+    SET @formatted_query = REPLACE(@formatted_query, 'GROUP BY', CHAR(13) + CHAR(10) + 'GROUP BY' + CHAR(13) + CHAR(10) + '    ')
+    SET @formatted_query = REPLACE(@formatted_query, 'HAVING', CHAR(13) + CHAR(10) + 'HAVING' + CHAR(13) + CHAR(10) + '    ')
+    
+    -- Format JOIN clauses
+    SET @formatted_query = REPLACE(@formatted_query, 'JOIN', CHAR(13) + CHAR(10) + 'JOIN' + CHAR(13) + CHAR(10) + '    ')
+    
+    -- Format AND/OR conditions
+    SET @formatted_query = REPLACE(@formatted_query, ' AND ', CHAR(13) + CHAR(10) + '    AND ')
+    SET @formatted_query = REPLACE(@formatted_query, ' OR ', CHAR(13) + CHAR(10) + '    OR ')
+    
+    RETURN @formatted_query
+END;
+
+
+-- Example usage:
+SELECT format_sql_pretty('select * from rakafood.public.gopay_users order by avg_gopay_trx desc limit 5;');
+
+
+-------------------------------------------------------------
+Explanation (Only for Postgre)
+
+I'll break down the PostgreSQL formatting function step by step:
+
+```sql
+-- 1. Function Declaration
+CREATE OR REPLACE FUNCTION format_sql_pretty(query_text TEXT)
+RETURNS TEXT AS $$
+```
+- Creates a new function (or replaces if it exists) named `format_sql_pretty`
+- Takes one parameter `query_text` of type TEXT
+- Will return TEXT
+- `$$` is PostgreSQL's dollar quoting, used to make it easier to write strings without escaping quotes
+
+```sql
+-- 2. Variable Declarations
+DECLARE
+    formatted_query TEXT;  -- Will store our formatted SQL
+    keywords TEXT[] := ARRAY[  -- Array of SQL keywords we want to uppercase
+        'select', 'from', 'where', 'and', 'or', 'order by', 'group by',
+        'having', 'limit', 'offset', 'join', 'left join', 'right join',
+        'inner join', 'outer join', 'cross join'
+    ];
+    keyword TEXT;  -- Used in loop for current keyword
+BEGIN
+```
+- Declares variables we'll use in the function
+- `keywords` is an array containing all SQL keywords we want to uppercase
+- `keyword` will be used to store each keyword as we loop through them
+
+```sql
+-- 3. First Loop: Converting Keywords to Uppercase
+    formatted_query := query_text;  -- Start with the original query
+    FOREACH keyword IN ARRAY keywords LOOP
+        formatted_query := regexp_replace(
+            formatted_query,        -- text to search in
+            '\y' || keyword || '\y', -- pattern to match (\y means word boundary)
+            upper(keyword),         -- replacement text
+            'gi'                    -- flags: g=global, i=case insensitive
+        );
+    END LOOP;
+```
+- Copies original query into `formatted_query`
+- Loops through each keyword in our array
+- Uses `regexp_replace` to find and uppercase each keyword
+- `\y` means word boundary (so 'select' matches but 'selecting' doesn't)
+- 'gi' flags mean: replace all occurrences (g) and ignore case (i)
+
+```sql
+-- 4. Adding Newlines and Indentation for Major Clauses
+    -- Basic clauses
+    formatted_query := regexp_replace(formatted_query, 'SELECT', E'SELECT\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'FROM', E'\nFROM\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'WHERE', E'\nWHERE\n    ', 'gi');
+```
+- `E'\n'` is an escape string where \n means newline
+- `    ` (4 spaces) after \n creates indentation
+- For example: 
+  - `SELECT * FROM` becomes:
+  ```sql
+  SELECT
+      * 
+  FROM
+      
+  ```
+
+```sql
+-- 5. Formatting for Other Clauses
+    formatted_query := regexp_replace(formatted_query, 'ORDER BY', E'\nORDER BY\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'GROUP BY', E'\nGROUP BY\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'HAVING', E'\nHAVING\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'LIMIT', E'\nLIMIT\n    ', 'gi');
+    formatted_query := regexp_replace(formatted_query, 'OFFSET', E'\nOFFSET\n    ', 'gi');
+```
+- Similar formatting for other SQL clauses
+- Each major clause gets its own line with indented content
+
+```sql
+-- 6. Handling JOIN Clauses
+    formatted_query := regexp_replace(formatted_query, 
+        '(LEFT|RIGHT|INNER|OUTER|CROSS)?\s*JOIN', 
+        E'\n\\1 JOIN\n    ', 
+        'gi'
+    );
+```
+- Matches any type of JOIN (LEFT JOIN, INNER JOIN, etc.)
+- `\\1` refers to the captured group (LEFT|RIGHT|INNER|OUTER|CROSS) if it exists
+- Adds newlines and indentation around JOIN clauses
+
+```sql
+-- 7. Formatting AND/OR Conditions
+    formatted_query := regexp_replace(formatted_query, ' AND ', E'\n    AND ', 'gi');
+    formatted_query := regexp_replace(formatted_query, ' OR ', E'\n    OR ', 'gi');
+```
+- Puts each AND/OR condition on a new indented line
+- Makes WHERE clauses more readable
+
+```sql
+-- 8. Return and End
+    RETURN formatted_query;
+END;
+$$ LANGUAGE plpgsql;
+```
+- Returns the final formatted query
+- Specifies this is a PL/pgSQL function (PostgreSQL's procedural language)
+
+Example Usage:
+```sql
+-- Input
+SELECT format_sql_pretty('select * from users where age > 25 and city = ''NYC''');
+
+-- Output
+SELECT
+    *
+FROM
+    users
+WHERE
+    age > 25
+    AND city = 'NYC'
+```
+
+-------------------------------------------------------------
+Additional information:
+- https://dev.mysql.com/doc/refman/8.4/en/assignment-operators.html#:~:text=This%20means%20you%20can%20use,a%20value%20to%20a%20variable.&text=While%20it%20is%20also%20possible,operator%2C%20this%20is%20not%20recommended.
+
+- https://dev.mysql.com/doc/refman/8.4/en/user-variables.html
+
+- https://stackoverflow.com/questions/1009954/mysql-variable-vs-variable-whats-the-difference
+
+-------------------------------------------------------------
+Some improvement needed:
+- Aggregate function
+- Case when
+- Between
+- On in joining
+- When finish typing clauses they go with 1 spaces below
+- etc
+
+example where you can see the error
+SELECT format_sql_pretty(
+    'select c.customer_id, c.customer_name, sum(oi.quantity * p.price) as total_spent, 
+            count(distinct o.order_id) as total_orders, 
+            case 
+                when sum(oi.quantity * p.price) > 1000 then ''VIP''
+                when sum(oi.quantity * p.price) between 500 and 1000 then ''Loyal''
+                else ''Regular'' 
+            end as customer_category 
+     from customers c 
+     inner join orders o on c.customer_id = o.customer_id 
+     inner join order_items oi on o.order_id = oi.order_id 
+     inner join products p on oi.product_id = p.product_id 
+     where o.order_date between ''2023-01-01'' and ''2023-12-31'' 
+       and p.category = ''Electronics'' 
+       and o.status = ''completed'' 
+     group by c.customer_id, c.customer_name 
+     having count(distinct o.order_id) >= 5 
+     order by total_spent desc 
+     limit 10;'
+);

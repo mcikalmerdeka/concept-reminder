@@ -1,0 +1,171 @@
+Let me explain the key differences between `loc` and `iloc`:
+
+1. **Label vs. Position**: 
+   - `loc` uses labels/index to select data
+   - `iloc` uses integer positions (0-based)
+
+2. **Syntax**:
+   - `loc[row_indexer, column_indexer]`
+   - `iloc[row_position, column_position]`
+
+The examples in the artifact demonstrate these differences through various scenarios:
+
+1. **Basic selection** shows how to select a single row using a label (`loc`) vs. position (`iloc`).
+2. **Multiple row selection** demonstrates selecting non-consecutive rows.
+3. **Column selection** shows how to select specific columns by name vs. position.
+4. **Slicing** illustrates how ranges work differently between `loc` and `iloc`.
+5. **Boolean indexing** demonstrates how to use conditional selection.
+6. **Mixed indexing** shows selecting specific rows and columns together.
+7. **Single value selection** shows how to extract individual values.
+8. **Conditional selection** specifically with `loc`.
+
+Some key points to remember:
+- `loc` is primarily label-based
+- `iloc` is primarily integer position-based
+- `loc` includes the last element in slices, while `iloc` excludes it
+- Both can use boolean arrays for filtering
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+You're absolutely right - let me provide the examples with the actual output included.
+
+
+```python
+import pandas as pd
+
+# Create a sample DataFrame
+df = pd.DataFrame({
+    'Name': ['Alice', 'Bob', 'Charlie', 'David', 'Eve'],
+    'Age': [25, 30, 35, 28, 22],
+    'City': ['New York', 'San Francisco', 'Chicago', 'Boston', 'Los Angeles'],
+    'Salary': [50000, 75000, 80000, 65000, 55000]
+})
+df.index = ['a', 'b', 'c', 'd', 'e']  # Set custom index
+
+# Original DataFrame:
+#      Name  Age           City  Salary
+# a   Alice   25      New York   50000
+# b     Bob   30  San Francisco   75000
+# c  Charlie   35       Chicago   80000
+# d    David   28        Boston   65000
+# e     Eve   22   Los Angeles   55000
+
+# Example 1: Basic selection - single row
+# Using loc - select row with label 'c':
+print(df.loc['c'])
+# Output:
+# Name      Charlie
+# Age            35
+# City      Chicago
+# Salary      80000
+# Name: c, dtype: object
+
+# Using iloc - select third row (index 2):
+print(df.iloc[2])
+# Output:
+# Name      Charlie
+# Age            35
+# City      Chicago
+# Salary      80000
+# Name: c, dtype: object
+
+# Example 2: Multiple row selection
+# Using loc - select rows with labels 'a', 'c', and 'e':
+print(df.loc[['a', 'c', 'e']])
+# Output:
+#       Name  Age         City  Salary
+# a    Alice   25    New York   50000
+# c  Charlie   35     Chicago   80000
+# e      Eve   22  Los Angeles  55000
+
+# Using iloc - select first, third, and fifth rows:
+print(df.iloc[[0, 2, 4]])
+# Output:
+#       Name  Age         City  Salary
+# a    Alice   25    New York   50000
+# c  Charlie   35     Chicago   80000
+# e      Eve   22  Los Angeles  55000
+
+# Example 3: Selecting specific columns
+# Using loc - select 'Name' and 'Salary' columns:
+print(df.loc[:, ['Name', 'Salary']])
+# Output:
+#       Name  Salary
+# a    Alice   50000
+# b      Bob   75000
+# c  Charlie   80000
+# d    David   65000
+# e      Eve   55000
+
+# Example 4: Slicing rows and columns
+# Using loc - select rows 'b' to 'd' and columns 'Age' to 'Salary':
+print(df.loc['b':'d', 'Age':'Salary'])
+# Output:
+#    Age           City  Salary
+# b   30  San Francisco   75000
+# c   35        Chicago   80000
+# d   28         Boston   65000
+
+# Using iloc - select rows 1 to 3 and columns 1 to 3:
+print(df.iloc[1:4, 1:4])
+# Output:
+#    Age           City  Salary
+# b   30  San Francisco   75000
+# c   35        Chicago   80000
+# d   28         Boston   65000
+
+# Example 5: Boolean indexing
+# Using loc - select rows where Age > 25:
+print(df.loc[df['Age'] > 25])
+# Output:
+#       Name  Age           City  Salary
+# b      Bob   30  San Francisco   75000
+# c  Charlie   35        Chicago   80000
+# d    David   28         Boston   65000
+
+# Example 6: Mixed indexing
+# Using loc - select 'Salary' column for rows 'b' and 'd':
+print(df.loc[['b', 'd'], 'Salary'])
+# Output:
+# b    75000
+# d    65000
+# Name: Salary, dtype: int64
+
+# Example 7: Single value selection
+# Using loc - select Age of Charlie (row 'c'):
+print(df.loc['c', 'Age'])
+# Output: 35
+
+# Using iloc - select Age of Charlie (third row, second column):
+print(df.iloc[2, 1])
+# Output: 35
+
+# Example 8: Using conditional selection with loc
+# Select rows where City is either 'New York' or 'Chicago':
+print(df.loc[df['City'].isin(['New York', 'Chicago'])])
+# Output:
+#       Name  Age      City  Salary
+# a    Alice   25  New York   50000
+# c  Charlie   35   Chicago   80000
+
+```
+
+Key differences between `loc` and `iloc`:
+
+1. **Label vs. Position**: 
+   - `loc` uses labels/index (like 'a', 'b', 'c')
+   - `iloc` uses integer positions (0, 1, 2)
+
+2. **When to use each**:
+   - Use `loc` when you know the names/labels you want to select
+   - Use `iloc` when you know the numeric positions
+
+3. **Inclusive vs. Exclusive**:
+   - `loc` slicing is inclusive of both start and end labels
+   - `iloc` slicing excludes the end position
+
+4. **Type of indexer**:
+   - `loc` accepts boolean arrays, labels, label slices
+   - `iloc` accepts integer positions, integer slices, boolean arrays
+
+Each example in the code above shows the actual output you would get when running the code. Is there anything specific from these examples you'd like me to clarify further?

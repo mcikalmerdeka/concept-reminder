@@ -1,0 +1,103 @@
+A business model based on ads means that the company generates revenue by showing advertisements to its users. Here's how this typically works, with a step-by-step example:
+
+### Case Study Example: Social Media Platform - "SnapPic"
+
+1. **Business Concept**:
+   - SnapPic is a social media platform where users can post photos, follow friends, and explore trending topics. It’s free to use, so SnapPic doesn't charge users directly for its services.
+
+2. **Building a User Base**:
+   - SnapPic’s priority is attracting and keeping as many users as possible. The platform offers a highly engaging and easy-to-use experience, adding features that encourage users to spend time on the app. This creates a large and active user base, which is crucial for an ads-based business model.
+
+3. **Gathering User Data**:
+   - SnapPic tracks how users interact with the app, such as which photos they like, topics they follow, or ads they skip or engage with. This data helps SnapPic build detailed user profiles, making it possible to categorize users by interests, location, age, etc.
+
+4. **Creating Advertising Opportunities**:
+   - SnapPic offers different types of ad formats for advertisers: image ads, video ads, and sponsored posts that appear in users’ feeds. Advertisers can select ad formats based on what works best for their goals.
+
+5. **Attracting Advertisers**:
+   - SnapPic uses its data to attract businesses looking to reach specific audiences. For example, a skincare brand might want to target users interested in beauty products, so they use SnapPic to reach these users through targeted ads.
+
+6. **Ad Targeting and Display**:
+   - When a user scrolls through SnapPic, they may see ads that match their interests and demographics. For example, if a user has liked photos of skincare products, they might see ads from a skincare brand. SnapPic charges advertisers a fee for each time a user views or clicks on the ad (known as CPM – cost per thousand impressions, or CPC – cost per click).
+
+7. **Revenue from Ads**:
+   - SnapPic earns revenue every time an ad is displayed or clicked. Since SnapPic has millions of daily active users, this scales up to significant ad revenue. For example, if SnapPic charges $5 per 1,000 ad impressions and delivers 10 million impressions daily, it earns $50,000 per day.
+
+8. **Profitability**:
+   - To turn this revenue into profit, SnapPic must keep its costs under control. Key costs may include:
+     - **Server and infrastructure costs** to keep the platform running.
+     - **Salaries** for engineers, designers, and other staff.
+     - **Marketing costs** to attract new users.
+
+   After covering these expenses, any remaining revenue contributes to SnapPic's profit.
+
+### Summary of Revenue Pathway
+
+- **Attract users** → **Analyze user interests** → **Attract advertisers who target users' interests** → **Show ads to users** → **Charge advertisers per view or click** → **Generate revenue**.
+
+By creating a large and engaging user base, SnapPic can consistently sell ad space to advertisers. Over time, increasing the user base and making ads more effective can help increase revenue and profits.
+
+------------------------------------------------------------
+
+Let’s add some numbers to the SnapPic case study to illustrate how an ad-based business model grows, from launching the platform to eventually generating profit. 
+
+### Year 1: Launch & Growth Phase
+
+1. **Initial Investment and Costs**:
+   - SnapPic needs a startup investment to cover costs before it starts earning revenue.
+   - **Development Costs**: $500,000 (for app development, servers, and initial team salaries).
+   - **Marketing Costs**: $200,000 (for launching the app, social media ads, and influencer partnerships to attract users).
+   - **Total Investment Needed**: $700,000
+
+2. **Building the User Base**:
+   - SnapPic launches in Year 1, aiming to gain 1 million users by the end of the year.
+   - **Average Cost per User Acquisition**: $2 (for marketing and incentives).
+   - **User Base Goal**: 1 million users, so the cost to reach this goal is $2 x 1,000,000 = $2,000,000.
+   
+   *At this stage, SnapPic is not yet generating revenue but is focused on growing its user base, so it’s operating at a net loss.*
+
+### Year 2: Initial Ad Revenue
+
+3. **Starting to Monetize**:
+   - By Year 2, SnapPic has a solid user base of 1 million users and can start attracting advertisers.
+   - **Daily Active Users (DAUs)**: Let’s assume 200,000 of those users are active daily.
+   - **Ad Impressions**: Each user sees about 10 ads per day, so SnapPic generates 2 million ad impressions per day (200,000 users x 10 ads).
+
+4. **Revenue from Ads**:
+   - SnapPic sells ads at a CPM (cost per thousand impressions) rate of $5.
+   - **Daily Ad Revenue**: $5 x 2,000 = $10,000.
+   - **Annual Ad Revenue**: $10,000 x 365 = $3.65 million.
+
+5. **Operating Costs**:
+   - **Staff Salaries**: $1 million (expanded team for app updates, sales, and customer support).
+   - **Server & Infrastructure**: $500,000 (to handle the growing user base).
+   - **Marketing and User Acquisition**: $500,000 (ongoing marketing to attract new users).
+   - **Total Annual Operating Costs**: $2 million.
+
+6. **Year 2 Profit or Loss**:
+   - **Revenue**: $3.65 million
+   - **Operating Costs**: $2 million
+   - **Net Income (Profit)**: $1.65 million
+
+   *At the end of Year 2, SnapPic has achieved profitability, with a net profit of $1.65 million.*
+
+### Year 3 and Beyond: Scaling and Increased Profitability
+
+7. **Scaling Up**:
+   - By Year 3, SnapPic continues to grow its user base and daily engagement, reaching 5 million users and 1 million DAUs.
+   - **Ad Impressions per Day**: 10 million (1 million users x 10 ads).
+   - **Daily Ad Revenue**: $5 x 10,000 = $50,000.
+   - **Annual Ad Revenue**: $50,000 x 365 = $18.25 million.
+
+8. **Increased Operating Costs** (due to scaling, but with improved efficiencies):
+   - **Staff Salaries**: $2 million (larger team).
+   - **Infrastructure**: $1 million (expanded server costs).
+   - **Marketing and User Acquisition**: $1 million.
+   - **Total Annual Operating Costs**: $4 million.
+
+9. **Year 3 Profit**:
+   - **Revenue**: $18.25 million
+   - **Operating Costs**: $4 million
+   - **Net Income (Profit)**: $14.25 million
+
+By Year 3, SnapPic is generating substantial profit, and the ad revenue increases as more users join and ad rates potentially increase due to advertiser demand. SnapPic can continue reinvesting profits into platform enhancements, expanding user engagement, and potentially introducing new revenue streams.

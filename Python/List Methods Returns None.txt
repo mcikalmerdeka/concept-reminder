@@ -1,0 +1,79 @@
+>>> mylist = ['a', 'b', 'c']
+>>> empty = mylist.clear()
+>>> restored = mylist.extend(range(3))
+>>> backwards = mylist.reverse()
+>>> with_four = mylist.append(4)
+>>> in_order = mylist.sort()
+>>> without_one = mylist.remove(1)
+>>> mylist
+[0, 2, 4]
+>>> [empty, restored, backwards, with_four, in_order, without_one]
+[None, None, None, None, None, None]
+
+can you explain why these happenned?
+
+--------------------------------------------------------------
+
+Let me explain what's happening in this code step by step:
+
+1. All these list methods (clear, extend, reverse, append, sort, remove) modify the list "in place" and return None. That's why when you assign their results to variables (empty, restored, etc.), you get a list of None values.
+
+Let's break down each operation:
+
+```python
+mylist = ['a', 'b', 'c']     # Initial list
+empty = mylist.clear()       # Clears list, returns None, mylist is now []
+restored = mylist.extend(range(3))  # Adds [0,1,2], returns None, mylist is now [0,1,2]
+backwards = mylist.reverse()  # Reverses to [2,1,0], returns None
+with_four = mylist.append(4) # Adds 4, returns None, mylist is now [2,1,0,4]
+in_order = mylist.sort()     # Sorts to [0,1,2,4], returns None
+without_one = mylist.remove(1)  # Removes 1, returns None, mylist is now [0,2,4]
+```
+
+If you want to get the result of these operations while preserving the original list, you can use alternative approaches:
+- Instead of clear(): new_list = []
+- Instead of extend(): new_list = mylist + list(range(3))
+- Instead of reverse(): new_list = mylist[::-1]
+- Instead of sort(): new_list = sorted(mylist)
+
+Or if you just want to chain operations, you can do them directly without assignments:
+```python
+mylist.clear()
+mylist.extend(range(3))
+# etc.
+```
+
+-----------------------------------------------------------
+
+Ah, if you want to store the results of each operation while keeping the same processing flow, here's how you could do it:
+
+```python
+mylist = ['a', 'b', 'c']
+empty = list(mylist)         # Make a copy first
+empty.clear()                # Then modify
+
+restored = list(empty)       # Make a copy
+restored.extend(range(3))    # Then modify
+
+backwards = list(restored)   # Make a copy
+backwards.reverse()          # Then modify
+
+with_four = list(backwards)  # Make a copy
+with_four.append(4)         # Then modify
+
+in_order = list(with_four)  # Make a copy
+in_order.sort()             # Then modify
+
+without_one = list(in_order) # Make a copy
+without_one.remove(1)       # Then modify
+
+# Now each variable contains the result of that step:
+print(empty)        # []
+print(restored)     # [0, 1, 2]
+print(backwards)    # [2, 1, 0]
+print(with_four)    # [2, 1, 0, 4]
+print(in_order)     # [0, 1, 2, 4]
+print(without_one)  # [0, 2, 4]
+```
+
+The key is to make a copy of the list using `list()` before applying the method. This way, each variable gets its own independent list that you can modify without affecting the others. Each step preserves its result in its own variable, just like you wanted in the original code.

@@ -1,0 +1,741 @@
+Source: 
+
+https://claude.ai/chat/c3fd1614-e949-4dd8-ac4a-22182d5a47b9
+
+https://claude.ai/chat/4121fcf2-77ac-461c-b8f0-e2cd539e70b6
+
+---------------------------------------------------------------------------------------------------
+
+Spreadsheets File: https://docs.google.com/spreadsheets/d/1l8Tp5S8YLTMfGYbU2B1pL-U8TsDOXO_a0U7K8k5gXGk/edit?usp=sharing
+
+Gdrive folder (for backup function): https://drive.google.com/drive/folders/1A8TPSMon3VNnyPXQTT22FSd5jDdz8WgO?usp=sharing
+
+---------------------------------------------------------------------------------------------------
+
+// Create the custom menu when the spreadsheet opens
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  
+  // Create main menu with 'Sales Automation' title
+  ui.createMenu('Sales Automation')
+
+    // Data Management Section
+    .addItem('Sort by Amount', 'autoSortOnEdit')
+    .addItem('Format Data', 'autoFormat')
+    .addItem('Clean Data', 'cleanData')
+    .addItem('Validate Data', 'validateData')  // New function for data validation (will update on this)
+    .addSeparator()
+    
+    // Reports Section
+    .addSubMenu(ui.createMenu('Reports')
+      .addItem('Generate Daily Report', 'generateDailyReport')
+      .addItem('Generate Weekly Report', 'generateWeeklyReport')  // New weekly report option (will update on this)
+      .addItem('Generate Monthly Report', 'generateMonthlyReport')  // New monthly report option (will update on this)
+      .addItem('Send Email Update', 'sendEmailOnEdit')
+      .addItem('Export as PDF', 'exportToPDF'))  // New PDF export function (will update on this)
+    
+    // Analysis Section
+    .addSubMenu(ui.createMenu('Analysis')  // New analysis submenu (will update on this)
+      .addItem('Sales Trends', 'analyzeSalesTrends')
+      .addItem('Performance Metrics', 'analyzePerformance')
+      .addItem('Generate Charts', 'generateCharts'))
+    
+    // Backup & Settings Section
+    .addSubMenu(ui.createMenu('Tools')
+      .addItem('Create Backup', 'backupData')
+      .addItem('Restore Backup', 'restoreBackup')  // New restore function (will update on this)
+      .addSeparator()
+      .addItem('Settings', 'showSettings')  // New settings configuration (will update on this)
+      .addItem('Help', 'showHelp'))  // New help documentation (will update on this)
+    
+    .addSeparator()
+    .addToUi();
+}
+
+// // 1. Automatic Email When Sheet is Updated (version 1)
+// function sendEmailOnEdit() {
+//   // Triggers when the sales data range is edited
+//   var sheet = SpreadsheetApp.getActiveSheet();
+//   var lastRow = sheet.getLastRow();
+  
+//   // Dynamically get the data range
+//   var range = sheet.getRange("A2:G" + lastRow);
+//   var data = range.getValues();
+  
+//   // Compose email with more detailed information
+//   var emailAddress = "mcikalmerdeka@gmail.com";
+//   var subject = "Sales Data Updated";
+//   var message = "The sales spreadsheet was updated with new data:\n" + 
+//                 "Last edited row: " + lastRow + "\n" +
+//                 "Total rows with data: " + (lastRow - 1);
+  
+//   // Send email
+//   MailApp.sendEmail(emailAddress, subject, message);
+
+//   // Show confirmation to user
+//   SpreadsheetApp.getUi().alert('Email update sent successfully!');
+// }
+
+// 1. Automatic Email When Sheet is Updated (version 2)
+function sendEmailOnEdit() {
+  var ui = SpreadsheetApp.getUi();
+  
+  try {
+    // Validate active sheet
+    var sheet = SpreadsheetApp.getActiveSheet();
+    if (sheet.getLastRow() <= 1) {
+      throw new Error('No data to report. Please add some data to the sheet first.');
+    }
+    
+    var lastRow = sheet.getLastRow();
+    
+    // Dynamically get the data range
+    var range = sheet.getRange("A2:G" + lastRow);
+    var data = range.getValues();
+    
+    // Calculate statistics for email
+    var stats = {
+      totalRows: lastRow - 1,  // Subtract header row
+      completedOrders: 0,
+      pendingOrders: 0,
+      processingOrders: 0,
+      totalAmount: 0
+    };
+    
+    // Process data for statistics
+    for (var i = 0; i < data.length; i++) {
+      // Count order statuses
+      if (data[i][4] === "Completed") stats.completedOrders++;
+      if (data[i][4] === "Pending") stats.pendingOrders++;
+      if (data[i][4] == "Processing") stats.processingOrders++;
+      
+      // Sum total amount
+      try {
+        var amount = parseFloat(data[i][3].toString().replace('$', '').replace(',', ''));
+        if (!isNaN(amount)) {
+          stats.totalAmount += amount;
+        }
+      } catch (e) {
+        Logger.log('Error processing amount in row ' + (i + 2) + ': ' + e.toString());
+      }
+    }
+    
+    // Compose email with detailed information
+    var emailAddress = "mcikalmerdeka@gmail.com";
+    var subject = "Sales Data Updated - " + new Date().toLocaleDateString();
+    var message = "The sales spreadsheet was updated with new data:\n\n" + 
+                 "Summary:\n" +
+                 "- Total rows with data: " + stats.totalRows + "\n" +
+                 "- Completed orders: " + stats.completedOrders + "\n" +
+                 "- Pending orders: " + stats.pendingOrders + "\n" +
+                 "- Processing orders: " + stats.processingOrders + "\n" +
+                 "- Total amount: $" + stats.totalAmount.toFixed(2) + "\n\n" +
+                 "Last updated: " + new Date().toLocaleString() + "\n" +
+                 "Sheet name: " + sheet.getName();
+    
+    // Send email with error handling
+    try {
+      MailApp.sendEmail(emailAddress, subject, message);
+      ui.alert('Success', 'Email update sent successfully!', ui.ButtonSet.OK);
+    } catch (emailError) {
+      throw new Error('Failed to send email: ' + emailError.message);
+    }
+    
+  } catch (error) {
+    Logger.log('Error in sendEmailOnEdit: ' + error.toString());
+    ui.alert('Error', 
+             'Failed to send email update: ' + error.message + '\n\nPlease check your sheet data and permissions.',
+             ui.ButtonSet.OK);
+  }
+}
+
+// ==================================================================================================================================================================================================
+// ==================================================================================================================================================================================================
+
+
+// 2. Auto-Sort Data When New Rows Are Added
+function autoSortOnEdit() {
+  var ui = SpreadsheetApp.getUi();
+  
+  try {
+    // Get the active sheet
+    var sheet = SpreadsheetApp.getActiveSheet();
+    
+    // Validate if sheet has data
+    if (sheet.getLastRow() <= 1) {
+      throw new Error('No data to sort. Please add some data to the sheet first.');
+    }
+    
+    var lastRow = sheet.getLastRow();
+    var range = sheet.getRange("A2:G" + lastRow);
+    
+    // Sort by Amount (column D) in descending order
+    // Column 4 represents column D in the range
+    range.sort({
+      column: 4,
+      ascending: false
+    });
+    
+    // Show success message
+    ui.alert('Success', 'Data sorted successfully by amount in descending order.', ui.ButtonSet.OK);
+    
+  } catch (error) {
+    // Handle any errors that occur during execution
+    Logger.log('Error in autoSortOnEdit: ' + error.toString());
+    ui.alert('Error', 
+             'Failed to sort data: ' + error.message + '\n\nPlease check if your sheet contains valid data.',
+             ui.ButtonSet.OK);
+  }
+}
+
+// ==================================================================================================================================================================================================
+// ==================================================================================================================================================================================================
+
+
+// // 3. Automatic Data Backup (version 1)
+// function backupData() {
+
+//   var ui = SpreadsheetApp.getUi();
+
+//   try{
+//     // Get source sheet
+//     var sourceSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sales Sample Data");
+//     var lastRow = sourceSheet.getLastRow();
+    
+//     // Include headers by starting from row 1
+//     var sourceData = sourceSheet.getRange(1, 1, lastRow, 7).getValues();
+
+//     // Create new spreadsheet for backup with date
+//     var backupFileName = "Sales_Backup_" + new Date().toISOString().split('T')[0];
+//     var newSpreadsheet = SpreadsheetApp.create(backupFileName);
+//     var newSheet = newSpreadsheet.getActiveSheet();
+    
+//     // Copy data to new spreadsheet
+//     newSheet.getRange(1, 1, sourceData.length, sourceData[0].length)
+//       .setValues(sourceData);
+
+//     ui.alert('Backup created successfully: ' + backupFileName);
+//   } catch (error) {
+//     ui.alert('Error creating backup: ' + error.toString());
+//   }
+// }
+
+// 3. Automatic Data Backup (version 2)
+function backupData() {
+  var ui = SpreadsheetApp.getUi();
+  
+  try {
+    // Get source sheet with validation
+    var sourceSheet = SpreadsheetApp.getActiveSheet();
+    if (sourceSheet.getLastRow() <= 1) {
+      throw new Error('No data to backup. Please add some data to the sheet first.');
+    }
+    
+    var lastRow = sourceSheet.getLastRow();
+    var lastCol = sourceSheet.getLastColumn();
+    
+    // Validate column count
+    if (lastCol !== 7) {
+      throw new Error('Invalid sheet format. Expected 7 columns but found ' + lastCol);
+    }
+    
+    // Include headers by starting from row 1
+    var sourceData = sourceSheet.getRange(1, 1, lastRow, lastCol).getValues();
+    
+    // Create backup folder if it doesn't exist
+    var folderName = 'Sales Data Backups';
+    var folder;
+    try {
+      folder = DriveApp.getFoldersByName(folderName).next();
+    } catch (e) {
+      folder = DriveApp.createFolder(folderName);
+    }
+    
+    // Create new spreadsheet for backup with timestamp
+    var timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    var backupFileName = "Sales_Backup_" + timestamp;
+    var newSpreadsheet = SpreadsheetApp.create(backupFileName);
+    var newSheet = newSpreadsheet.getActiveSheet();
+    
+    // Copy data to new spreadsheet
+    newSheet.getRange(1, 1, sourceData.length, sourceData[0].length)
+      .setValues(sourceData);
+    
+    // Move file to backup folder
+    var file = DriveApp.getFileById(newSpreadsheet.getId());
+    folder.addFile(file);
+    DriveApp.getRootFolder().removeFile(file);
+    
+    // Format the backup sheet
+    formatBackupSheet(newSheet, lastRow);
+    
+    // Show success message with link
+    var fileUrl = newSpreadsheet.getUrl();
+    ui.alert('Success', 
+             'Backup created successfully!\n\n' +
+             'File: ' + backupFileName + '\n' +
+             'Location: ' + folderName + ' folder\n' +
+             'Rows backed up: ' + (lastRow - 1) + '\n\n' +
+             'You can access the backup at: ' + fileUrl,
+             ui.ButtonSet.OK);
+             
+  } catch (error) {
+    Logger.log('Error in backupData: ' + error.toString());
+    ui.alert('Error', 
+             'Failed to create backup: ' + error.message + '\n\nPlease check your sheet data and permissions.',
+             ui.ButtonSet.OK);
+  }
+}
+
+// Helper function to format backup sheet
+function formatBackupSheet(sheet, lastRow) {
+  // Format headers
+  sheet.getRange("A1:G1")
+    .setFontWeight("bold")
+    .setBackground("#4a86e8")
+    .setFontColor("white");
+    
+  // Format data
+  var dataRange = sheet.getRange("A2:G" + lastRow);
+  dataRange.setFontFamily("Arial")
+           .setFontSize(11);
+  
+  // Format specific columns
+  sheet.getRange("D2:D" + lastRow).setNumberFormat("$#,##0.00");
+  sheet.getRange("C2:C" + lastRow).setNumberFormat("mm/dd/yyyy");
+  
+  // Autosize columns
+  sheet.autoResizeColumns(1, 7);
+}
+
+// ==================================================================================================================================================================================================
+// ==================================================================================================================================================================================================
+
+
+// // 4. Format Data Automatically (version 1)
+// function autoFormat() {
+
+//   var ui = SpreadsheetApp.getUi();
+
+//   try{
+//     var sheet = SpreadsheetApp.getActiveSheet();
+//     var lastRow = sheet.getLastRow();
+//     var dataRange = sheet.getRange("A2:G" + lastRow);
+//     var headerRange = sheet.getRange("A1:G1");
+    
+//     // Format headers
+//     headerRange
+//       .setFontWeight("bold")
+//       .setBackground("#4a86e8")
+//       .setFontColor("white");
+      
+//     // Format data range
+//     dataRange.setFontFamily("Arial")
+//             .setFontSize(11);
+    
+//     // Format Amount column (Column D)
+//     sheet.getRange("D2:D51")
+//         .setNumberFormat("$#,##0.00");
+    
+//     // Format Date column (Column C)
+//     sheet.getRange("C2:C51")
+//         .setNumberFormat("mm/dd/yyyy");
+    
+//     // Add conditional formatting for high-value orders
+//     var rule = SpreadsheetApp.newConditionalFormatRule()
+//       .whenNumberGreaterThan(1000)
+//       .setBackground("#93c47d")
+//       .setRanges([sheet.getRange("D2:D51")])
+//       .build();
+    
+//     sheet.setConditionalFormatRules([rule]);
+
+//     ui.alert('Formatting appllied sucessfully!');
+//   } catch (error) {
+//     ui.alert('Error applying formatting: ' + error.toString());
+//   }
+// }
+
+// 4. Format Data Automatically (version 2)
+function autoFormat() {
+  var ui = SpreadsheetApp.getUi();
+  
+  try {
+    // Validate active sheet
+    var sheet = SpreadsheetApp.getActiveSheet();
+    if (sheet.getLastRow() <= 1) {
+      throw new Error('No data to format. Please add some data to the sheet first.');
+    }
+    
+    var lastRow = sheet.getLastRow();
+    
+    // Track formatting changes
+    var stats = {
+      rowsFormatted: lastRow - 1,
+      columnsFormatted: 7
+    };
+    
+    // Format headers with improved styling
+    var headerRange = sheet.getRange("A1:G1");
+    headerRange
+      .setFontWeight("bold")
+      .setBackground("#4a86e8")
+      .setFontColor("white")
+      .setHorizontalAlignment("center")
+      .setBorder(true, true, true, true, true, true, "black", SpreadsheetApp.BorderStyle.SOLID);
+    
+    // Format data range with comprehensive styling
+    var dataRange = sheet.getRange("A2:G" + lastRow);
+    dataRange
+      .setFontFamily("Arial")
+      .setFontSize(11)
+      .setBorder(true, true, true, true, true, true, "black", SpreadsheetApp.BorderStyle.SOLID)
+      .setHorizontalAlignment("left");
+    
+    // Format Amount column (Column D) with currency
+    var amountRange = sheet.getRange("D2:D" + lastRow);
+    amountRange
+      .setNumberFormat("$#,##0.00")
+      .setHorizontalAlignment("right");
+    
+    // Format Date column (Column C) with consistent date format
+    var dateRange = sheet.getRange("C2:C" + lastRow);
+    dateRange
+      .setNumberFormat("mm/dd/yyyy")
+      .setHorizontalAlignment("center");
+    
+    // Add conditional formatting for high-value orders
+    var rule = SpreadsheetApp.newConditionalFormatRule()
+      .whenNumberGreaterThan(1000)
+      .setBackground("#93c47d")
+      .setRanges([amountRange])
+      .build();
+    
+    // Add conditional formatting for status column
+    var statusRange = sheet.getRange("E2:E" + lastRow);
+    var rules = [
+      SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo("Completed")
+        .setBackground("#b7e1cd")
+        .setRanges([statusRange])
+        .build(),
+      SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo("Pending")
+        .setBackground("#fce8b2")
+        .setRanges([statusRange])
+        .build(),
+      SpreadsheetApp.newConditionalFormatRule()
+        .whenTextEqualTo("Processing")
+        .setBackground("#ffe0e0")
+        .setRanges([statusRange])
+        .build(),
+      rule
+    ];
+    
+    sheet.setConditionalFormatRules(rules);
+    
+    // Autosize columns for better readability
+    sheet.autoResizeColumns(1, 7);
+    
+    // Show success message with formatting statistics
+    ui.alert('Success', 
+             'Formatting applied successfully!\n\n' +
+             'Rows formatted: ' + stats.rowsFormatted + '\n' +
+             'Columns formatted: ' + stats.columnsFormatted + '\n' +
+             'Conditional rules applied: ' + rules.length,
+             ui.ButtonSet.OK);
+             
+  } catch (error) {
+    Logger.log('Error in autoFormat: ' + error.toString());
+    ui.alert('Error', 
+             'Failed to apply formatting: ' + error.message + '\n\nPlease check your sheet data and permissions.',
+             ui.ButtonSet.OK);
+  }
+}
+
+// ==================================================================================================================================================================================================
+// ==================================================================================================================================================================================================
+
+
+// // 5. Generate Daily Report (version 1)
+// function generateDailyReport() {
+//   var sheet = SpreadsheetApp.getActiveSheet();
+//   var lastRow = sheet.getLastRow();
+//   var data = sheet.getRange(1, 1, lastRow, 7).getValues();
+
+//   // Calculate daily totals and metrics
+//   var totalSales = 0;
+//   var completedOrders = 0;
+//   var pendingOrders = 0;
+  
+//   // Start from i=1 to skip header row
+//   for (var i = 1; i < data.length; i++) {
+//     var amount = parseFloat(data[i][3].toString().replace('$', '').replace(',', ''));
+//     if (!isNaN(amount)) {
+//       totalSales += amount;
+//     }
+    
+//     // Count order statuses
+//     if (data[i][4] === "Completed") completedOrders++;
+//     if (data[i][4] === "Pending") pendingOrders++;
+//   }
+  
+//   // Create or get report sheet
+//   var reportSheet = SpreadsheetApp.getActiveSpreadsheet()
+//     .getSheetByName("Daily Report") || 
+//     SpreadsheetApp.getActiveSpreadsheet()
+//     .insertSheet("Daily Report");
+  
+//   // Add report data
+//   reportSheet.getRange("A1").setValue("Daily Sales Report - " + new Date().toLocaleDateString());
+//   reportSheet.getRange("A3").setValue("Total Sales: $" + totalSales.toFixed(2));
+//   reportSheet.getRange("A4").setValue("Completed Orders: " + completedOrders);
+//   reportSheet.getRange("A5").setValue("Pending Orders: " + pendingOrders);
+//   reportSheet.getRange("A6").setValue("Total Orders: " + (lastRow - 1)); // Subtract header row
+// }
+
+// 5. Generate Daily Report (version 2)
+function generateDailyReport() {
+  var ui = SpreadsheetApp.getUi();
+  
+  try {
+    var sheet = SpreadsheetApp.getActiveSheet();
+    
+    // Validate if sheet has data
+    if (sheet.getLastRow() <= 1) {
+      throw new Error('No data to generate report. Please add some data to the sheet first.');
+    }
+    
+    var lastRow = sheet.getLastRow();
+    var data = sheet.getRange(1, 1, lastRow, 7).getValues();
+
+    // Initialize metrics
+    var totalSales = 0;
+    var completedOrders = 0;
+    var pendingOrders = 0;
+    var processingOrders = 0;
+    var invalidAmounts = 0;
+    
+    // Process each row of data
+    // Start from i=1 to skip header row
+    for (var i = 1; i < data.length; i++) {
+      // Handle amount calculation with error checking
+      try {
+        var amount = parseFloat(data[i][3].toString().replace('$', '').replace(',', ''));
+        if (!isNaN(amount)) {
+          totalSales += amount;
+        } else {
+          invalidAmounts++;
+        }
+      } catch (e) {
+        invalidAmounts++;
+      }
+      
+      // Count order statuses
+      // Using switch for better maintainability if new statuses are added
+      switch(data[i][4]) {
+        case "Completed":
+          completedOrders++;
+          break;
+        case "Pending":
+          pendingOrders++;
+          break;
+        case "Processing":
+          processingOrders++;
+          break;
+      }
+    }
+    
+    // Create or get report sheet
+    var reportSheet = SpreadsheetApp.getActiveSpreadsheet()
+      .getSheetByName("Daily Report");
+      
+    if (!reportSheet) {
+      reportSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Daily Report");
+    } else {
+      // Clear existing content if sheet already exists
+      reportSheet.clear();
+    }
+    
+    // Format report header
+    var headerRange = reportSheet.getRange("A1:B1");
+    headerRange.merge();
+    headerRange.setValue("Daily Sales Report - " + new Date().toLocaleDateString())
+               .setFontWeight("bold")
+               .setBackground("#4a86e8")
+               .setFontColor("white");
+    
+    // Add report data with formatting
+    var reportData = [
+      ["Total Sales:", "$" + totalSales.toFixed(2)],
+      ["Completed Orders:", completedOrders],
+      ["Pending Orders:", pendingOrders],
+      ["Processing Orders:", processingOrders],
+      ["Total Orders:", (lastRow - 1)], // Subtract header row
+      ["Invalid Amounts Found:", invalidAmounts]
+    ];
+    
+    reportSheet.getRange("A3:B8").setValues(reportData);
+    reportSheet.autoResizeColumns(1, 2);
+    
+    // Show success message
+    ui.alert('Success', 'Daily report generated successfully!', ui.ButtonSet.OK);
+    
+  } catch (error) {
+    // Log error and show user-friendly message
+    Logger.log('Error in generateDailyReport: ' + error.toString());
+    ui.alert('Error', 
+             'Failed to generate report: ' + error.message + '\n\nPlease check if your sheet contains valid data.',
+             ui.ButtonSet.OK);
+  }
+}
+
+// // 6. Clean and Validate Data (version 1)
+// function cleanData() {
+//   var sheet = SpreadsheetApp.getActiveSheet();
+//   var lastRow = sheet.getLastRow();
+//   var range = sheet.getRange("A2:G" + lastRow);
+//   var values = range.getValues();
+  
+//   for (var i = 0; i < values.length; i++) {
+//     // Clean Order ID (Column A)
+//     values[i][0] = values[i][0].toString().trim();
+    
+//     // Clean and format Customer Name (Column B)
+//     if (values[i][1]) {
+//       values[i][1] = values[i][1].toString()
+//         .trim()
+//         .toLowerCase()
+//         .replace(/\b\w/g, l => l.toUpperCase());
+//     }
+    
+//     // Format dates (Column C)
+//     if (values[i][2]) {
+//       var date = new Date(values[i][2]);
+//       values[i][2] = Utilities.formatDate(
+//         date, 
+//         Session.getScriptTimeZone(), 
+//         "MM/dd/yyyy"
+//       );
+//     }
+    
+//     // Clean Amount (Column D)
+//     if (values[i][3]) {
+//       var amount = values[i][3].toString()
+//         .replace('$', '')
+//         .replace(',', '');
+//       values[i][3] = parseFloat(amount);
+//     }
+    
+//     // Standardize Status (Column E)
+//     if (values[i][4]) {
+//       values[i][4] = values[i][4].toString()
+//         .trim()
+//         .charAt(0).toUpperCase() + 
+//         values[i][4].slice(1).toLowerCase();
+//     }
+//   }
+  
+//   // Update sheet with cleaned data
+//   range.setValues(values);
+// }
+
+// 6. Clean and Validate Data (version 2)
+function cleanData() {
+  var ui = SpreadsheetApp.getUi();
+  
+  try {
+    var sheet = SpreadsheetApp.getActiveSheet();
+    
+    // Validate if sheet has data
+    if (sheet.getLastRow() <= 1) {
+      throw new Error('No data to clean. Please add some data to the sheet first.');
+    }
+    
+    var lastRow = sheet.getLastRow();
+    var range = sheet.getRange("A2:G" + lastRow);
+    var values = range.getValues();
+    
+    // Track cleaning statistics
+    var stats = {
+      namesFormatted: 0,
+      datesFixed: 0,
+      amountsFixed: 0,
+      statusesStandardized: 0
+    };
+    
+    for (var i = 0; i < values.length; i++) {
+      try {
+        // Clean Order ID (Column A)
+        values[i][0] = values[i][0].toString().trim();
+        
+        // Clean and format Customer Name (Column B)
+        if (values[i][1]) {
+          var originalName = values[i][1];
+          values[i][1] = values[i][1].toString()
+            .trim()
+            .toLowerCase()
+            .replace(/\b\w/g, l => l.toUpperCase());
+          if (originalName !== values[i][1]) stats.namesFormatted++;
+        }
+        
+        // Format dates (Column C)
+        if (values[i][2]) {
+          try {
+            var originalDate = values[i][2];
+            var date = new Date(values[i][2]);
+            values[i][2] = Utilities.formatDate(
+              date, 
+              Session.getScriptTimeZone(), 
+              "MM/dd/yyyy"
+            );
+            if (originalDate !== values[i][2]) stats.datesFixed++;
+          } catch (e) {
+            Logger.log('Error formatting date in row ' + (i + 2) + ': ' + e.toString());
+          }
+        }
+        
+        // Clean Amount (Column D)
+        if (values[i][3]) {
+          var originalAmount = values[i][3];
+          var amount = values[i][3].toString()
+            .replace('$', '')
+            .replace(',', '');
+          values[i][3] = parseFloat(amount);
+          if (originalAmount !== values[i][3]) stats.amountsFixed++;
+        }
+        
+        // Standardize Status (Column E)
+        if (values[i][4]) {
+          var originalStatus = values[i][4];
+          values[i][4] = values[i][4].toString()
+            .trim()
+            .charAt(0).toUpperCase() + 
+            values[i][4].slice(1).toLowerCase();
+          if (originalStatus !== values[i][4]) stats.statusesStandardized++;
+        }
+      } catch (rowError) {
+        Logger.log('Error processing row ' + (i + 2) + ': ' + rowError.toString());
+      }
+    }
+    
+    // Update sheet with cleaned data
+    range.setValues(values);
+    
+    // Show success message with statistics
+    ui.alert('Success', 
+             'Data cleaned successfully!\n\n' +
+             'Names formatted: ' + stats.namesFormatted + '\n' +
+             'Dates fixed: ' + stats.datesFixed + '\n' +
+             'Amounts standardized: ' + stats.amountsFixed + '\n' +
+             'Statuses standardized: ' + stats.statusesStandardized,
+             ui.ButtonSet.OK);
+             
+  } catch (error) {
+    // Log error and show user-friendly message
+    Logger.log('Error in cleanData: ' + error.toString());
+    ui.alert('Error', 
+             'Failed to clean data: ' + error.message + '\n\nPlease check if your sheet contains valid data.',
+             ui.ButtonSet.OK);
+  }
+}

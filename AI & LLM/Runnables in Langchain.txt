@@ -1,0 +1,99 @@
+Source:https://chat.langchain.com/?ref=blog.langchain.com&ajs_aid=0d86fa3e-51f6-473c-b1d3-aa4c3a0ec76a&ajs_uid=106d67b4-3936-445d-a008-61b496989d04&_gl=1*1c8vocv*_gcl_au*MTEwNDU2NjE5MS4xNzU3NjU0OTky*_ga*MTI2NDQzNTU4NS4xNzUxMzExOTQ5*_ga_47WX3HKKY2*czE3NjIzOTgyMTMkbzEzJGcxJHQxNzYyMzk4MzcyJGo2MCRsMCRoMA..&threadId=6830492f-100a-4c2b-bcab-9167b0da13a0
+
+------------------------------------------------------------------------------------------------
+
+**Runnables are the core composable primitive in LangChain that implement a standard interface with methods like `invoke()`, `batch()`, `stream()`, and `aget()` for building chains and pipelines.**
+
+Any object that implements this **Runnable** interface (like LLMs, prompts, retrievers, parsers, or custom functions) can be **chained together using the pipe operator `|`**. This creates executable sequences where output from one becomes input to the next. All core LangChain components (chat models, retrievers, output parsers) are Runnables.
+
+```python
+# Basic chain: prompt | model | parser (all are Runnables)
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+
+prompt = ChatPromptTemplate.from_template("Tell me a joke about {topic}")
+model = ChatOpenAI()
+parser = StrOutputParser()
+
+chain = prompt | model | parser  # Composable Runnable chain
+result = chain.invoke({"topic": "bears"})
+print(result)  # "Why did the bear quit the circus?..."
+```
+
+## RunnableLambda
+
+**Wraps any Python function to make it a Runnable with full batching, async, and streaming support.**
+
+```python
+from langchain_core.runnables import RunnableLambda
+
+def format_docs(docs):
+    """Format documents into a single string"""
+    return "\n\n".join(doc.page_content for doc in docs)
+
+format_runner = RunnableLambda(format_docs)  # Now supports .invoke(), .batch(), etc.
+result = format_runner.invoke([doc1, doc2])
+```
+
+## RunnablePassthrough
+
+**Passes input through unchanged** - useful for identity transforms in chains or when you need multiple inputs.
+
+```python
+from langchain_core.runnables import RunnablePassthrough
+
+# Pass question through while formatting context
+chain = (
+    {
+        "context": retriever,      # Runs retrieval
+        "question": RunnablePassthrough()  # Passes input unchanged
+    }
+    | prompt
+    | model
+    | parser
+)
+```
+
+## RunnableParallel
+
+**Runs multiple Runnables concurrently** and returns a dict of their outputs.
+
+```python
+from langchain_core.runnables import RunnableParallel
+
+# Run retrieval and generate answer in parallel
+parallel_chain = RunnableParallel({
+    "context": retriever,
+    "answer": model,
+    "summary": lambda x: model.invoke(f"Summarize: {x}")
+})
+
+result = parallel_chain.invoke("What is LangChain?")
+# Returns: {"context": [...], "answer": AIMessage(...), "summary": AIMessage(...)}
+```
+
+## Key Runnable Methods
+
+All Runnables support these standard methods:
+
+```python
+# Single invocation
+result = chain.invoke({"topic": "bears"})
+
+# Batch multiple inputs
+results = chain.batch([input1, input2, input3])
+
+# Streaming tokens/steps
+async for chunk in chain.astream(input):
+    print(chunk)
+
+# With config (tracing, callbacks, etc.)
+chain.invoke(input, config={"run_name": "MyChain"})
+```
+
+**Relevant docs:**
+- [Runnables Concept](https://python.langchain.com/docs/concepts/runnables/)
+- [RunnableLambda](https://python.langchain.com/api_reference/core/runnables/langchain_core.runnables.base.RunnableLambda.html)
+- [RunnablePassthrough](https://python.langchain.com/api_reference/core/runnables/langchain_core.runnables.pass_through.RunnablePassthrough.html)
+- [RunnableParallel](https://python.langchain.com/api_reference/core/runnables/langchain_core.runnables.base.RunnableParallel.html)

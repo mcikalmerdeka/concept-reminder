@@ -1,0 +1,78 @@
+The `time` library in Python provides various functions for working with time-related operations. Here are some of the most commonly used functions and methods from the `time` library, along with examples:
+
+1. `time.time()`: Returns the current time as a float representing seconds since the epoch.
+
+```python
+import time
+
+current_time = time.time()
+print(f"Current time: {current_time}")
+```
+
+2. `time.sleep(seconds)`: Suspends execution for the given number of seconds.
+
+```python
+print("Start")
+time.sleep(2)  # Pause for 2 seconds
+print("End")
+```
+
+3. `time.ctime([seconds])`: Converts a time in seconds since the epoch to a string.
+
+```python
+print(time.ctime())  # Current time as a string
+print(time.ctime(0))  # Epoch time
+```
+
+4. `time.strftime(format[, t])`: Converts a tuple or struct_time to a string according to a format.
+
+```python
+current_time = time.localtime()
+formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", current_time)
+print(f"Formatted time: {formatted_time}")
+```
+
+5. `time.strptime(string, format)`: Parses a string representing time according to a format.
+
+```python
+time_string = "2023-07-19 15:30:00"
+parsed_time = time.strptime(time_string, "%Y-%m-%d %H:%M:%S")
+print(f"Parsed time: {parsed_time}")
+```
+
+6. `time.localtime([seconds])`: Converts seconds since the epoch to a struct_time in local time.
+
+```python
+local_time = time.localtime()
+print(f"Local time: {local_time}")
+```
+
+7. `time.gmtime([seconds])`: Similar to localtime(), but converts to UTC.
+
+```python
+gm_time = time.gmtime()
+print(f"GMT time: {gm_time}")
+```
+
+8. `time.perf_counter()`: Returns a high-resolution time suitable for performance measurement.
+
+```python
+start = time.perf_counter()
+# Some operation
+time.sleep(1)
+end = time.perf_counter()
+print(f"Operation took {end - start:.6f} seconds")
+```
+
+9. `time.monotonic()`: Returns a monotonic time in fractional seconds.
+
+```python
+start = time.monotonic()
+time.sleep(0.5)
+end = time.monotonic()
+print(f"Elapsed time: {end - start:.6f} seconds")
+```
+
+These functions are often used for timing operations, creating timestamps, formatting time for display, parsing time strings, and introducing delays in code execution. The choice of function depends on the specific requirements of your application.
+
+Would you like me to elaborate on any of these functions or provide more examples?

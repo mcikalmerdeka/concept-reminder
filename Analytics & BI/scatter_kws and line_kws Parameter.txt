@@ -1,0 +1,10 @@
+In the `sns.regplot` function, `scatter_kws` and `line_kws` are parameters used to customize the appearance of the scatter plot points and the regression line, respectively.
+
+1. `scatter_kws`: This parameter is a dictionary of keyword arguments that control the appearance of the scatter plot points. In your example, `scatter_kws={'s':20, 'alpha':0.3}` means:
+   - `'s': 20` sets the size of the scatter plot points to 20.
+   - `'alpha': 0.3` sets the transparency of the scatter plot points to 0.3, making them somewhat transparent.
+
+2. `line_kws`: This parameter is a dictionary of keyword arguments that control the appearance of the regression line. In your example, `line_kws={'color':'red'}` means:
+   - `'color': 'red'` sets the color of the regression line to red.
+
+So, in summary, `scatter_kws` allows you to customize properties of the scatter plot points, such as size and transparency, while `line_kws` allows you to customize properties of the regression line, such as color.

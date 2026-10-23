@@ -1,0 +1,100 @@
+Source: https://claude.ai/chat/5736cefe-8465-4b8d-b79b-73a939830695
+
+---------------------------------------------------------------------------------------------------
+
+there is another thing that i want to ask related to storage used, if whenever i want to create a project in my local pc i always create a virtual environment and then install packages required there, do you think that's also use quite a lot of storage in my pc? if so how can i check this, like how many virtual environment have i created and how much spaces do they use in my laptop?
+
+Yes, virtual environments can definitely consume significant storage, especially if you create many of them or install heavy packages like machine learning libraries. Each virtual environment is essentially a separate copy of Python plus all installed packages.
+
+Here are several ways to check your virtual environments and their storage usage:
+
+## For conda environments:
+```bash
+# List all conda environments
+conda env list
+
+# Check size of specific environment
+conda list -n your_env_name
+
+# Get detailed info about environment sizes
+conda info --envs
+```
+
+## For venv/virtualenv environments:
+These are typically stored in your project directories or in a central location. Common locations:
+- Project folders (if you create them with `python -m venv venv`)
+- `C:\Users\Cikal Merdeka\Envs\` (if using virtualenvwrapper)
+- `C:\Users\Cikal Merdeka\.virtualenvs\`
+
+## To find and measure storage:
+1. **PowerShell command to find Python environments:**
+```powershell
+Get-ChildItem -Path C:\ -Recurse -Directory -Name "*venv*", "*env*", "*virtualenv*" -ErrorAction SilentlyContinue | Where-Object {Test-Path "$_\pyvenv.cfg"}
+```
+
+2. **Check folder sizes in File Explorer:**
+   - Navigate to your projects folder
+   - Right-click on folders containing `venv`, `env`, or `.venv`
+   - Select "Properties" to see size
+
+3. **PowerShell to get sizes:**
+```powershell
+Get-ChildItem -Directory | ForEach-Object {
+    $size = (Get-ChildItem $_.FullName -Recurse | Measure-Object -Property Length -Sum).Sum
+    [PSCustomObject]@{
+        Name = $_.Name
+        SizeGB = [math]::Round($size / 1GB, 2)
+    }
+} | Sort-Object SizeGB -Descending
+```
+
+## Storage optimization tips:
+- Delete unused virtual environments
+- Use `pip cache purge` to clear pip's download cache
+- Consider using `pipenv` or `poetry` which can share dependencies
+- For learning projects, you might reuse a single environment for similar projects
+- Use `conda clean --all` to clean conda caches
+
+Virtual environments with ML libraries (tensorflow, pytorch, etc.) can easily be 2-5GB each, so this cleanup can free substantial space.
+
+---------------------------------------------------------------------------------------------------
+
+but wait, if i created those project with those virtual environments not in my C disk but somewhere in a subfolder inside D or E disk, does that still consume the storage in C?
+
+No, if you created your virtual environments in subfolders on your D or E drives, they **do not** consume storage on your C drive. Virtual environments are stored exactly where you create them.
+
+So if you ran:
+```bash
+# In D:\my-projects\project1\
+python -m venv venv
+```
+
+Then the virtual environment is stored in `D:\my-projects\project1\venv\` and uses D drive storage, not C drive storage.
+
+However, there are a few things that might still be using C drive space:
+
+## What could still be on C drive:
+1. **Pip cache**: `C:\Users\Cikal Merdeka\AppData\Local\pip\cache\` - pip downloads packages here before installing them
+2. **Python installation**: If Python itself is installed on C drive
+3. **Conda environments**: If you use conda, environments are typically stored in `C:\Users\Cikal Merdeka\anaconda3\envs\` or similar
+4. **System Python packages**: Any globally installed packages
+
+## To check what's actually using C drive space:
+```powershell
+# Check pip cache size
+Get-ChildItem "C:\Users\Cikal Merdeka\AppData\Local\pip\cache" -Recurse | Measure-Object -Property Length -Sum
+
+# Find Python-related folders on C drive
+Get-ChildItem -Path C:\ -Recurse -Directory -Name "*python*", "*conda*", "*anaconda*" -ErrorAction SilentlyContinue
+```
+
+## To clean up C drive Python-related storage:
+```bash
+# Clear pip cache
+pip cache purge
+
+# If using conda
+conda clean --all
+```
+
+So your virtual environments on D/E drives aren't the culprit for C drive usage - it's more likely the Hugging Face cache we discussed earlier, pip cache, or other system-level Python installations.

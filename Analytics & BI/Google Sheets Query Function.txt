@@ -1,0 +1,6 @@
+reference :
+https://developers.google.com/chart/interactive/docs/querylanguage
+
+example :
+https://support.google.com/docs/answer/3093343?hl=en&ref_topic=9054531&sjid=16794520328879537020-AP
+https://docs.google.com/spreadsheets/d/1Xcnn0Xx0IrOznb45F685QS7aJ0r3IxHbssIzbrpve6w/edit?gid=5#gid=5

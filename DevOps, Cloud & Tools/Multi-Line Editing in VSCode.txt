@@ -1,0 +1,48 @@
+Source : https://chatgpt.com/c/677b34b6-64c8-800a-89ce-8d23a3e9c01e
+
+------------------------------------------------------------------------------------------------
+
+
+In Visual Studio Code (VSCode), there are multiple ways to select and edit multiple lines efficiently:
+
+### 1. **Using `Alt` (or `Option` on macOS) and Drag**:
+   - Hold `Alt` (`Option` on macOS) and drag your mouse over the lines you want to select. This creates a **block (column) selection**.
+   - Once selected, type to edit all selected lines simultaneously.
+
+---
+
+### 2. **Using `Ctrl` (or `Cmd` on macOS) + `Alt` + Down/Up Arrow**:
+   - Place your cursor on the first line.
+   - Press `Ctrl` + `Alt` + Down Arrow (`Cmd` + `Option` + Down Arrow on macOS) to add cursors on the lines below.
+   - Use `Up Arrow` to add cursors on the lines above.
+
+---
+
+### 3. **Shift + Alt + Arrow Keys**:
+   - Hold `Shift` + `Alt` (`Shift` + `Option` on macOS) and use the arrow keys to extend a block selection.
+   - This works well for selecting parts of multiple lines.
+
+---
+
+### 4. **Selecting All Instances of a Word (Multi-Cursor Editing)**:
+   - Select the word you want to edit.
+   - Press `Ctrl` + `D` (`Cmd` + `D` on macOS) to add a cursor at the next instance of the same word.
+   - Keep pressing `Ctrl` + `D` until all instances are selected.
+   - Edit all selected words simultaneously.
+
+---
+
+### 5. **Ctrl + Shift + L (Select All Matching Text)**:
+   - Highlight a word or block of text.
+   - Press `Ctrl` + `Shift` + `L` (`Cmd` + `Shift` + `L` on macOS) to select all matching occurrences in the file.
+   - All selected instances will now have cursors for simultaneous editing.
+
+---
+
+### 6. **Mouse and Keyboard Combination**:
+   - Hold `Ctrl` (`Cmd` on macOS) and click at different locations where you want to add a cursor.
+   - Once all cursors are added, type to edit multiple lines.
+
+---
+
+These techniques are very powerful for making quick edits in VSCode across multiple lines or instances.

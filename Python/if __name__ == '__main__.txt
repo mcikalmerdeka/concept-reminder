@@ -1,0 +1,83 @@
+The `if __name__ == '__main__':` block in Python is typically used to control the execution of code when a script is run directly, as opposed to when it's imported as a module. This allows you to write code that can be both imported as a module and run as a standalone script.
+
+Here's an explanation with examples:
+
+1. Basic usage:
+
+```python
+def main_function():
+    print("This is the main function")
+
+if __name__ == '__main__':
+    main_function()
+```
+
+When this script is run directly, it will output:
+```
+This is the main function
+```
+
+However, if this script is imported as a module in another script, the `main_function()` won't be called automatically.
+
+2. Module with both importable functions and standalone behavior:
+
+```python
+def greet(name):
+    return f"Hello, {name}!"
+
+def main():
+    print(greet("World"))
+    print("This is the main program")
+
+if __name__ == '__main__':
+    main()
+```
+
+If you run this script directly, it will output:
+```
+Hello, World!
+This is the main program
+```
+
+But if you import this script in another file, you can use the `greet()` function without running the `main()` function:
+
+```python
+import my_module
+
+print(my_module.greet("Alice"))
+```
+
+This will output:
+```
+Hello, Alice!
+```
+
+3. Running tests:
+
+```python
+def add(a, b):
+    return a + b
+
+def test_add():
+    assert add(2, 3) == 5
+    assert add(-1, 1) == 0
+    print("All tests passed!")
+
+if __name__ == '__main__':
+    test_add()
+```
+
+When run directly, this script will output:
+```
+All tests passed!
+```
+
+But if imported, the tests won't run automatically.
+
+The `if __name__ == '__main__':` block is useful because:
+
+1. It allows you to write reusable code that can be imported without side effects.
+2. You can include code that should only run when the script is executed directly.
+3. It helps in organizing your code, separating the main execution logic from the rest of the script.
+
+Would you like me to explain any part of this in more detail?

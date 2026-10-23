@@ -1,0 +1,73 @@
+Source: https://chatgpt.com/c/68e7926c-b7a0-8323-9741-d153c7113a2d
+
+------------------------------------------------------------------------------------------------
+
+what is the difference between this 2 probability:
+P(positive, infected) and P(positive | infected)
+
+Great question — this is a **fundamental concept in probability** that often trips people up, especially in contexts like medical testing.
+
+Let’s break it down clearly 👇
+
+---
+
+### 1️⃣ **P(positive, infected)**
+
+This means:
+
+> The **joint probability** that a person is both *positive* **and** *infected* at the same time.
+
+It answers:
+
+> “What is the probability that a randomly chosen person is infected **and** the test result is positive?”
+
+It combines both conditions **simultaneously**.
+
+Formally:
+[
+P(\text{positive, infected}) = P(\text{positive} \cap \text{infected})
+]
+
+Example:
+If 1% of the population is infected and the test detects infection correctly 99% of the time:
+[
+P(\text{positive, infected}) = P(\text{positive | infected}) \times P(\text{infected})
+]
+[
+= 0.99 \times 0.01 = 0.0099
+]
+So, **0.99%** of the population are both infected and test positive.
+
+---
+
+### 2️⃣ **P(positive | infected)**
+
+This means:
+
+> The **conditional probability** that a person tests positive **given that they are infected**.
+
+It answers:
+
+> “If we already know someone is infected, what’s the chance the test will correctly show positive?”
+
+Formally:
+[
+P(\text{positive | infected}) = \frac{P(\text{positive, infected})}{P(\text{infected})}
+]
+
+Using the same example:
+[
+P(\text{positive | infected}) = \frac{0.0099}{0.01} = 0.99
+]
+So, **99%** of infected people test positive.
+
+---
+
+### 💡 In summary
+
+| Expression                | Type              | Meaning                        | Example value                            |      |
+| ------------------------- | ----------------- | ------------------------------ | ---------------------------------------- | ---- |
+| **P(positive, infected)** | Joint probability | Probability that both are true | 0.0099                                   |      |
+| **P(positive              | infected)**       | Conditional probability        | Probability of positive *given* infected | 0.99 |
+
+---

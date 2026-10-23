@@ -1,0 +1,210 @@
+Source: https://chatgpt.com/c/67676088-0efc-800a-86ad-cc3d10af5f81
+
+Note: as of 22th December 2024, did this research because i wanted to try this https://www.youtube.com/watch?v=QmUsG_3wHPg (ADVANCED Python AI Agent Tutorial - Using RAG, Langflow & Multi-Agents)
+---------------------------------------------------------------------------------------------------
+
+what is the calculation of your API pricing looks like because i don't think i quite understand it yet, can you give me an example like if i ask for create a simple python function with explanation, how much does it cost me, as for the model lets say we use GPT-4o
+
+OpenAI's API pricing is based on the number of tokens processed, with separate rates for input (prompt) and output (completion) tokens. As of December 2024, the pricing for the GPT-4o model is:
+
+- **Input tokens**: $5.00 per million tokens
+- **Output tokens**: $15.00 per million tokens
+
+
+
+To estimate the cost of a specific API call, such as requesting the creation of a simple Python function with an explanation, follow these steps:
+
+1. **Determine the number of input tokens**: This includes the tokens in your prompt. For example, if your prompt is:
+
+   ```
+   Create a simple Python function that adds two numbers and explain how it works.
+   ```
+
+   This prompt contains approximately 15 tokens.
+
+2. **Estimate the number of output tokens**: This includes the tokens in the model's response. A simple Python function with an explanation might result in around 100 tokens.
+
+3. **Calculate the cost**:
+
+   - **Input cost**: 15 input tokens × ($5.00 / 1,000,000 tokens) = $0.000075
+   - **Output cost**: 100 output tokens × ($15.00 / 1,000,000 tokens) = $0.0015
+   - **Total cost**: $0.000075 (input) + $0.0015 (output) = $0.001575
+
+Therefore, the total cost for this API call would be approximately **$0.001575**.
+
+Keep in mind that token counts can vary based on the complexity and length of both the prompt and the response. For more detailed calculations, you can use tools like the [OpenAI API Pricing Calculator](https://gptforwork.com/tools/openai-chatgpt-api-pricing/).
+
+---------------------------------------------------------------------------------------------------
+
+now can you do price calculation for claude 3.5 sonnet?
+
+Anthropic's Claude 3.5 Sonnet model offers competitive pricing for API usage:
+
+- **Input tokens**: $3 per million tokens
+- **Output tokens**: $15 per million tokens
+
+
+
+To estimate the cost of a specific API call, such as requesting the creation of a simple Python function with an explanation, follow these steps:
+
+1. **Determine the number of input tokens**: This includes the tokens in your prompt. For example, if your prompt is:
+
+   ```
+   Create a simple Python function that adds two numbers and explain how it works.
+   ```
+
+   This prompt contains approximately 15 tokens.
+
+2. **Estimate the number of output tokens**: This includes the tokens in the model's response. A simple Python function with an explanation might result in around 100 tokens.
+
+3. **Calculate the cost**:
+
+   - **Input cost**: 15 input tokens × ($3 / 1,000,000 tokens) = $0.000045
+   - **Output cost**: 100 output tokens × ($15 / 1,000,000 tokens) = $0.0015
+   - **Total cost**: $0.000045 (input) + $0.0015 (output) = $0.001545
+
+Therefore, the total cost for this API call would be approximately **$0.001545**.
+
+Keep in mind that token counts can vary based on the complexity and length of both the prompt and the response. For more detailed calculations, you can use tools like the [Anthropic Claude 3 Sonnet Pricing Calculator](https://livechatai.com/anthropic-claude-3-sonnet-pricing-calculator).
+
+
+---------------------------------------------------------------------------------------------------
+
+
+let's try to make the example a little bit more real-life application, for example i want to add a new method of outlier handling in this function using sklearn Isolation Forest, here is the current function
+
+# Handling the outliers in dataframe based on chosen method using (IQR or Z-Score)
+def outlier_handling(df, col_series, method='iqr', threshold=3):
+    """
+    Function to remove outliers from specific columns of a dataframe using either IQR or Z-Score method.
+    
+    Parameters:
+    df (pd.DataFrame): The dataframe containing the data
+    col_series (list): List of column names to remove outliers from
+    method (str): Method to use for outlier detection - either 'iqr' or 'zscore'
+    threshold (float): Threshold for z-score method (default=3). Only used if method='zscore'
+    
+    Returns:
+    pd.DataFrame: A new dataframe with outliers removed for the specified columns
+    
+    Raises:
+    ValueError: If an invalid method is specified
+    """
+    print(f'Rows before removing outliers: {len(df)}')
+    
+    # Validate the method parameter
+    if method.lower() not in ['iqr', 'zscore']:
+        raise ValueError("Method must be either 'iqr' or 'zscore'")
+    
+    # Start with all rows marked as True (non-outliers)
+    filtered_entries = np.array([True] * len(df))
+    
+    # Loop through each column
+    for col in col_series:
+        if method.lower() == 'iqr':
+            # IQR method
+            Q1 = df[col].quantile(0.25)  # First quartile (25th percentile)
+            Q3 = df[col].quantile(0.75)  # Third quartile (75th percentile)
+            IQR = Q3 - Q1  # Interquartile range
+            lower_bound = Q1 - (IQR * 1.5)  # Lower bound for outliers
+            upper_bound = Q3 + (IQR * 1.5)  # Upper bound for outliers
+
+            # Create a filter that identifies non-outliers for the current column
+            filter_outlier = ((df[col] >= lower_bound) & (df[col] <= upper_bound))
+            
+        elif method.lower() == 'zscore':  # zscore method
+            # Calculate Z-Scores
+            z_scores = np.abs(stats.zscore(df[col]))
+
+            # Create a filter that identifies non-outliers
+            filter_outlier = (z_scores < threshold)
+        
+        # Update the filter to exclude rows that have outliers in the current column
+        filtered_entries = filtered_entries & filter_outlier
+    
+    # Create a new dataframe by applying the cumulative filter
+    df_filtered_outliers = df[filtered_entries]
+    
+    print(f'Rows after removing outliers: {len(df_filtered_outliers)}')
+    
+    return df_filtered_outliers
+
+what do you think will be the pricing comparison between GPT-4o and Claude 3.5 Sonnet?
+
+To estimate the pricing for integrating a new method of outlier handling using **sklearn's Isolation Forest**, let's first evaluate the scope of the task and token usage. Adding a new method involves:
+
+1. **Input tokens**:
+   - The **user prompt**, including the detailed description of the current function, the requested new method, and specific instructions.
+   - Approximately **500 tokens** (based on the length of the provided function and a realistic prompt).
+
+2. **Output tokens**:
+   - The response would include the updated function and some explanations.
+   - Approximately **300–500 tokens** for the function and explanation.
+
+### Token Calculation for GPT-4o
+
+| Category         | Tokens | Rate per 1M tokens | Cost        |
+|-------------------|--------|--------------------|-------------|
+| Input tokens      | 500    | $5 / 1,000,000     | $0.0025     |
+| Output tokens     | 500    | $15 / 1,000,000    | $0.0075     |
+| **Total**         | 1000   | -                  | **$0.01**   |
+
+### Token Calculation for Claude 3.5 Sonnet
+
+| Category         | Tokens | Rate per 1M tokens | Cost        |
+|-------------------|--------|--------------------|-------------|
+| Input tokens      | 500    | $3 / 1,000,000     | $0.0015     |
+| Output tokens     | 500    | $15 / 1,000,000    | $0.0075     |
+| **Total**         | 1000   | -                  | **$0.009**  |
+
+### Observations:
+1. **GPT-4o** would cost approximately **$0.01** for this API call.
+2. **Claude 3.5 Sonnet** would cost slightly less at **$0.009** for the same task.
+
+Both models are competitively priced for such a small-scale, real-life task, with Claude 3.5 Sonnet having a marginally lower cost advantage.
+
+---------------------------------------------------------------------------------------------------
+
+
+if for example there are 50 daily active users that use this API call in my application 3 times a day, what is the total cost that i have to pay in a day, a week, and a month?
+
+### Assumptions:
+- **Number of daily active users (DAU)**: 50
+- **Number of API calls per user per day**: 3
+- **Cost per API call**:
+  - **GPT-4o**: $0.01
+  - **Claude 3.5 Sonnet**: $0.009
+
+### Total API Calls:
+- **Daily**: \( 50 \, \text{users} \times 3 \, \text{calls per user} = 150 \, \text{calls/day} \)
+- **Weekly**: \( 150 \, \text{calls/day} \times 7 \, \text{days} = 1,050 \, \text{calls/week} \)
+- **Monthly**: \( 150 \, \text{calls/day} \times 30 \, \text{days} = 4,500 \, \text{calls/month} \)
+
+---
+
+### Cost Calculation:
+#### GPT-4o:
+- **Daily cost**: \( 150 \, \text{calls/day} \times 0.01 \, \text{USD/call} = 1.50 \, \text{USD/day} \)
+- **Weekly cost**: \( 1,050 \, \text{calls/week} \times 0.01 \, \text{USD/call} = 10.50 \, \text{USD/week} \)
+- **Monthly cost**: \( 4,500 \, \text{calls/month} \times 0.01 \, \text{USD/call} = 45.00 \, \text{USD/month} \)
+
+---
+
+#### Claude 3.5 Sonnet:
+- **Daily cost**: \( 150 \, \text{calls/day} \times 0.009 \, \text{USD/call} = 1.35 \, \text{USD/day} \)
+- **Weekly cost**: \( 1,050 \, \text{calls/week} \times 0.009 \, \text{USD/call} = 9.45 \, \text{USD/week} \)
+- **Monthly cost**: \( 4,500 \, \text{calls/month} \times 0.009 \, \text{USD/call} = 40.50 \, \text{USD/month} \)
+
+---
+
+### Summary of Costs:
+
+| Model              | Daily Cost | Weekly Cost | Monthly Cost |
+|---------------------|------------|-------------|--------------|
+| **GPT-4o**         | $1.50      | $10.50      | $45.00       |
+| **Claude 3.5 Sonnet** | $1.35      | $9.45       | $40.50       |
+
+---
+
+### Conclusion:
+Using **Claude 3.5 Sonnet** would save you approximately $0.15 per day, $1.05 per week, and $4.50 per month for this scenario compared to GPT-4o. While the savings are modest, they may add up with higher usage or additional API calls.

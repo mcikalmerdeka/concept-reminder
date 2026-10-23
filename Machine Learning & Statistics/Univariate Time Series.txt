@@ -1,0 +1,67 @@
+A univariate time series is a sequence of observations of a single variable recorded over time. Each observation in the series is dependent on its previous values. Here are a few real-world examples:
+
+### Real-World Examples of Univariate Time Series
+
+1. **Stock Prices**:
+   - **Description**: Daily closing prices of a particular stock.
+   - **Example**: The closing price of Apple Inc. (AAPL) stock recorded at the end of each trading day.
+
+2. **Weather Data**:
+   - **Description**: Daily temperature measurements in a specific city.
+   - **Example**: Daily high temperatures in New York City over a year.
+
+3. **Economic Indicators**:
+   - **Description**: Monthly unemployment rate in a country.
+   - **Example**: The monthly unemployment rate in the United States.
+
+4. **Sales Data**:
+   - **Description**: Weekly sales figures for a retail store.
+   - **Example**: Weekly sales of a specific product (e.g., bottled water) in a supermarket.
+
+5. **Electricity Consumption**:
+   - **Description**: Hourly electricity usage in a household.
+   - **Example**: The amount of electricity consumed each hour in a single household.
+
+6. **Traffic Volume**:
+   - **Description**: Number of vehicles passing through a toll booth every hour.
+   - **Example**: Hourly vehicle count on a specific highway toll booth.
+
+### Detailed Example: Daily Closing Prices of Apple Inc. (AAPL) Stock
+
+#### Description:
+This example involves the daily closing prices of Apple Inc. (AAPL) stock over a specified period, say one year. Each observation in this time series represents the closing price of the stock on a particular trading day.
+
+#### Data Points:
+- **Date**: 01-Jan-2023, **Closing Price**: $132.00
+- **Date**: 02-Jan-2023, **Closing Price**: $134.50
+- **Date**: 03-Jan-2023, **Closing Price**: $133.25
+- ...
+- **Date**: 31-Dec-2023, **Closing Price**: $150.75
+
+#### Applications:
+- **Forecasting**: Predicting future stock prices.
+- **Trend Analysis**: Identifying long-term trends in stock performance.
+- **Volatility Analysis**: Measuring the stock's volatility over time.
+- **Investment Strategy**: Developing trading strategies based on historical price patterns.
+
+### Detailed Example: Monthly Unemployment Rate in the United States
+
+#### Description:
+This example involves the monthly unemployment rate in the United States over a period, such as ten years. Each observation in this time series represents the percentage of the labor force that is unemployed at a given month.
+
+#### Data Points:
+- **Month**: Jan-2010, **Unemployment Rate**: 9.8%
+- **Month**: Feb-2010, **Unemployment Rate**: 9.7%
+- **Month**: Mar-2010, **Unemployment Rate**: 9.7%
+- ...
+- **Month**: Dec-2020, **Unemployment Rate**: 6.7%
+
+#### Applications:
+- **Economic Analysis**: Understanding the health of the labor market.
+- **Policy Making**: Informing government policies on employment.
+- **Business Planning**: Helping businesses plan for expansions or contractions.
+- **Social Impact Studies**: Studying the impact of unemployment on society.
+
+### Summary
+
+Univariate time series data consist of observations recorded sequentially over time for a single variable. These series are used in various real-world applications, such as financial market analysis, weather forecasting, economic indicators, retail sales analysis, energy consumption tracking, and traffic monitoring. Each of these applications involves analyzing past observations to understand underlying patterns, make forecasts, and inform decision-making processes.

@@ -1,0 +1,80 @@
+**Using Pandas Plotting**
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Sample data
+data = {
+    'Category': ['A', 'B', 'C', 'D'],
+    'Group1': [10, 20, 15, 25],
+    'Group2': [15, 25, 20, 30],
+    'Group3': [20, 30, 25, 35]
+}
+
+# Convert data to DataFrame
+df = pd.DataFrame(data)
+
+# Melt the DataFrame to long format
+df_melted = df.melt(id_vars='Category', var_name='Group', value_name='Value')
+
+# Group by Category and Group, and sum the values
+df_stacked = df_melted.groupby(['Category', 'Group'])['Value'].sum().unstack()
+
+# Group by Category and Group, and sum the values (Using pivot table)
+df_pivot = df.set_index('Category').stack().reset_index().rename(columns={0: 'Value', 'level_1': 'Group'})
+
+"""
+- df and df_stacked result are basically the same (diff in index) 
+
+Just change the index and it will be the same : df.set_index('Category', inplace=True)
+
+- df_melted and df_pivot result are basically the same (diff in sorting)
+
+Just change the sorting and it will be the same : df_pivot.sort_values(by='Category', inplace=True)
+"""
+
+# Create stacked bar plot using Matplotlib
+fig, ax = plt.subplots(1,2, figsize=(8,4))
+
+# Testing with df_stacked
+df_stacked.plot(kind='bar', stacked=True, colormap='Set1', ax=ax[0])
+ax[0].set_title('Stacked Bar Chart using Seaborn')
+ax[0].set_xlabel('Category')
+ax[0].set_ylabel('Value')
+# plt.legend(title='Group')
+
+# Testing with df
+df.plot(kind='bar', stacked=True, colormap='Set1', ax=ax[1])
+ax[1].set_title('Stacked Bar Chart using Seaborn')
+ax[1].set_xlabel('Category')
+ax[1].set_ylabel('Value')
+# plt.legend(title='Group')
+
+plt.show()
+
+
+**Using Matplotlib Plotting**
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Sample data
+categories = ['A', 'B', 'C', 'D']
+group1 = [10, 20, 15, 25]
+group2 = [15, 25, 20, 30]
+group3 = [20, 30, 25, 35]
+
+# Create stacked bar plot
+barWidth = 0.3
+r = np.arange(len(categories))
+plt.bar(r, group1, color='b', width=barWidth, edgecolor='grey', label='Group1')
+plt.bar(r, group2, bottom=group1, color='g', width=barWidth, edgecolor='grey', label='Group2')
+plt.bar(r, group3, bottom=np.array(group1)+np.array(group2), color='r', width=barWidth, edgecolor='grey', label='Group3')
+
+plt.xlabel('Category', fontweight='bold')
+plt.ylabel('Value', fontweight='bold')
+plt.xticks(r, categories)
+plt.title('Stacked Bar Chart using Matplotlib')
+plt.legend()
+plt.show()

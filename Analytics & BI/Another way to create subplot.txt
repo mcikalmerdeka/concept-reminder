@@ -1,0 +1,20 @@
+import matplotlib.pyplot as plt
+
+# Assuming you have DataFrame named plant1_generation_agg and plant2_generation_agg
+
+# Creating subplots with 2 rows and 1 column
+fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(15, 5))
+
+# Plotting DC power output for Plant 1
+plant1_generation_agg.plot(x='TIME', y='DC_POWER', style='.', label='Plant 1', ax=ax1)
+
+# Plotting DC power output for Plant 2
+plant2_generation_agg.plot(x='TIME', y='DC_POWER', style='.', label='Plant 2', ax=ax2)
+
+# Adding labels and title
+fig.suptitle('Comparison of DC Power Output for Each Plant')
+ax1.set_ylabel('DC Power')
+ax2.set_ylabel('DC Power')
+
+# Showing the plot
+plt.show()

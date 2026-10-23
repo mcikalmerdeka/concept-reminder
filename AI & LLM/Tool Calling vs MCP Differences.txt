@@ -1,0 +1,87 @@
+Source: https://claude.ai/chat/7630570b-6831-4d7a-9245-e32901350288
+
+------------------------------------------------------------------------------------------------
+
+Great question! These two concepts are related but operate at different levels. Here's a clear breakdown:
+
+---
+
+## Tool Calling (Function Calling)
+
+Tool calling is a **core LLM capability** — it's how a model signals that it wants to invoke a specific function instead of just returning text.
+
+**How it works:**
+1. You define a list of tools (functions) with a name, description, and JSON schema for parameters.
+2. You send that list along with your prompt to the LLM.
+3. The model decides whether to call a tool or respond in text.
+4. If it calls a tool, it returns a structured `tool_use` block (not text) — e.g., `{"name": "get_weather", "input": {"city": "Jakarta"}}`.
+5. **Your code** executes the actual function and returns the result back to the model.
+6. The model uses the result to continue its response.
+
+**Key point:** The model doesn't actually *run* anything. It just outputs a structured decision. Your application is responsible for execution.
+
+```python
+tools = [{
+    "name": "get_weather",
+    "description": "Get current weather for a city",
+    "input_schema": {
+        "type": "object",
+        "properties": {"city": {"type": "string"}},
+        "required": ["city"]
+    }
+}]
+```
+
+---
+
+## MCP (Model Context Protocol)
+
+MCP is a **standardized protocol / architecture** — it's an open standard (by Anthropic) that defines *how tools and resources are exposed to AI agents* in a consistent, reusable way.
+
+**Think of it as:** a USB-C standard for AI tool integrations.
+
+**How it works:**
+1. An **MCP Server** is a separate process/service that exposes a set of tools, resources, and prompts via a standard interface.
+2. An **MCP Client** (your AI app or agent) connects to the server and discovers what tools are available.
+3. The client passes those tools to the LLM just like regular tool calling.
+4. When the model calls a tool, the MCP client routes the execution to the MCP server, which handles it.
+
+```
+Your App (MCP Client)
+    ↕ MCP Protocol (JSON-RPC over stdio/SSE/HTTP)
+MCP Server (e.g., Gmail MCP, Asana MCP, Filesystem MCP)
+    → Executes the actual tool and returns results
+```
+
+---
+
+## Side-by-Side Comparison
+
+| Aspect | Tool Calling | MCP |
+|---|---|---|
+| **What it is** | LLM capability (input/output format) | Open protocol / architecture standard |
+| **Scope** | Single model interaction | System-level integration standard |
+| **Tool definition** | You write it manually in your code | MCP server exposes tools automatically |
+| **Execution** | Your app runs the function | MCP server runs the function |
+| **Reusability** | Per-app, per-integration | Any MCP client can use any MCP server |
+| **Discovery** | Static (hardcoded in prompt) | Dynamic (client queries server for available tools) |
+| **Transport** | N/A (just a schema) | stdio, HTTP/SSE, WebSocket |
+
+---
+
+## The Key Mental Model
+
+> **Tool calling is the *mechanism*. MCP is the *ecosystem* built on top of that mechanism.**
+
+Without MCP, you'd have to write custom integration code for every tool in every app. With MCP, a Gmail MCP Server can be used by Claude, Cursor, your LangGraph agent, or any other MCP-compatible client — with zero changes.
+
+---
+
+## In Your Stack Context
+
+Since you work with **LangGraph + LangChain + Azure OpenAI**, here's how this maps:
+
+- **Tool calling** → what happens when you use `@tool` decorators or `bind_tools()` in LangChain/LangGraph
+- **MCP** → the protocol used by tools like Claude Code, OpenCode, or agentic systems to connect to external servers (e.g., the `mcp_servers` you've seen in AGENTS.md config)
+
+LangChain also has an `MCP adapter` that lets you load tools from any MCP server directly into your LangGraph agent, bridging both worlds cleanly.

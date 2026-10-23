@@ -1,0 +1,251 @@
+Source: https://chatgpt.com/c/685538af-b498-800a-91fe-47ef0ef4a8c1
+
+------------------------------------------------------------------------------------------------
+
+PS C:\Users\Cikal Merdeka> uv pip show numpy
+Using Python 3.11.6 environment at: AppData\Local\Programs\Python\Python311
+Name: numpy
+Version: 1.26.4
+Location: C:\Users\Cikal Merdeka\AppData\Local\Programs\Python\Python311\Lib\site-packages
+Requires:
+Required-by: chroma-hnswlib, contourpy, geopandas, matplotlib, onnxruntime, pandas, pyarrow, pyogrio, scikit-learn, scipy, seaborn, shapely, transformers, yfinance
+
+i want to know how to check for another python version if i have for example i have python 3.12.2
+
+To check installed packages (like `numpy`) for **another Python version** (e.g., Python 3.12.2), you need to ensure you're using the **correct Python environment** associated with that version.
+
+### ✅ Step-by-step:
+
+#### 1. **Check if Python 3.12.2 is installed**
+
+Open PowerShell and run:
+
+```powershell
+py -0
+```
+
+This will list all installed Python versions like:
+
+```
+ -3.11 *        C:\Users\Cikal Merdeka\AppData\Local\Programs\Python\Python311\python.exe
+ -3.12          C:\Users\Cikal Merdeka\AppData\Local\Programs\Python\Python312\python.exe
+```
+
+#### 2. **Run pip show with Python 3.12**
+
+Use the `py` launcher to specify version 3.12:
+
+```powershell
+py -3.12 -m pip show numpy
+```
+
+#### 3. **Using `uv` with another Python version**
+
+If you're using `uv`, you must ensure `uv` is operating within the environment for Python 3.12. This requires:
+
+* Either activating the Python 3.12 virtual environment before running `uv`.
+* Or directly using `uv` inside a folder with a `pyproject.toml` set up to use Python 3.12.
+
+You can also create a new virtual environment using `uv` with Python 3.12:
+
+```powershell
+py -3.12 -m venv .venv312
+.\.venv312\Scripts\Activate.ps1
+uv pip show numpy
+```
+
+Let me know if you'd like help setting up a virtual environment for Python 3.12 using `uv`.
+
+------------------------------------------------------------------------------------------------
+
+PS C:\Users\Cikal Merdeka> py -0
+ -V:3.12 *        Python 3.12 (64-bit)
+ -V:3.11          Python 3.11 (64-bit)
+
+is there a way to change the current python version that is used inside my pc? like for example i got python 3.11.6 and 3.12.2 right, other than going to system properties and go to environment variables and edit the PATH where i make the version 3.12.2 or 3.11.6 at the top, is there any other way to do this
+
+Yes! Besides manually editing the `PATH` in System Environment Variables, you can **change the Python version used in your terminal sessions** more flexibly using one of these approaches:
+
+---
+
+### ✅ 1. **Use the `py` launcher (Best for running scripts temporarily with a specific version)**
+
+You already have this set up:
+
+* Run any script or command with a specific Python version:
+
+```powershell
+py -3.12 script.py
+py -3.11 -m pip install somepackage
+```
+
+The `py` launcher is built to handle multiple versions easily **without changing system-wide defaults**.
+
+---
+
+### ✅ 2. **Use a Virtual Environment with Your Preferred Python Version**
+
+You can create and activate a virtual environment using Python 3.12 like this:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Once activated:
+
+* Running `python` or `pip` inside this session will use Python 3.12
+* Keeps your projects isolated
+
+---
+
+### ✅ 3. **Use `uv` to create an environment for a specific Python version**
+
+If using `uv`:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+uv pip install numpy
+```
+
+Or in a project folder:
+
+```toml
+# pyproject.toml
+[project]
+requires-python = ">=3.12"
+```
+
+Then:
+
+```bash
+uv venv
+uv pip install -r requirements.txt
+```
+
+---
+
+### ✅ 4. **Temporarily change system `python` in terminal using aliases or functions (PowerShell only)**
+
+You can override the default `python` command **in PowerShell profile**:
+
+1. Open PowerShell profile:
+
+```powershell
+notepad $PROFILE
+```
+
+2. Add this function to temporarily make `python` and `pip` point to version 3.12:
+
+```powershell
+function python { & "C:\Users\Cikal Merdeka\AppData\Local\Programs\Python\Python312\python.exe" @args }
+function pip { & "C:\Users\Cikal Merdeka\AppData\Local\Programs\Python\Python312\Scripts\pip.exe" @args }
+```
+
+3. Save and restart PowerShell.
+
+This way, when you type `python` or `pip`, it will use Python 3.12, without needing to change global `PATH`.
+
+---
+
+### ✅ 5. **Use version managers like `pyenv` (Linux/macOS)**
+
+Unfortunately, `pyenv` is not available on Windows natively, but tools like [`pyenv-win`](https://github.com/pyenv-win/pyenv-win) exist. However, it's not as seamless as on Linux/macOS.
+
+---
+
+### Summary
+
+| Method              | Scope       | Recommended For                       |
+| ------------------- | ----------- | ------------------------------------- |
+| `py -3.12`          | Per command | Running specific scripts or tools     |
+| Virtual Environment | Per project | Isolated project setups               |
+| PowerShell alias    | Terminal    | Temporarily overriding python command |
+| Change `PATH`       | Global      | System-wide default (not recommended) |
+
+Let me know if you want a persistent solution for working across projects!
+
+
+------------------------------------------------------------------------------------------------
+
+if i want to focus on using uv how can i change the python version whenever i want to create a project? because i believe if for example my current system python in Path is 3.11 but i want to use python 3.12, how can i create a uv project using uv init here
+
+Great question — you're absolutely right. If your system Python (in `PATH`) is 3.11, then running `uv init` or `uv venv` without any extra setup will default to that 3.11 version.
+
+To **use a different Python version (like 3.12)** when creating a new project with `uv`, you have a few clean options. Here's how to do it:
+
+---
+
+## ✅ Option 1: Use `PYTHON_EXECUTABLE` to explicitly set the Python version for `uv`
+
+When you run `uv init` or `uv venv`, you can **tell `uv` which Python to use** by setting the environment variable `PYTHON_EXECUTABLE`.
+
+### 📌 Example (Windows PowerShell):
+
+```powershell
+$env:PYTHON_EXECUTABLE = "C:\Users\Cikal Merdeka\AppData\Local\Programs\Python\Python312\python.exe"
+uv init
+```
+
+This will create the `uv` project with Python 3.12.
+
+You can verify it afterward with:
+
+```powershell
+uv pip list
+uv pip show python
+```
+
+Or from within Python:
+
+```python
+import sys
+print(sys.version)
+```
+
+---
+
+## ✅ Option 2: Use `uv venv` directly with Python 3.12
+
+If you're not using `uv init`, but just want to make a `.venv` using `uv`, do this:
+
+```powershell
+$env:PYTHON_EXECUTABLE = "C:\Users\Cikal Merdeka\AppData\Local\Programs\Python\Python312\python.exe"
+uv venv
+```
+
+This is great for an existing project with a `pyproject.toml`.
+
+---
+
+## ✅ Option 3: Use `py` launcher to activate the correct Python first
+
+You can first create a `.venv` using `py -3.12` and then let `uv` use that:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+uv sync
+```
+
+This works if you're okay not using `uv venv` and prefer to let Python handle the venv, while `uv` handles the dependencies.
+
+---
+
+## 📝 Bonus: Make it easier with an alias or script
+
+You can add a simple PowerShell function to your `$PROFILE` to make it easier:
+
+```powershell
+function uv-init-312 {
+    $env:PYTHON_EXECUTABLE = "C:\Users\Cikal Merdeka\AppData\Local\Programs\Python\Python312\python.exe"
+    uv init
+}
+```
+
+Then just run `uv-init-312` whenever you want to start a new project with Python 3.12.
+
+---
+
+Let me know if you want a custom `uv init` template for data science or web projects as well!

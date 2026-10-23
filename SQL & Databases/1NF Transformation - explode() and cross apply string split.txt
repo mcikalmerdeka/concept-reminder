@@ -1,0 +1,101 @@
+Certainly! I'll show you how to split the table that violates 1NF into a 1NF-compliant table using both SQL and Python. We'll start with the original table:
+
+| StudentID | Courses           |
+|-----------|-------------------|
+| 1         | Math, Science     |
+| 2         | English, History  |
+
+Let's split this into a 1NF-compliant table:
+
+| StudentID | Course   |
+|-----------|----------|
+| 1         | Math     |
+| 1         | Science  |
+| 2         | English  |
+| 2         | History  |
+
+Here's how to do this in SQL and Python:
+
+1. SQL approach:
+
+
+
+```sql
+-- Create the original table
+CREATE TABLE Students_Original (
+    StudentID INT,
+    Courses VARCHAR(255)
+);
+
+-- Insert sample data
+INSERT INTO Students_Original (StudentID, Courses) VALUES
+(1, 'Math, Science'),
+(2, 'English, History');
+
+-- Create the new 1NF-compliant table
+CREATE TABLE Students_1NF (
+    StudentID INT,
+    Course VARCHAR(50)
+);
+
+-- Split the comma-separated values and insert into the new table
+INSERT INTO Students_1NF (StudentID, Course)
+SELECT 
+    StudentID,
+    TRIM(value) AS Course
+FROM 
+    Students_Original
+CROSS APPLY STRING_SPLIT(Courses, ',');
+
+-- View the result
+SELECT * FROM Students_1NF;
+
+```
+
+This SQL script does the following:
+1. Creates the original non-1NF table
+2. Inserts the sample data
+3. Creates a new 1NF-compliant table
+4. Uses STRING_SPLIT to split the comma-separated courses and insert them into the new table
+5. Displays the result
+
+Note: The exact syntax might vary slightly depending on your SQL database system. This example uses T-SQL (SQL Server) syntax.
+
+2. Python approach:
+
+For the Python approach, we'll use pandas, which is commonly used in data engineering and analytics tasks.
+
+
+
+```python
+import pandas as pd
+
+# Create the original DataFrame
+df_original = pd.DataFrame({
+    'StudentID': [1, 2],
+    'Courses': ['Math, Science', 'English, History']
+})
+
+print("Original DataFrame:")
+print(df_original)
+
+# Split the 'Courses' column and explode the resulting lists
+df_1nf = df_original.assign(Courses=df_original['Courses'].str.split(', ')).explode('Courses')
+
+# Reset the index to get a clean DataFrame
+df_1nf = df_1nf.reset_index(drop=True)
+
+print("\n1NF-compliant DataFrame:")
+print(df_1nf)
+
+```
+
+This Python script does the following:
+1. Creates the original DataFrame
+2. Uses `str.split()` to split the 'Courses' column
+3. Uses `explode()` to create separate rows for each course
+4. Resets the index for a clean DataFrame
+
+Both of these approaches will transform the non-1NF table into a 1NF-compliant one. The SQL approach is more suitable for database operations, while the Python approach is great for data manipulation and analysis tasks.
+
+Would you like me to explain any part of these scripts in more detail?

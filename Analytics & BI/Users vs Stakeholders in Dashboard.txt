@@ -1,0 +1,42 @@
+Source : https://chatgpt.com/c/67823671-41fc-800a-95e1-9bf045017e77
+
+------------------------------------------------------------------------------------------------
+
+In the context of building a dashboard, **users** and **stakeholders** refer to distinct but related groups involved in or affected by the project:
+
+### **Users**
+- **Definition**: Individuals who will directly interact with the dashboard to retrieve and interpret information.
+- **Examples**:
+  - Analysts using the dashboard to extract insights for reports.
+  - Managers using it to track KPIs (Key Performance Indicators).
+  - Operational teams monitoring real-time metrics like sales or system performance.
+- **Role in Dashboard Design**:
+  - Provide insights into what data and metrics they need.
+  - Influence usability and interactivity features (e.g., filters, drill-downs, custom views).
+  - Drive the design of user-friendly layouts and visualizations.
+- **Focus**: The dashboard should meet their day-to-day requirements and improve efficiency in decision-making.
+
+---
+
+### **Stakeholders**
+- **Definition**: People or groups who have an interest in or influence over the project but may not use the dashboard directly.
+- **Examples**:
+  - Executives or department heads who fund the project and expect high-level summaries.
+  - IT teams responsible for data infrastructure supporting the dashboard.
+  - Compliance teams ensuring regulatory requirements are met in the data.
+- **Role in Dashboard Design**:
+  - Define the business goals and success criteria for the dashboard.
+  - Provide approval for resource allocation and project milestones.
+  - May specify high-level metrics or strategic insights that the dashboard should highlight.
+- **Focus**: They are more concerned with the **outcomes** (e.g., insights driving business value) and ensuring the dashboard aligns with broader business strategies.
+
+---
+
+### **Key Differences**
+- **Users**: Directly interact with the dashboard. Their needs shape the design, usability, and granularity of data.
+- **Stakeholders**: May or may not use the dashboard but influence its purpose, priorities, and success metrics.
+
+### **Overlap**:
+Sometimes, stakeholders can also be users, especially in smaller organizations or projects where decision-makers actively interact with the dashboard.
+
+By identifying and understanding these groups, you can ensure the dashboard meets the functional needs of users while aligning with the strategic vision of stakeholders.

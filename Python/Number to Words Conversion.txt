@@ -1,0 +1,98 @@
+Source : https://chatgpt.com/c/67871b53-9d40-800a-a99c-847d96ba4d15
+
+---------------------------------------------------------------------------------------------------
+
+To implement a library for converting numbers into words and vice versa, you can use Python. Below is an example code implementation:
+
+### Approach
+1. **Converting Numbers to Words:**
+   Use the `inflect` library, which is designed for natural language processing and supports converting numbers to words.
+   
+2. **Converting Words to Numbers:**
+   Use the `word2number` library for parsing words into numeric values.
+
+---
+
+### Code Implementation
+
+```python
+import inflect
+from word2number import w2n
+
+class NumberConverter:
+    def __init__(self):
+        self.inflect_engine = inflect.engine()
+    
+    def number_to_words(self, number):
+        """
+        Convert a number into its word representation.
+        
+        Args:
+            number (int): The number to convert.
+        
+        Returns:
+            str: The word representation of the number.
+        """
+        try:
+            words = self.inflect_engine.number_to_words(number, group=1)
+            return words
+        except Exception as e:
+            return f"Error: {e}"
+    
+    def words_to_number(self, words):
+        """
+        Convert a word representation of a number into an integer.
+        
+        Args:
+            words (str): The word representation of a number.
+        
+        Returns:
+            int: The number.
+        """
+        try:
+            number = w2n.word_to_num(words)
+            return number
+        except Exception as e:
+            return f"Error: {e}"
+
+# Example Usage
+converter = NumberConverter()
+
+# Convert number to words
+num = 500_000
+words = converter.number_to_words(num)
+print(f"{num} -> {words}")
+
+# Convert words to number
+word_representation = "five hundred thousand"
+number = converter.words_to_number(word_representation)
+print(f"'{word_representation}' -> {number}")
+```
+
+---
+
+### Output Example
+```plaintext
+500000 -> five hundred thousand
+'five hundred thousand' -> 500000
+```
+
+---
+
+### Libraries Used
+1. **[inflect](https://pypi.org/project/inflect/):** Converts numbers to words.
+2. **[word2number](https://pypi.org/project/word2number/):** Converts words to numbers.
+
+---
+
+### Installation
+Install the required libraries:
+```bash
+pip install inflect word2number
+```
+
+---
+
+### Best Approach
+- Using libraries like `inflect` and `word2number` is efficient and maintains readability.
+- If performance or customization is critical, you could build a custom parser for words-to-numbers using mapping and logic. However, leveraging existing libraries is usually the best choice for general use cases.

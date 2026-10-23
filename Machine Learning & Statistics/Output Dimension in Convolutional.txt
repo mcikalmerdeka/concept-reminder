@@ -1,0 +1,9 @@
+Yes, changing the feature map/kernel dimension from 3x3 to 2x2 in a convolutional layer will affect the output dimension. The output dimension is influenced by the size of the input, the size of the kernel, the stride, and the use of padding.
+
+In the convolution operation, when you slide the 2x2 kernel over the input, the resulting output will be smaller compared to using a 3x3 kernel. This is because a smaller kernel covers less area during each slide, leading to a reduction in the spatial dimensions of the output.
+
+The general formula to compute the output dimension in a convolutional layer is given by:
+
+\[ \text{Output Dimension} = \frac{{\text{Input Dimension} - \text{Kernel Dimension} + 2 \times \text{Padding}}}{{\text{Stride}}} + 1 \]
+
+If the kernel dimension changes from 3x3 to 2x2, it will affect the output dimension according to this formula. The specific impact will depend on the values of other parameters like padding and stride that are used in the convolutional layer.

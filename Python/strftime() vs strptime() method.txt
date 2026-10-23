@@ -1,0 +1,59 @@
+The `strftime()` and `strptime()` functions in Python are used for converting between string representations of dates/times and their corresponding datetime objects.
+
+`strftime()`:
+- This function is used to convert a datetime object into a string representation of the date and/or time.
+- It takes a datetime object as input and a format string that specifies how the datetime should be represented as a string.
+- For example, `datetime.now().strftime('%Y-%m-%d %H:%M:%S')` would return the current date and time as a string in the format "2023-08-21 16:30:00".
+
+`strptime()`:
+- This function is used to convert a string representation of a date and/or time into a datetime object.
+- It takes a string and a format string that specifies how the string should be interpreted.
+- For example, `datetime.strptime('2023-08-21 16:30:00', '%Y-%m-%d %H:%M:%S')` would return a datetime object representing August 21, 2023 at 4:30 PM.
+
+So in summary:
+- `strftime()` turns a datetime object into a string.
+- `strptime()` turns a string into a datetime object.
+
+The key difference is the direction of conversion - `strftime()` goes from datetime to string, while `strptime()` goes from string to datetime.
+
+
+------------------------------------------------------------------------
+
+Sure, here are examples of using `strftime()` and `strptime()` in Python:
+
+`strftime()` example:
+
+```python
+import datetime
+
+# Get the current date and time
+now = datetime.datetime.now()
+
+# Convert the datetime object to a string
+date_string = now.strftime('%Y-%m-%d %H:%M:%S')
+print(date_string)  # Output: 2023-08-21 16:35:45
+```
+
+In this example, we use `strftime()` to convert the `datetime.datetime.now()` object to a string in the format `'%Y-%m-%d %H:%M:%S'`.
+
+`strptime()` example:
+
+```python
+import datetime
+
+# Define a date/time string
+date_string = '2023-08-21 16:30:00'
+
+# Convert the string to a datetime object
+date_object = datetime.datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+print(date_object)  # Output: 2023-08-21 16:30:00
+```
+
+In this example, we use `strptime()` to convert the string `'2023-08-21 16:30:00'` to a `datetime.datetime` object, using the format string `'%Y-%m-%d %H:%M:%S'` to specify how the string should be interpreted.
+
+The key differences are:
+
+- `strftime()` takes a `datetime` object as input and outputs a string.
+- `strptime()` takes a string as input and outputs a `datetime` object.
+
+Both functions use format strings to specify the desired date/time representation. The format strings are the same for both functions, and allow you to control how the date/time is represented as a string or parsed from a string.

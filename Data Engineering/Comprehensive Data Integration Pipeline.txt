@@ -1,0 +1,307 @@
+https://claude.ai/chat/8b5f9756-5bbd-4a05-9a79-cb38cd1db5dc
+
+I'll create a comprehensive ETL pipeline that integrates data from multiple sources using Python. This example will include integrations with common systems and proper error handling.
+
+
+
+```python
+import pandas as pd
+import requests
+import pyodbc
+import json
+from datetime import datetime, timedelta
+import logging
+from sqlalchemy import create_engine
+import numpy as np
+from typing import Dict, List, Any
+import os
+from concurrent.futures import ThreadPoolExecutor
+
+class DataIntegrationPipeline:
+    def __init__(self):
+        # Configure logging
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            filename='etl_pipeline.log'
+        )
+        self.logger = logging.getLogger(__name__)
+        
+        # Initialize connection parameters
+        self.config = {
+            'erp_connection': {
+                'server': 'your_erp_server',
+                'database': 'erp_db',
+                'username': 'user',
+                'password': 'pass'
+            },
+            'crm_api': {
+                'base_url': 'https://api.crm.com/v1',
+                'api_key': 'your_api_key'
+            },
+            'shopify': {
+                'shop_url': 'your-store.myshopify.com',
+                'access_token': 'your_access_token'
+            }
+        }
+        
+        # Initialize database connection for data warehouse
+        self.warehouse_engine = create_engine(
+            'postgresql://user:pass@warehouse-host:5432/warehouse_db'
+        )
+
+    def extract_erp_data(self, days_ago: int = 7) -> pd.DataFrame:
+        """
+        Extract data from ERP system using SQL connection
+        
+        Args:
+            days_ago: Number of days of data to extract
+            
+        Returns:
+            DataFrame containing ERP data
+        """
+        try:
+            # Create connection string for SQL Server
+            conn_str = (
+                f"DRIVER={{SQL Server}};"
+                f"SERVER={self.config['erp_connection']['server']};"
+                f"DATABASE={self.config['erp_connection']['database']};"
+                f"UID={self.config['erp_connection']['username']};"
+                f"PWD={self.config['erp_connection']['password']}"
+            )
+            
+            # Calculate date range
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=days_ago)
+            
+            # SQL query to extract relevant data
+            query = f"""
+                SELECT 
+                    order_id,
+                    customer_id,
+                    order_date,
+                    total_amount,
+                    status
+                FROM orders
+                WHERE order_date >= '{start_date.strftime('%Y-%m-%d')}'
+                AND order_date < '{end_date.strftime('%Y-%m-%d')}'
+            """
+            
+            # Execute query and return results as DataFrame
+            with pyodbc.connect(conn_str) as conn:
+                df = pd.read_sql(query, conn)
+                
+            self.logger.info(f"Successfully extracted {len(df)} records from ERP")
+            return df
+            
+        except Exception as e:
+            self.logger.error(f"Error extracting ERP data: {str(e)}")
+            raise
+
+    def extract_crm_data(self) -> pd.DataFrame:
+        """
+        Extract customer data from CRM system using REST API
+        
+        Returns:
+            DataFrame containing CRM data
+        """
+        try:
+            headers = {
+                'Authorization': f"Bearer {self.config['crm_api']['api_key']}",
+                'Content-Type': 'application/json'
+            }
+            
+            # Make API request to CRM system
+            response = requests.get(
+                f"{self.config['crm_api']['base_url']}/customers",
+                headers=headers
+            )
+            response.raise_for_status()
+            
+            # Convert JSON response to DataFrame
+            data = response.json()
+            df = pd.DataFrame(data['customers'])
+            
+            self.logger.info(f"Successfully extracted {len(df)} records from CRM")
+            return df
+            
+        except Exception as e:
+            self.logger.error(f"Error extracting CRM data: {str(e)}")
+            raise
+
+    def extract_shopify_data(self) -> pd.DataFrame:
+        """
+        Extract order data from Shopify using their REST API
+        
+        Returns:
+            DataFrame containing Shopify order data
+        """
+        try:
+            headers = {
+                'X-Shopify-Access-Token': self.config['shopify']['access_token'],
+                'Content-Type': 'application/json'
+            }
+            
+            # Make API request to Shopify
+            response = requests.get(
+                f"https://{self.config['shopify']['shop_url']}/admin/api/2024-01/orders.json",
+                headers=headers
+            )
+            response.raise_for_status()
+            
+            # Convert JSON response to DataFrame
+            data = response.json()
+            df = pd.DataFrame(data['orders'])
+            
+            self.logger.info(f"Successfully extracted {len(df)} records from Shopify")
+            return df
+            
+        except Exception as e:
+            self.logger.error(f"Error extracting Shopify data: {str(e)}")
+            raise
+
+    def transform_data(self, erp_df: pd.DataFrame, crm_df: pd.DataFrame, 
+                      shopify_df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+        """
+        Transform and clean data from all sources
+        
+        Args:
+            erp_df: DataFrame containing ERP data
+            crm_df: DataFrame containing CRM data
+            shopify_df: DataFrame containing Shopify data
+            
+        Returns:
+            Dictionary containing transformed DataFrames
+        """
+        try:
+            # Transform ERP data
+            erp_transformed = erp_df.copy()
+            erp_transformed['source'] = 'ERP'
+            erp_transformed['order_date'] = pd.to_datetime(erp_transformed['order_date'])
+            
+            # Transform CRM data
+            crm_transformed = crm_df.copy()
+            crm_transformed['last_purchase_date'] = pd.to_datetime(
+                crm_transformed['last_purchase_date']
+            )
+            crm_transformed['lifetime_value'] = crm_transformed['lifetime_value'].astype(float)
+            
+            # Transform Shopify data
+            shopify_transformed = shopify_df.copy()
+            shopify_transformed['created_at'] = pd.to_datetime(shopify_transformed['created_at'])
+            shopify_transformed['source'] = 'Shopify'
+            
+            # Merge relevant customer data
+            customer_data = pd.merge(
+                crm_transformed,
+                erp_transformed[['customer_id', 'total_amount']],
+                on='customer_id',
+                how='left'
+            )
+            
+            return {
+                'orders': pd.concat([erp_transformed, shopify_transformed]),
+                'customers': customer_data
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error transforming data: {str(e)}")
+            raise
+
+    def load_data(self, transformed_data: Dict[str, pd.DataFrame]) -> None:
+        """
+        Load transformed data into data warehouse
+        
+        Args:
+            transformed_data: Dictionary containing DataFrames to be loaded
+        """
+        try:
+            # Load each DataFrame to its respective table
+            for table_name, df in transformed_data.items():
+                df.to_sql(
+                    name=table_name,
+                    con=self.warehouse_engine,
+                    if_exists='append',
+                    index=False,
+                    chunksize=1000
+                )
+                
+                self.logger.info(
+                    f"Successfully loaded {len(df)} records to {table_name} table"
+                )
+                
+        except Exception as e:
+            self.logger.error(f"Error loading data: {str(e)}")
+            raise
+
+    def run_pipeline(self) -> None:
+        """
+        Execute the complete ETL pipeline
+        """
+        try:
+            self.logger.info("Starting ETL pipeline")
+            
+            # Extract data from all sources
+            with ThreadPoolExecutor() as executor:
+                erp_future = executor.submit(self.extract_erp_data)
+                crm_future = executor.submit(self.extract_crm_data)
+                shopify_future = executor.submit(self.extract_shopify_data)
+                
+                erp_data = erp_future.result()
+                crm_data = crm_future.result()
+                shopify_data = shopify_future.result()
+            
+            # Transform data
+            transformed_data = self.transform_data(erp_data, crm_data, shopify_data)
+            
+            # Load data
+            self.load_data(transformed_data)
+            
+            self.logger.info("ETL pipeline completed successfully")
+            
+        except Exception as e:
+            self.logger.error(f"Pipeline failed: {str(e)}")
+            raise
+
+if __name__ == "__main__":
+    # Create and run pipeline
+    pipeline = DataIntegrationPipeline()
+    pipeline.run_pipeline()
+
+```
+
+I've created a complete ETL pipeline that integrates data from ERP, CRM, and Shopify systems. Here are the key features:
+
+1. **Structure**:
+   - Object-oriented design with a main `DataIntegrationPipeline` class
+   - Separate methods for extract, transform, and load operations
+   - Configuration management for different data sources
+   - Comprehensive error handling and logging
+
+2. **Key Components**:
+   - ERP data extraction using SQL
+   - CRM data extraction via REST API
+   - Shopify integration using their API
+   - Data transformation and cleaning
+   - Loading to a data warehouse using SQLAlchemy
+
+3. **Advanced Features**:
+   - Parallel data extraction using ThreadPoolExecutor
+   - Batch loading with chunking
+   - Type hints for better code maintenance
+   - Configurable date ranges for historical data
+
+To use this code:
+
+1. Install required packages:
+```bash
+pip install pandas requests pyodbc sqlalchemy numpy
+```
+
+2. Update the configuration section with your actual credentials:
+   - ERP database connection details
+   - CRM API credentials
+   - Shopify API credentials
+   - Data warehouse connection string
+
+3. Adjust the SQL queries and data transformations based on your specific schema

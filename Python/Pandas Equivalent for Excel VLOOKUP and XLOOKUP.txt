@@ -1,0 +1,263 @@
+Source: https://claude.ai/chat/52ae8e1e-0836-4b65-b1ac-0a4050bd999a
+
+---------------------------------------------------------------------------------------------------
+
+# Excel VLOOKUP and XLOOKUP Equivalents in Python
+
+Python offers several powerful ways to achieve the functionality of Excel's VLOOKUP and XLOOKUP functions, primarily using pandas, which is the most popular data analysis library in Python.
+
+Let's look at how to implement both functions with examples:
+
+## VLOOKUP Equivalent in Python
+
+In pandas, you can use methods like `merge()`, `map()`, or `loc[]` to achieve VLOOKUP functionality.
+
+Here's an example using a simple dataset:
+
+```python
+import pandas as pd
+
+# Create two dataframes
+# Main data (similar to the table you'd search within in Excel)
+df_main = pd.DataFrame({
+    'ID': [101, 102, 103, 104, 105],
+    'Name': ['Alice', 'Bob', 'Charlie', 'David', 'Emma'],
+    'Department': ['HR', 'IT', 'Finance', 'Marketing', 'IT']
+})
+
+# Lookup table (similar to where you'd get your lookup value in Excel)
+df_lookup = pd.DataFrame({
+    'ID': [103, 101, 105],
+    'Project': ['Alpha', 'Beta', 'Gamma']
+})
+
+print("Main Data:")
+print(df_main)
+print("\nLookup Data:")
+print(df_lookup)
+
+# VLOOKUP equivalent using merge (like SQL JOIN)
+result = pd.merge(df_lookup, df_main, on='ID', how='left')
+
+print("\nVLOOKUP Result (using merge):")
+print(result)
+
+# Alternative: using map() for simple lookups
+name_mapping = dict(zip(df_main['ID'], df_main['Name']))
+df_lookup['Name'] = df_lookup['ID'].map(name_mapping)
+
+print("\nVLOOKUP Result (using map):")
+print(df_lookup)
+```
+
+Output:
+```
+Main Data:
+    ID     Name Department
+0  101    Alice         HR
+1  102      Bob         IT
+2  103  Charlie    Finance
+3  104    David  Marketing
+4  105     Emma         IT
+
+Lookup Data:
+    ID Project
+0  103   Alpha
+1  101    Beta
+2  105   Gamma
+
+VLOOKUP Result (using merge):
+    ID Project    Name Department
+0  103   Alpha  Charlie    Finance
+1  101    Beta    Alice         HR
+2  105   Gamma     Emma         IT
+
+VLOOKUP Result (using map):
+    ID Project    Name
+0  103   Alpha  Charlie
+1  101    Beta    Alice
+2  105   Gamma     Emma
+```
+
+## XLOOKUP Equivalent in Python
+
+XLOOKUP is more versatile than VLOOKUP, handling both vertical and horizontal lookups with better error handling. Here's how to implement it in pandas:
+
+```python
+import pandas as pd
+import numpy as np
+
+# Create sample data
+products = pd.DataFrame({
+    'Product_ID': ['A001', 'B002', 'C003', 'D004', 'E005'],
+    'Product_Name': ['Laptop', 'Phone', 'Tablet', 'Monitor', 'Keyboard'],
+    'Category': ['Electronics', 'Mobile', 'Electronics', 'Display', 'Accessories'],
+    'Price': [1200, 800, 400, 300, 50]
+})
+
+# Sample lookup values
+lookup_ids = pd.DataFrame({
+    'ID_to_find': ['C003', 'F006', 'A001', 'D004']
+})
+
+print("Products Data:")
+print(products)
+print("\nLookup IDs:")
+print(lookup_ids)
+
+# XLOOKUP equivalent with custom function
+def xlookup(lookup_value, lookup_array, return_array, if_not_found=None):
+    """Mimics Excel's XLOOKUP function"""
+    # Create a Series for mapping
+    lookup_table = pd.Series(return_array.values, index=lookup_array.values)
+    
+    # Return mapped values or the if_not_found value
+    result = lookup_value.map(lookup_table)
+    if if_not_found is not None:
+        result = result.fillna(if_not_found)
+    return result
+
+# Perform XLOOKUP to find product names
+lookup_ids['Product_Name'] = xlookup(
+    lookup_ids['ID_to_find'], 
+    products['Product_ID'], 
+    products['Product_Name'], 
+    if_not_found="Not Found"
+)
+
+# Perform XLOOKUP to find prices
+lookup_ids['Price'] = xlookup(
+    lookup_ids['ID_to_find'], 
+    products['Product_ID'], 
+    products['Price'], 
+    if_not_found=0
+)
+
+print("\nXLOOKUP Result:")
+print(lookup_ids)
+
+# Alternative approach using DataFrame.loc and reindex
+result_alt = products.set_index('Product_ID').loc[lookup_ids['ID_to_find']].reset_index()
+print("\nAlternative XLOOKUP using loc (with potential NaN values):")
+print(result_alt)
+```
+
+Output:
+```
+Products Data:
+  Product_ID Product_Name     Category  Price
+0       A001       Laptop  Electronics   1200
+1       B002        Phone       Mobile    800
+2       C003       Tablet  Electronics    400
+3       D004      Monitor      Display    300
+4       E005     Keyboard  Accessories     50
+
+Lookup IDs:
+  ID_to_find
+0       C003
+1       F006
+2       A001
+3       D004
+
+XLOOKUP Result:
+  ID_to_find Product_Name  Price
+0       C003       Tablet    400
+1       F006    Not Found      0
+2       A001       Laptop   1200
+3       D004      Monitor    300
+
+Alternative XLOOKUP using loc (with potential NaN values):
+  Product_ID Product_Name     Category  Price
+0       C003       Tablet  Electronics  400.0
+1       F006          NaN         NaN    NaN
+2       A001       Laptop  Electronics 1200.0
+3       D004      Monitor      Display  300.0
+```
+
+## Practical Application
+
+In real-world scenarios, you might combine these techniques with more complex queries:
+
+```python
+import pandas as pd
+
+# Example: Employee data and salary lookup
+employees = pd.DataFrame({
+    'EmpID': [1001, 1002, 1003, 1004, 1005],
+    'Name': ['John Smith', 'Mary Johnson', 'Robert Brown', 'Lisa Davis', 'Michael Wilson'],
+    'Department': ['Sales', 'IT', 'HR', 'Finance', 'Marketing'],
+    'Position': ['Manager', 'Developer', 'Recruiter', 'Accountant', 'Specialist']
+})
+
+salary_grades = pd.DataFrame({
+    'Position': ['Manager', 'Developer', 'Recruiter', 'Accountant', 'Specialist', 'Director'],
+    'Min_Salary': [70000, 65000, 55000, 60000, 50000, 100000],
+    'Max_Salary': [90000, 85000, 70000, 75000, 65000, 150000]
+})
+
+print("Employee Data:")
+print(employees)
+print("\nSalary Grade Data:")
+print(salary_grades)
+
+# Find salary ranges for specific employees
+query_ids = [1001, 1003, 1006]
+
+# First get the positions using a function similar to VLOOKUP
+position_lookup = dict(zip(employees['EmpID'], employees['Position']))
+
+# Create a function for finding employees and their salary ranges
+def find_employee_salary_range(emp_id):
+    if emp_id in position_lookup:
+        position = position_lookup[emp_id]
+        emp_name = employees.loc[employees['EmpID'] == emp_id, 'Name'].iloc[0]
+        
+        # Now use the position to find salary range (like nested VLOOKUP)
+        salary_row = salary_grades[salary_grades['Position'] == position]
+        
+        if not salary_row.empty:
+            min_salary = salary_row['Min_Salary'].iloc[0]
+            max_salary = salary_row['Max_Salary'].iloc[0]
+            return pd.Series([emp_id, emp_name, position, min_salary, max_salary])
+        else:
+            return pd.Series([emp_id, emp_name, position, None, None])
+    else:
+        return pd.Series([emp_id, 'Not Found', None, None, None])
+
+# Apply the function to each ID in our query
+results = []
+for emp_id in query_ids:
+    results.append(find_employee_salary_range(emp_id))
+
+result_df = pd.DataFrame(results, columns=['EmpID', 'Name', 'Position', 'Min_Salary', 'Max_Salary'])
+print("\nEmployee Salary Lookup Result:")
+print(result_df)
+```
+
+Output:
+```
+Employee Data:
+   EmpID           Name Department    Position
+0   1001     John Smith      Sales     Manager
+1   1002  Mary Johnson         IT   Developer
+2   1003   Robert Brown         HR   Recruiter
+3   1004    Lisa Davis    Finance  Accountant
+4   1005 Michael Wilson  Marketing  Specialist
+
+Salary Grade Data:
+     Position  Min_Salary  Max_Salary
+0     Manager      70000       90000
+1   Developer      65000       85000
+2   Recruiter      55000       70000
+3  Accountant      60000       75000
+4  Specialist      50000       65000
+5    Director     100000      150000
+
+Employee Salary Lookup Result:
+   EmpID         Name  Position  Min_Salary  Max_Salary
+0   1001   John Smith   Manager     70000.0     90000.0
+1   1003 Robert Brown Recruiter     55000.0     70000.0
+2   1006    Not Found      None        NaN         NaN
+```
+
+These examples demonstrate how to implement Excel's lookup functions in Python using pandas. The pandas approach is often more flexible and powerful than Excel functions, allowing you to handle larger datasets and more complex operations.

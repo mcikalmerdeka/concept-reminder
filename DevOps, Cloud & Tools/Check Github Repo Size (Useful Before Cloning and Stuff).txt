@@ -1,0 +1,46 @@
+Source :https://chatgpt.com/c/67625951-9c0c-800a-99ea-dcadabf626e6
+
+---------------------------------------------------------------------------------------------------
+You can check the size of a GitHub repository before cloning or forking it by using the following methods:
+
+### 1. **Check the Repository Size on the GitHub Web Interface**
+   - Open the repository in your browser.
+   - Scroll down to the bottom of the main page.
+   - Look at the **"Languages"** section on the right-hand side. The repository size is often displayed there, though this is just the size of the code files and doesn't include large files or Git history.
+
+### 2. **Use the GitHub API**
+   You can use the GitHub API to fetch repository details, including its size. Follow these steps:
+   1. Replace `owner` and `repo` in the URL with the username and repository name, respectively:
+      ```
+      https://api.github.com/repos/owner/repo
+      ```
+   2. Look for the `size` field in the JSON response. It gives the size of the repository in kilobytes (KB).
+
+   Example:
+   ```bash
+   curl -s https://api.github.com/repos/owner/repo | grep '"size"'
+   ```
+
+### 3. **Use GitHub CLI**
+   If you have the GitHub CLI (`gh`) installed, you can check repository information:
+   ```bash
+   gh repo view owner/repo
+   ```
+   The size is included in the details shown.
+
+### 4. **Use GitHub Advanced Search**
+   - Go to the GitHub search page: https://github.com/search
+   - Use advanced search filters to find repositories by size using `size:`.
+     For example:
+     ```
+     repo:owner/repo size:<10000
+     ```
+     This checks if the repository is under 10 MB.
+
+### 5. **Check the `.git` Directory After Cloning (Optional)**
+   If you have cloned a repository but want to analyze its storage usage, check the `.git` directory:
+   ```bash
+   du -sh .git
+   ```
+
+Using these methods, you can estimate whether a repository is manageable before deciding to fork or clone it.

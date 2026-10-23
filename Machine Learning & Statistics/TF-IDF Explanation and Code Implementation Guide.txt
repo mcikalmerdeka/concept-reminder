@@ -1,0 +1,112 @@
+Source : https://chat.deepseek.com/a/chat/s/49b59ed6-2078-4712-9cd4-4fcb8e0fde85
+
+--> first time testing deepseek-R1 model
+
+---------------------------------------------------------------------------------------------------
+
+Here's a detailed explanation of TF-IDF followed by a complete code implementation:
+
+**TF-IDF Explained:**
+- **Term Frequency (TF):** Measures how often a term appears in a document (normalized by document length).
+  Formula: `TF(t, d) = (Number of times term t appears in document d) / (Total number of terms in d)`
+
+- **Inverse Document Frequency (IDF):** Measures how important a term is by downscaling frequent terms.
+  Formula: `IDF(t) = log((Total documents + 1) / (Documents containing term t + 1)) + 1`
+
+- **TF-IDF:** Product of TF and IDF. Higher values indicate more important terms in a document.
+
+**Applications:**
+- Text vectorization for ML models
+- Information retrieval systems
+- Document similarity measurement
+- Keyword extraction
+
+**Complete Code Implementation:**
+
+```python
+# Install required libraries (if not pre-installed)
+# !pip install scikit-learn numpy
+
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Sample documents
+documents = [
+    "The cat sat on the mat.",
+    "The dog sat on the log.",
+    "The cat and the dog are friends."
+]
+
+# Initialize TF-IDF Vectorizer
+vectorizer = TfidfVectorizer(
+    lowercase=True,     # Convert to lowercase
+    stop_words='english',  # Remove English stop words
+    smooth_idf=True     # Smooth IDF weights to prevent zero divisions
+)
+
+# Fit and transform the documents to TF-IDF features
+tfidf_matrix = vectorizer.fit_transform(documents)
+
+# Convert sparse matrix to dense array for visualization
+dense_array = tfidf_matrix.toarray()
+
+# Get feature names (vocabulary)
+feature_names = vectorizer.get_feature_names_out()
+
+# Print results
+print("Vocabulary (Feature Names):")
+print(feature_names)
+print("\nTF-IDF Matrix (Documents x Features):")
+print(np.round(dense_array, 3))  # Rounded to 3 decimal places for readability
+
+# Additional information
+print("\nDocument Frequency (DF) for each term:")
+df = np.diff(tfidf_matrix.tocsc().indptr)
+for term, count in zip(feature_names, df):
+    print(f"{term}: {count}")
+
+print("\nIDF Values for each term:")
+for term, idf in zip(feature_names, vectorizer.idf_):
+    print(f"{term}: {np.round(idf, 3)}")
+
+# Example query transformation
+query = ["cat and dog"]
+query_tfidf = vectorizer.transform(query)
+print("\nTF-IDF for query 'cat and dog':")
+print(np.round(query_tfidf.toarray(), 3))
+```
+
+**Code Explanation:**
+1. **Vectorizer Setup:** We use `TfidfVectorizer` with parameters to handle:
+   - Lowercasing
+   - Stop word removal
+   - IDF smoothing
+
+2. **Matrix Creation:** The `fit_transform` method converts text to:
+   - TF-IDF weighted document-term matrix
+   - Sparse matrix format (efficient for large datasets)
+
+3. **Output Interpretation:**
+   - Feature names show the vocabulary
+   - TF-IDF matrix shows weighted values for each term-document pair
+   - DF shows document frequency for each term
+   - IDF values demonstrate term specificity
+
+4. **Query Example:** Shows how to transform new text using the same vectorizer
+
+**Key Observations:**
+- Terms appearing in many documents (like "sat") get lower IDF
+- Unique terms (like "mat") receive higher TF-IDF scores
+- The third document shows balanced scores for "cat" and "dog"
+
+To run this in Google Colab:
+1. Go to [colab.research.google.com](https://colab.research.google.com/)
+2. Create a new notebook
+3. Copy-paste this code into a code cell
+4. Click the play button to execute
+
+The output will show:
+- The vocabulary of processed terms
+- TF-IDF matrix with numerical values
+- Document frequencies and IDF values for each term
+- Example of transforming a new query

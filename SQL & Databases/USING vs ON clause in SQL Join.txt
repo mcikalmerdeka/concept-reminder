@@ -1,0 +1,34 @@
+No, the `USING` and `ON` clauses are not exactly the same, though they serve a similar purpose in SQL joins.
+
+### `USING` Clause:
+- When you use the `USING` clause, SQL assumes that the column names are the same in both tables and automatically references that column. In this case, it implicitly joins on the common column, and the resulting output includes only one instance of that column in the final result.
+
+  In your case:
+  ```sql
+  left join customer_orders using (customer_id)
+  ```
+  Here, the `USING` clause assumes that both `customers` and `customer_orders` have a `customer_id` column. The result will only include one `customer_id` column in the output.
+
+### `ON` Clause:
+- The `ON` clause is more explicit. It allows you to specify the join condition and use different column names in the two tables. Even if the column names are the same in both tables, the `ON` clause will still work but you must explicitly mention the condition.
+
+  The equivalent using the `ON` clause would look like this:
+  ```sql
+  left join customer_orders
+    on customers.customer_id = customer_orders.customer_id
+  ```
+
+### Key Differences:
+1. **Column Names**: 
+   - `USING` requires that the column names in both tables are the same.
+   - `ON` allows you to specify the condition, even if the column names are different.
+   
+2. **Output Columns**: 
+   - With `USING`, only one instance of the joined column (e.g., `customer_id`) will be included in the result.
+   - With `ON`, both columns (e.g., `customers.customer_id` and `customer_orders.customer_id`) are kept unless you explicitly select only one.
+
+### Which one to use?
+- If the column names are the same and you want to avoid redundant column output, `USING` is more concise.
+- If you need more control or are working with tables that have different column names, `ON` is more flexible.
+
+In your case, both work the same functionally since `customer_id` is the same in both tables, but `USING` simplifies the query.

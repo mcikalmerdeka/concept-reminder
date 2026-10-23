@@ -1,0 +1,13 @@
+https://claude.ai/chat/d6afba6e-0d44-4cdc-a128-678e19dc21e3
+
+
+Changing the python PATH
+https://answers.microsoft.com/en-us/windows/forum/all/change-system-variables-on-windows-11/f172c29e-fd9e-4f0b-949d-c4696bd656b8
+
+Click your Start Button, then just type advanced system
+
+On the resulting list, open 'View Advanced System Settings
+
+On the resulting utility click the 'Environment Variables' button at the bottom
+
+You should then be able to edit the System Variables settings.

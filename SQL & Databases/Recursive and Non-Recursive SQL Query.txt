@@ -1,0 +1,169 @@
+In SQL, a Common Table Expression (CTE) is a temporary result set that you can reference within a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement. CTEs are defined using the `WITH` keyword. They can be recursive or non-recursive.
+
+### Non-Recursive CTE
+
+A non-recursive CTE is a CTE that does not refer to itself. It is straightforward and typically used to simplify complex queries, break down subqueries, or improve readability.
+
+**Example of a Non-Recursive CTE:**
+
+```sql
+WITH Sales_CTE AS (
+    SELECT employee_id, SUM(sales_amount) AS total_sales
+    FROM sales
+    GROUP BY employee_id
+)
+SELECT employee_id, total_sales
+FROM Sales_CTE
+WHERE total_sales > 10000;
+```
+
+In this example, `Sales_CTE` is a non-recursive CTE that aggregates sales data by `employee_id`. The main query then selects employees with total sales greater than 10,000.
+
+### Recursive CTE
+
+A recursive CTE is a CTE that references itself. It is used for hierarchical or recursive data structures, such as organizational charts, bill of materials, or tree structures. Recursive CTEs consist of two parts:
+
+1. **Anchor Member**: The initial query that provides the starting point for the recursion.
+2. **Recursive Member**: A query that references the CTE itself, allowing it to repeat until a termination condition is met.
+
+**Example of a Recursive CTE:**
+
+```sql
+WITH RECURSIVE EmployeeHierarchy AS (
+    -- Anchor member
+    SELECT employee_id, manager_id, employee_name, 1 AS level
+    FROM employees
+    WHERE manager_id IS NULL
+
+    UNION ALL
+
+    -- Recursive member
+    SELECT e.employee_id, e.manager_id, e.employee_name, eh.level + 1
+    FROM employees e
+    INNER JOIN EmployeeHierarchy eh ON e.manager_id = eh.employee_id
+)
+SELECT employee_id, manager_id, employee_name, level
+FROM EmployeeHierarchy;
+```
+
+In this example, `EmployeeHierarchy` is a recursive CTE used to create a hierarchy of employees based on their managers. The anchor member selects all top-level employees (those without a manager). The recursive member joins the `employees` table with the CTE itself to find employees reporting to the current level of managers, incrementing the level each time.
+
+### Key Differences
+
+- **Non-Recursive CTE**:
+  - Does not refer to itself.
+  - Simplifies complex queries or subqueries.
+  - Generally used for straightforward operations like filtering, grouping, or joining.
+
+- **Recursive CTE**:
+  - References itself.
+  - Handles hierarchical or recursive data.
+  - Consists of an anchor member and a recursive member, iterating until a condition is met.
+
+### Usage Considerations
+
+- **Performance**: Recursive CTEs can be more complex and may impact performance, especially with deep recursion. Use them judiciously and ensure proper indexing on the columns involved.
+- **Termination Condition**: Ensure that the recursive member has a proper termination condition to prevent infinite loops.
+
+Both recursive and non-recursive CTEs are powerful tools in SQL that enhance query readability and maintainability, allowing you to handle complex data retrieval tasks efficiently.
+
+-------------------------------------------------------------------
+Examples :
+
+Certainly! Here are more examples of both recursive and non-recursive CTEs:
+
+### Non-Recursive CTE Examples
+
+#### Example 1: Calculating Department Averages
+This example calculates the average salary for each department.
+
+```sql
+WITH DepartmentAverages AS (
+    SELECT department_id, AVG(salary) AS avg_salary
+    FROM employees
+    GROUP BY department_id
+)
+SELECT department_id, avg_salary
+FROM DepartmentAverages;
+```
+
+#### Example 2: Finding Top 5 Most Expensive Products
+This example finds the top 5 most expensive products.
+
+```sql
+WITH TopProducts AS (
+    SELECT product_name, price
+    FROM products
+    ORDER BY price DESC
+    LIMIT 5
+)
+SELECT *
+FROM TopProducts;
+```
+
+### Recursive CTE Examples
+
+#### Example 1: Generating a Sequence of Numbers
+This example generates a sequence of numbers from 1 to 10.
+
+```sql
+WITH RECURSIVE Numbers AS (
+    SELECT 1 AS number
+    UNION ALL
+    SELECT number + 1
+    FROM Numbers
+    WHERE number < 10
+)
+SELECT number
+FROM Numbers;
+```
+
+#### Example 2: Hierarchical Data (Employee Management Structure)
+This example builds an employee management hierarchy, showing each employee's level in the hierarchy.
+
+```sql
+WITH RECURSIVE EmployeeHierarchy AS (
+    -- Anchor member
+    SELECT employee_id, manager_id, employee_name, 1 AS level
+    FROM employees
+    WHERE manager_id IS NULL
+
+    UNION ALL
+
+    -- Recursive member
+    SELECT e.employee_id, e.manager_id, e.employee_name, eh.level + 1
+    FROM employees e
+    INNER JOIN EmployeeHierarchy eh ON e.manager_id = eh.employee_id
+)
+SELECT employee_id, manager_id, employee_name, level
+FROM EmployeeHierarchy
+ORDER BY level, employee_id;
+```
+
+#### Example 3: Calculating Factorials
+This example calculates the factorial of numbers from 1 to 5.
+
+```sql
+WITH RECURSIVE Factorials AS (
+    SELECT 1 AS n, 1 AS factorial
+    UNION ALL
+    SELECT n + 1, (n + 1) * factorial
+    FROM Factorials
+    WHERE n < 5
+)
+SELECT n, factorial
+FROM Factorials;
+```
+
+### Explanation
+
+- **Non-Recursive CTEs**:
+  - **Department Averages**: The CTE `DepartmentAverages` calculates the average salary for each department.
+  - **Top Products**: The CTE `TopProducts` selects the top 5 products by price.
+
+- **Recursive CTEs**:
+  - **Number Sequence**: The CTE `Numbers` starts with 1 and recursively adds 1 until reaching 10.
+  - **Employee Hierarchy**: The CTE `EmployeeHierarchy` constructs an employee hierarchy, starting with employees with no manager and recursively finding employees managed by them.
+  - **Factorials**: The CTE `Factorials` calculates the factorial of numbers from 1 to 5 by recursively multiplying the current number by the previous factorial.
+
+These examples illustrate the versatility of CTEs in SQL, allowing for complex data retrieval and manipulation through both recursive and non-recursive methods.

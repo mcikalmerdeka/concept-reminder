@@ -1,0 +1,336 @@
+Source: https://chatgpt.com/c/683c61c2-bab4-800a-83d3-97afc8f2a562
+
+---------------------------------------------------------------------------------------------------
+
+apa yang dimaksud dengan uji normalitas shapiro-wilk dan kolmogorov-smirnov? berikan definisinya, kegunaan, serta contoh sederhananya dimana uji tersebut dilakukan seperti tampilkan perhitungannya
+
+
+Uji **normalitas** digunakan dalam statistik untuk mengevaluasi apakah suatu **data mengikuti distribusi normal**. Dua uji yang populer untuk ini adalah:
+
+---
+
+### **1. Uji Shapiro-Wilk**
+
+#### **Definisi:**
+
+Uji **Shapiro-Wilk** adalah salah satu uji statistik yang digunakan untuk menguji **apakah sebuah sampel berasal dari populasi yang terdistribusi normal**. Ini adalah uji yang **paling powerful** untuk dataset kecil hingga menengah (n < 50, tapi bisa digunakan hingga n = 2000).
+
+#### **Kegunaan:**
+
+Digunakan sebelum melakukan uji parametrik seperti **uji-t** atau **ANOVA**, karena uji-uji tersebut mengasumsikan bahwa data berdistribusi normal.
+
+#### **Contoh Sederhana (manual dan Python):**
+
+Misal kita punya data berikut (n = 5):
+
+```python
+data = [4.5, 5.2, 6.1, 4.9, 5.7]
+```
+
+Untuk menjalankan uji Shapiro-Wilk di Python:
+
+```python
+from scipy.stats import shapiro
+
+data = [4.5, 5.2, 6.1, 4.9, 5.7]
+stat, p = shapiro(data)
+print(f"Statistic = {stat}, p-value = {p}")
+```
+
+#### **Interpretasi:**
+
+* **Jika p > 0.05** → Data **mungkin normal**.
+* **Jika p ≤ 0.05** → Data **tidak normal**.
+
+> Misalnya, outputnya: `Statistic = 0.98, p-value = 0.89` → karena p > 0.05, data mengikuti distribusi normal.
+
+---
+
+### **2. Uji Kolmogorov-Smirnov (K-S)**
+
+#### **Definisi:**
+
+Uji **Kolmogorov-Smirnov** membandingkan distribusi kumulatif dari sampel dengan distribusi kumulatif dari distribusi normal (atau distribusi lain). Sering disebut sebagai uji "goodness-of-fit".
+
+#### **Kegunaan:**
+
+Cocok untuk dataset lebih besar dan juga bisa digunakan untuk **membandingkan dua distribusi**. Dalam konteks normalitas, biasanya dibandingkan dengan distribusi normal teoritis.
+
+#### **Contoh Sederhana di Python:**
+
+```python
+from scipy.stats import kstest, norm
+import numpy as np
+
+data = [4.5, 5.2, 6.1, 4.9, 5.7]
+data = (data - np.mean(data)) / np.std(data)  # distandarkan
+
+stat, p = kstest(data, 'norm')  # bandingkan dengan distribusi normal standar
+print(f"Statistic = {stat}, p-value = {p}")
+```
+
+#### **Interpretasi:**
+
+* **p > 0.05** → Tidak ada bukti menolak bahwa data berasal dari distribusi normal.
+* **p ≤ 0.05** → Data tidak berasal dari distribusi normal.
+
+---
+
+### **Ringkasan Perbandingan:**
+
+| Aspek             | Shapiro-Wilk                 | Kolmogorov-Smirnov                          |
+| ----------------- | ---------------------------- | ------------------------------------------- |
+| Cocok untuk       | Data kecil – menengah        | Data besar                                  |
+| Bandingkan dengan | Distribusi normal            | Distribusi teoritis apa pun                 |
+| Output utama      | Statistik W, p-value         | Statistik D, p-value                        |
+| Kelemahan         | Kurang kuat untuk data besar | Kurang sensitif pada ekor distribusi        |
+| Keunggulan        | Sangat kuat untuk normalitas | Lebih fleksibel, bisa pakai distribusi lain |
+
+---
+
+Kalau kamu ingin perhitungan manual (tanpa Python), bisa dilakukan tapi cukup panjang karena perlu menghitung statistik berdasarkan urutan nilai (ranking) dan koefisien aᵢ tertentu. Biasanya perhitungan manual tidak dilakukan kecuali untuk pembelajaran konsep dasar.
+
+---------------------------------------------------------------------------------------------------
+
+apakah ada metode-metode pengujian yang lain dan sering digunakan oleh data scientist dalam analisa data? berikan contohnya juga
+
+
+Ya, selain **Shapiro-Wilk** dan **Kolmogorov-Smirnov**, ada **banyak metode pengujian statistik** yang sering digunakan oleh data scientist tergantung pada **tujuan analisis** dan **karakteristik data**. Berikut beberapa metode pengujian yang umum, beserta definisi, kegunaan, dan contoh sederhananya:
+
+---
+
+## ✅ **1. Uji Normalitas Tambahan**
+
+Selain Shapiro-Wilk & K-S:
+
+### a. **Anderson-Darling Test**
+
+* **Definisi:** Uji normalitas yang menekankan pada bagian ekor distribusi.
+* **Kegunaan:** Mirip seperti Shapiro-Wilk, tapi lebih sensitif terhadap outlier.
+* **Contoh (Python):**
+
+```python
+from scipy.stats import anderson
+data = [4.5, 5.2, 6.1, 4.9, 5.7]
+result = anderson(data, dist='norm')
+print(result.statistic, result.critical_values)
+```
+
+---
+
+## ✅ **2. Uji Homogenitas Varians**
+
+Digunakan untuk mengecek apakah **kelompok data memiliki varians yang sama**, penting untuk uji parametrik (ANOVA, t-test).
+
+### a. **Levene's Test**
+
+* **Definisi:** Menguji kesamaan varians antara dua atau lebih grup.
+* **Contoh (Python):**
+
+```python
+from scipy.stats import levene
+group1 = [4.5, 4.9, 5.0]
+group2 = [5.5, 5.9, 6.0]
+stat, p = levene(group1, group2)
+```
+
+### b. **Bartlett’s Test**
+
+* Sama seperti Levene tapi **lebih sensitif terhadap normalitas**.
+
+---
+
+## ✅ **3. Uji Perbedaan Mean**
+
+### a. **t-test (Independent sample)**
+
+* **Tujuan:** Membandingkan rata-rata dua kelompok.
+* **Contoh:**
+
+```python
+from scipy.stats import ttest_ind
+a = [2, 4, 6, 8]
+b = [1, 3, 5, 7]
+ttest_ind(a, b)
+```
+
+### b. **Paired t-test**
+
+* Untuk data berpasangan (misal sebelum & sesudah intervensi).
+
+### c. **Mann-Whitney U Test** (non-parametrik alternatif t-test)
+
+* Untuk data **yang tidak normal**.
+
+```python
+from scipy.stats import mannwhitneyu
+mannwhitneyu(a, b)
+```
+
+---
+
+## ✅ **4. Uji Perbedaan Banyak Grup**
+
+### a. **ANOVA (Analysis of Variance)**
+
+* **Tujuan:** Bandingkan rata-rata lebih dari 2 grup.
+
+```python
+from scipy.stats import f_oneway
+f_oneway([2,3,4], [5,6,7], [8,9,10])
+```
+
+### b. **Kruskal-Wallis Test**
+
+* Alternatif non-parametrik dari ANOVA.
+
+---
+
+## ✅ **5. Uji Korelasi**
+
+### a. **Pearson Correlation**
+
+* Untuk data **interval/rasio** & **normal**.
+
+```python
+from scipy.stats import pearsonr
+pearsonr([1,2,3], [2,4,6])
+```
+
+### b. **Spearman Correlation**
+
+* Untuk data **ordinal atau tidak normal**.
+
+---
+
+## ✅ **6. Uji Chi-Square (χ² Test)**
+
+### a. **Goodness of Fit**
+
+* Apakah distribusi data sesuai dengan distribusi teoritis.
+
+### b. **Chi-Square Test of Independence**
+
+* Untuk melihat **hubungan antar dua variabel kategori**.
+
+```python
+import scipy.stats as stats
+import numpy as np
+obs = np.array([[10, 20], [20, 40]])
+stats.chi2_contingency(obs)
+```
+
+---
+
+## ✅ **7. Uji Outlier**
+
+### a. **Z-Score Method**
+
+* Menandai data yang jauh dari mean.
+
+### b. **IQR Method**
+
+* Jika data di bawah Q1 − 1.5×IQR atau di atas Q3 + 1.5×IQR → outlier.
+
+---
+
+## Ringkasan Tabel
+
+| Tujuan Uji              | Nama Uji                    | Parametrik / Non-parametrik |
+| ----------------------- | --------------------------- | --------------------------- |
+| Uji Normalitas          | Shapiro-Wilk, K-S, Anderson | Parametrik                  |
+| Homogenitas Varians     | Levene, Bartlett            | Parametrik                  |
+| Perbedaan 2 Grup        | t-test, Mann-Whitney        | Keduanya                    |
+| Perbedaan >2 Grup       | ANOVA, Kruskal-Wallis       | Keduanya                    |
+| Korelasi                | Pearson, Spearman           | Keduanya                    |
+| Hubungan antar kategori | Chi-Square                  | Non-parametrik              |
+
+---
+
+---------------------------------------------------------------------------------------------------
+
+ingatkan kembali saya mengenai definisi dan perbedaan dari parametrik dan non-parametrik dalam konteks ini
+
+
+Tentu! Mari kita ulas kembali definisi dan perbedaan antara **parametrik** dan **non-parametrik** dalam konteks **uji statistik**:
+
+---
+
+## ✅ **1. Uji Parametrik**
+
+### **Definisi:**
+
+Uji **parametrik** adalah uji statistik yang **mengasumsikan** bahwa data mengikuti **distribusi tertentu**, biasanya **distribusi normal**, serta memenuhi asumsi-asumsi lainnya seperti **homogenitas varians**.
+
+### **Ciri-ciri:**
+
+* Data harus **berdistribusi normal**.
+* Umumnya untuk **data numerik kontinu**.
+* Lebih **powerful (kuat)** jika asumsi terpenuhi.
+* Contoh asumsi:
+
+  * Normalitas data
+  * Homogenitas varians
+  * Skala pengukuran interval atau rasio
+
+### **Contoh Uji Parametrik:**
+
+| Nama Uji                | Tujuan                                       |
+| ----------------------- | -------------------------------------------- |
+| **t-test**              | Bandingkan rata-rata dua grup                |
+| **Paired t-test**       | Bandingkan dua data berpasangan              |
+| **ANOVA**               | Bandingkan rata-rata dari ≥3 grup            |
+| **Pearson correlation** | Hubungan linear antara dua variabel          |
+| **Regression**          | Hubungan antara variabel dependen-independen |
+
+---
+
+## ✅ **2. Uji Non-Parametrik**
+
+### **Definisi:**
+
+Uji **non-parametrik** adalah uji statistik yang **tidak memerlukan asumsi distribusi tertentu**. Uji ini digunakan jika data **tidak normal**, berskala **ordinal**, atau tidak memenuhi asumsi uji parametrik.
+
+### **Ciri-ciri:**
+
+* Cocok untuk data **ordinal**, **kategori**, atau **tidak normal**.
+* Lebih **fleksibel**, tapi bisa **kurang sensitif** dibandingkan uji parametrik jika asumsi terpenuhi.
+* Tidak memerlukan asumsi distribusi.
+
+### **Contoh Uji Non-Parametrik:**
+
+| Nama Uji                 | Tujuan                                       |
+| ------------------------ | -------------------------------------------- |
+| **Mann-Whitney U test**  | Alternatif t-test untuk dua grup             |
+| **Wilcoxon Signed-Rank** | Alternatif paired t-test                     |
+| **Kruskal-Wallis**       | Alternatif ANOVA                             |
+| **Spearman correlation** | Hubungan antar variabel ordinal/tidak normal |
+| **Chi-Square**           | Hubungan antar dua variabel kategori         |
+
+---
+
+## 🔍 **Perbedaan Parametrik vs Non-Parametrik**
+
+| Aspek                 | Parametrik                       | Non-Parametrik                             |
+| --------------------- | -------------------------------- | ------------------------------------------ |
+| **Asumsi distribusi** | Ya (biasanya normal)             | Tidak perlu asumsi distribusi              |
+| **Jenis data**        | Numerik (interval/rasio)         | Ordinal, kategori, atau data tidak normal  |
+| **Contoh uji**        | t-test, ANOVA, Pearson           | Mann-Whitney, Kruskal-Wallis, Spearman     |
+| **Kekuatan uji**      | Lebih kuat jika asumsi terpenuhi | Lebih fleksibel jika asumsi dilanggar      |
+| **Akurasi**           | Tinggi jika asumsi terpenuhi     | Lebih robust terhadap outlier / data kecil |
+
+---
+
+## ✍️ Ilustrasi Sederhana:
+
+Bayangkan kamu ingin tahu apakah **rata-rata skor ujian siswa laki-laki dan perempuan berbeda**:
+
+* Jika data **normal** dan variansnya serupa → gunakan **t-test** (parametrik).
+* Jika data **tidak normal atau ordinal** → gunakan **Mann-Whitney U** (non-parametrik).
+
+---
+
+Jika kamu ingin, saya bisa bantu buat tabel pemilihan uji statistik berdasarkan:
+
+* **Jenis data** (kategori, ordinal, numerik)
+* **Tujuan analisis** (menguji rata-rata, korelasi, hubungan kategori, dst)

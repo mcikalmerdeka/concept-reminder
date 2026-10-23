@@ -1,0 +1,215 @@
+Source: https://chat.deepseek.com/a/chat/s/b2eaf6ff-ae73-4dfe-92f9-37d8b300885d
+
+---------------------------------------------------------------------------------------------------
+
+Here's a comprehensive list of NumPy functions for number generation, categorized by their purpose, along with brief explanations and examples:
+
+---
+
+### **1. Sequences and Ranges**
+#### **`np.arange([start,] stop, [step,], dtype=None)`**
+- **Explanation**: Creates evenly spaced values within a range (like Python’s `range`, but returns an array).
+- **Example**:  
+  ```python
+  np.arange(3)          # array([0, 1, 2])
+  np.arange(2, 5)       # array([2, 3, 4])
+  np.arange(0, 1, 0.3)  # array([0.0, 0.3, 0.6, 0.9])
+  ```
+
+#### **`np.linspace(start, stop, num=50, endpoint=True)`**
+- **Explanation**: Generates `num` evenly spaced values between `start` and `stop` (inclusive if `endpoint=True`).
+- **Example**:  
+  ```python
+  np.linspace(0, 1, 5)  # array([0.0, 0.25, 0.5, 0.75, 1.0])
+  ```
+
+#### **`np.logspace(start, stop, num=50, base=10.0)`**
+- **Explanation**: Generates `num` values spaced logarithmically between `base^start` and `base^stop`.
+- **Example**:  
+  ```python
+  np.logspace(0, 2, 3)  # array([1.0, 10.0, 100.0])
+  ```
+
+#### **`np.geomspace(start, stop, num=50)`**
+- **Explanation**: Generates `num` values spaced geometrically (equal ratios between consecutive values).
+- **Example**:  
+  ```python
+  np.geomspace(1, 8, 4)  # array([1.0, 2.0, 4.0, 8.0])
+  ```
+
+---
+
+### **2. Constant Arrays**
+#### **`np.zeros(shape, dtype=float)`**
+- **Explanation**: Creates an array filled with zeros.
+- **Example**:  
+  ```python
+  np.zeros((2, 3))  # [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+  ```
+
+#### **`np.ones(shape, dtype=float)`**
+- **Explanation**: Creates an array filled with ones.
+- **Example**:  
+  ```python
+  np.ones((2, 2))  # [[1.0, 1.0], [1.0, 1.0]]
+  ```
+
+#### **`np.full(shape, fill_value, dtype=None)`**
+- **Explanation**: Creates an array filled with `fill_value`.
+- **Example**:  
+  ```python
+  np.full((2, 2), 7)  # [[7, 7], [7, 7]]
+  ```
+
+#### **`np.empty(shape, dtype=float)`**
+- **Explanation**: Creates an uninitialized array (values are arbitrary).
+- **Example**:  
+  ```python
+  np.empty(3)  # Uninitialized array of size 3
+  ```
+
+#### **`np.zeros_like(a, dtype=None)`** / **`np.ones_like(a)`** / **`np.full_like(a, fill_value)`**
+- **Explanation**: Creates an array of zeros/ones/fill-value with the same shape as `a`.
+- **Example**:  
+  ```python
+  a = np.array([[1, 2], [3, 4]])
+  np.zeros_like(a)  # [[0, 0], [0, 0]]
+  ```
+
+---
+
+### **3. Matrix Creation**
+#### **`np.eye(N, M=None, k=0)`**
+- **Explanation**: Creates a 2D array with ones on the diagonal (offset by `k`).
+- **Example**:  
+  ```python
+  np.eye(3)  # 3x3 identity matrix
+  ```
+
+#### **`np.identity(n)`**
+- **Explanation**: Creates a square identity matrix of size `n`.
+- **Example**:  
+  ```python
+  np.identity(2)  # [[1.0, 0.0], [0.0, 1.0]]
+  ```
+
+#### **`np.diag(v, k=0)`**
+- **Explanation**: Creates a diagonal matrix from a 1D array `v` (or extracts a diagonal from a 2D array).
+- **Example**:  
+  ```python
+  np.diag([1, 2, 3])  # [[1, 0, 0], [0, 2, 0], [0, 0, 3]]
+  ```
+
+#### **`np.tri(N, M=None, k=0)`**
+- **Explanation**: Creates a lower-triangular matrix with ones.
+- **Example**:  
+  ```python
+  np.tri(3)  # [[1, 0, 0], [1, 1, 0], [1, 1, 1]]
+  ```
+
+---
+
+### **4. Grid and Mesh Creation**
+#### **`np.meshgrid(x, y)`**
+- **Explanation**: Returns coordinate matrices from 1D coordinate vectors.
+- **Example**:  
+  ```python
+  x = [1, 2, 3]
+  y = [4, 5]
+  X, Y = np.meshgrid(x, y)  # X = [[1,2,3], [1,2,3]], Y = [[4,4,4], [5,5,5]]
+  ```
+
+#### **`np.mgrid`** / **`np.ogrid`**
+- **Explanation**: Grid creation via slice notation (`mgrid` for dense grids, `ogrid` for sparse/optimized).
+- **Example**:  
+  ```python
+  np.mgrid[0:3, 0:2]  # Dense grid arrays
+  np.ogrid[0:3, 0:2]  # Sparse grid arrays
+  ```
+
+---
+
+### **5. Random Sampling (`numpy.random`)**
+#### **`np.random.rand(d0, d1, ..., dn)`**
+- **Explanation**: Uniformly distributed random floats in [0, 1).
+- **Example**:  
+  ```python
+  np.random.rand(2, 2)  # [[0.42, 0.81], [0.12, 0.95]]
+  ```
+
+#### **`np.random.randn(d0, d1, ..., dn)`**
+- **Explanation**: Samples from the standard normal distribution (mean=0, variance=1).
+- **Example**:  
+  ```python
+  np.random.randn(2, 2)  # [[-0.3, 1.2], [0.5, -0.7]]
+  ```
+
+#### **`np.random.randint(low, high, size)`**
+- **Explanation**: Random integers from `low` (inclusive) to `high` (exclusive).
+- **Example**:  
+  ```python
+  np.random.randint(3, 10, size=(2, 2))  # [[5, 8], [3, 7]]
+  ```
+
+#### **`np.random.uniform(low=0.0, high=1.0, size=None)`**
+- **Explanation**: Uniform distribution over [low, high).
+- **Example**:  
+  ```python
+  np.random.uniform(5, 10, size=3)  # [6.8, 9.2, 5.5]
+  ```
+
+#### **`np.random.normal(loc=0.0, scale=1.0, size=None)`**
+- **Explanation**: Normal distribution with mean `loc` and standard deviation `scale`.
+- **Example**:  
+  ```python
+  np.random.normal(5, 0.1, 3)  # [5.03, 4.98, 5.12]
+  ```
+
+#### **`np.random.choice(a, size, replace=True)`**
+- **Explanation**: Random samples from a 1D array `a`.
+- **Example**:  
+  ```python
+  np.random.choice([3, 5, 7], size=2)  # [5, 3]
+  ```
+
+#### **`np.random.shuffle(x)`** / **`np.random.permutation(x)`**
+- **Explanation**: Shuffles an array in-place (`shuffle`) or returns a shuffled array (`permutation`).
+- **Example**:  
+  ```python
+  x = np.array([1, 2, 3])
+  np.random.shuffle(x)  # x becomes [2, 1, 3]
+  ```
+
+---
+
+### **6. Specialized Arrays**
+#### **`np.fromfunction(function, shape)`**
+- **Explanation**: Builds an array by calling `function` on each coordinate.
+- **Example**:  
+  ```python
+  np.fromfunction(lambda i, j: i + j, (2, 2))  # [[0, 1], [1, 2]]
+  ```
+
+#### **`np.fromiter(iterable, dtype, count)`**
+- **Explanation**: Creates a 1D array from an iterable.
+- **Example**:  
+  ```python
+  np.fromiter((x**2 for x in range(5)), int)  # [0, 1, 4, 9, 16]
+  ```
+
+---
+
+### **7. Other Distributions (Random Module)**
+- **`np.random.binomial(n, p, size)`**: Binomial distribution.
+- **`np.random.poisson(lam, size)`**: Poisson distribution.
+- **`np.random.exponential(scale, size)`**: Exponential distribution.
+- **`np.random.beta(a, b, size)`**: Beta distribution.
+- **`np.random.gamma(shape, scale, size)`**: Gamma distribution.
+
+---
+
+### **Key Notes**
+- **Seeding**: Use `np.random.seed(seed)` for reproducibility.
+- **Newer API**: For advanced use, consider `np.random.Generator` (e.g., `rng = np.random.default_rng()`).
+
+This list covers the majority of NumPy’s number generation utilities. Let me know if you need further clarification!

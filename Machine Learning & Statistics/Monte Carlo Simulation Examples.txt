@@ -1,0 +1,634 @@
+Source: https://claude.ai/chat/c3bcd370-bf4c-48d8-bcff-13aacf3ce413
+
+---------------------------------------------------------------------------------------------------
+
+
+"""
+Monte Carlo Simulation Examples in Python
+=========================================
+
+This file contains 5 different Monte Carlo simulation examples with detailed comments
+explaining the important steps and concepts behind each method.
+
+Required libraries: numpy, matplotlib, scipy (optional for statistical functions)
+Install with: pip install numpy matplotlib scipy
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+import time
+
+# Set random seed for reproducible results (optional)
+np.random.seed(42)
+
+def monte_carlo_pi(n_samples=100000, visualize=True):
+    """
+    Example 1: Estimate π using Monte Carlo method
+    
+    Concept: Generate random points in a unit square [-1,1] x [-1,1]
+    Count how many fall inside the unit circle (x² + y² ≤ 1)
+    π ≈ 4 * (points inside circle) / (total points)
+    
+    Args:
+        n_samples: Number of random points to generate
+        visualize: Whether to create a scatter plot
+    """
+    print("="*50)
+    print("MONTE CARLO ESTIMATION OF π")
+    print("="*50)
+    
+    start_time = time.time()
+    
+    # Generate random points in the square [-1,1] x [-1,1]
+    # Each coordinate is uniformly distributed between -1 and 1
+    x = np.random.uniform(-1, 1, n_samples)
+    y = np.random.uniform(-1, 1, n_samples)
+    
+    # Calculate distance from origin for each point
+    # Points inside unit circle satisfy: x² + y² ≤ 1
+    distances_squared = x**2 + y**2
+    inside_circle = distances_squared <= 1
+    
+    # Count points inside the circle
+    points_inside = np.sum(inside_circle)
+    
+    # Estimate π using the ratio
+    # Area of circle = π, Area of square = 4
+    # So π/4 = points_inside/total_points
+    pi_estimate = 4 * points_inside / n_samples
+    
+    # Calculate error and statistics
+    actual_pi = np.pi
+    error = abs(pi_estimate - actual_pi)
+    error_percentage = (error / actual_pi) * 100
+    
+    execution_time = time.time() - start_time
+    
+    # Display results
+    print(f"Number of samples: {n_samples:,}")
+    print(f"Points inside circle: {points_inside:,}")
+    print(f"Estimated π: {pi_estimate:.6f}")
+    print(f"Actual π: {actual_pi:.6f}")
+    print(f"Absolute error: {error:.6f}")
+    print(f"Relative error: {error_percentage:.4f}%")
+    print(f"Execution time: {execution_time:.3f} seconds")
+    
+    # Visualization (only plot subset of points for clarity)
+    if visualize and n_samples <= 10000:
+        plt.figure(figsize=(8, 8))
+        
+        # Plot points inside circle in red, outside in blue
+        inside_x = x[inside_circle]
+        inside_y = y[inside_circle]
+        outside_x = x[~inside_circle]
+        outside_y = y[~inside_circle]
+        
+        plt.scatter(inside_x, inside_y, c='red', s=1, alpha=0.6, label=f'Inside circle ({points_inside})')
+        plt.scatter(outside_x, outside_y, c='blue', s=1, alpha=0.6, label=f'Outside circle ({n_samples - points_inside})')
+        
+        # Draw the theoretical circle and square
+        circle = plt.Circle((0, 0), 1, fill=False, color='black', linewidth=2)
+        plt.gca().add_patch(circle)
+        plt.plot([-1, 1, 1, -1, -1], [-1, -1, 1, 1, -1], 'k-', linewidth=2)
+        
+        plt.xlim(-1.1, 1.1)
+        plt.ylim(-1.1, 1.1)
+        plt.gca().set_aspect('equal')
+        plt.title(f'Monte Carlo Estimation of π\nEstimate: {pi_estimate:.4f}, Error: {error:.4f}')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.show()
+    
+    return pi_estimate, error
+
+
+def stock_price_simulation(S0=100, mu=0.05, sigma=0.2, T=1, dt=1/252, n_simulations=1000, visualize=True):
+    """
+    Example 2: Stock Price Simulation using Geometric Brownian Motion
+    
+    The stock price follows: dS = μS dt + σS dW
+    Discrete form: S(t+dt) = S(t) * exp((μ - σ²/2)dt + σ√dt * Z)
+    where Z ~ N(0,1) is a standard normal random variable
+    
+    Args:
+        S0: Initial stock price
+        mu: Drift rate (expected annual return)
+        sigma: Volatility (annual standard deviation)
+        T: Time horizon in years
+        dt: Time step (1/252 for daily steps)
+        n_simulations: Number of price paths to simulate
+    """
+    print("\n" + "="*50)
+    print("STOCK PRICE SIMULATION (Geometric Brownian Motion)")
+    print("="*50)
+    
+    start_time = time.time()
+    
+    # Calculate number of time steps
+    n_steps = int(T / dt)
+    
+    # Pre-calculate constants for efficiency
+    # This comes from the analytical solution of GBM
+    drift = (mu - 0.5 * sigma**2) * dt
+    diffusion = sigma * np.sqrt(dt)
+    
+    # Initialize arrays to store results
+    # Shape: (n_simulations, n_steps + 1) to include initial price
+    prices = np.zeros((n_simulations, n_steps + 1))
+    prices[:, 0] = S0  # Set initial price for all simulations
+    
+    print(f"Simulating {n_simulations} price paths...")
+    print(f"Time horizon: {T} years ({n_steps} steps)")
+    print(f"Initial price: ${S0}")
+    print(f"Expected return: {mu*100:.1f}% per year")
+    print(f"Volatility: {sigma*100:.1f}% per year")
+    
+    # Generate all random numbers at once for efficiency
+    # Shape: (n_simulations, n_steps)
+    random_shocks = np.random.standard_normal((n_simulations, n_steps))
+    
+    # Simulate price paths
+    for t in range(n_steps):
+        # Apply GBM formula: S(t+1) = S(t) * exp(drift + diffusion * random_shock)
+        prices[:, t + 1] = prices[:, t] * np.exp(drift + diffusion * random_shocks[:, t])
+    
+    # Extract final prices for analysis
+    final_prices = prices[:, -1]
+    
+    # Calculate statistics
+    mean_final_price = np.mean(final_prices)
+    std_final_price = np.std(final_prices)
+    percentile_5 = np.percentile(final_prices, 5)
+    percentile_95 = np.percentile(final_prices, 95)
+    
+    # Theoretical expected final price
+    theoretical_mean = S0 * np.exp(mu * T)
+    
+    execution_time = time.time() - start_time
+    
+    # Display results
+    print(f"\nResults after {T} year(s):")
+    print(f"Mean final price: ${mean_final_price:.2f}")
+    print(f"Theoretical mean: ${theoretical_mean:.2f}")
+    print(f"Standard deviation: ${std_final_price:.2f}")
+    print(f"5th percentile: ${percentile_5:.2f}")
+    print(f"95th percentile: ${percentile_95:.2f}")
+    print(f"Probability of loss: {np.mean(final_prices < S0)*100:.1f}%")
+    print(f"Average return: {(mean_final_price/S0 - 1)*100:.2f}%")
+    print(f"Execution time: {execution_time:.3f} seconds")
+    
+    # Visualization
+    if visualize:
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Plot sample price paths
+        time_axis = np.linspace(0, T, n_steps + 1)
+        n_paths_to_plot = min(100, n_simulations)  # Don't plot too many paths
+        
+        for i in range(n_paths_to_plot):
+            ax1.plot(time_axis, prices[i], alpha=0.1, color='blue', linewidth=0.5)
+        
+        # Plot mean path
+        mean_path = np.mean(prices, axis=0)
+        ax1.plot(time_axis, mean_path, color='red', linewidth=2, label='Mean path')
+        ax1.plot(time_axis, S0 * np.exp(mu * time_axis), color='green', linewidth=2, 
+                linestyle='--', label='Theoretical mean')
+        
+        ax1.set_xlabel('Time (years)')
+        ax1.set_ylabel('Stock Price ($)')
+        ax1.set_title(f'Stock Price Simulation ({n_simulations} paths)')
+        ax1.legend()
+        ax1.grid(True, alpha=0.3)
+        
+        # Histogram of final prices
+        ax2.hist(final_prices, bins=50, alpha=0.7, density=True, color='lightblue', edgecolor='black')
+        ax2.axvline(mean_final_price, color='red', linestyle='-', linewidth=2, label=f'Mean: ${mean_final_price:.2f}')
+        ax2.axvline(S0, color='green', linestyle='--', linewidth=2, label=f'Initial: ${S0}')
+        ax2.set_xlabel('Final Stock Price ($)')
+        ax2.set_ylabel('Density')
+        ax2.set_title('Distribution of Final Prices')
+        ax2.legend()
+        ax2.grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        plt.show()
+    
+    return prices, final_prices
+
+
+def portfolio_var_calculation(portfolio_value=1000000, expected_return=0.08, volatility=0.15, 
+                            time_horizon=1, confidence_levels=[0.95, 0.99], n_simulations=10000):
+    """
+    Example 3: Portfolio Value at Risk (VaR) Calculation
+    
+    VaR answers: "What is the maximum loss we expect with X% confidence over Y days?"
+    We simulate portfolio returns and find the percentile corresponding to our confidence level.
+    
+    Args:
+        portfolio_value: Current portfolio value
+        expected_return: Expected annual return
+        volatility: Annual volatility (standard deviation of returns)
+        time_horizon: Time horizon in days
+        confidence_levels: List of confidence levels (e.g., [0.95, 0.99])
+        n_simulations: Number of Monte Carlo simulations
+    """
+    print("\n" + "="*50)
+    print("PORTFOLIO VALUE AT RISK (VaR) CALCULATION")
+    print("="*50)
+    
+    start_time = time.time()
+    
+    # Convert time horizon to years
+    dt = time_horizon / 252  # 252 trading days per year
+    
+    print(f"Portfolio value: ${portfolio_value:,}")
+    print(f"Expected annual return: {expected_return*100:.1f}%")
+    print(f"Annual volatility: {volatility*100:.1f}%")
+    print(f"Time horizon: {time_horizon} day(s)")
+    print(f"Number of simulations: {n_simulations:,}")
+    
+    # Simulate portfolio returns
+    # Returns are normally distributed: R ~ N(μ*dt, σ²*dt)
+    mean_return = expected_return * dt
+    std_return = volatility * np.sqrt(dt)
+    
+    # Generate random returns
+    portfolio_returns = np.random.normal(mean_return, std_return, n_simulations)
+    
+    # Convert returns to dollar changes
+    portfolio_changes = portfolio_value * portfolio_returns
+    
+    # Sort changes to find percentiles (losses are negative)
+    sorted_changes = np.sort(portfolio_changes)
+    
+    print(f"\nPortfolio Return Statistics:")
+    print(f"Mean return: {np.mean(portfolio_returns)*100:.3f}%")
+    print(f"Std deviation: {np.std(portfolio_returns)*100:.3f}%")
+    print(f"Mean change: ${np.mean(portfolio_changes):,.0f}")
+    
+    # Calculate VaR for each confidence level
+    print(f"\nValue at Risk Results:")
+    var_results = {}
+    
+    for confidence in confidence_levels:
+        # VaR is the negative of the percentile (since we want losses)
+        percentile_index = int((1 - confidence) * n_simulations)
+        var_dollar = -sorted_changes[percentile_index]  # Make positive (loss amount)
+        var_percentage = var_dollar / portfolio_value * 100
+        
+        var_results[confidence] = {
+            'dollar': var_dollar,
+            'percentage': var_percentage
+        }
+        
+        print(f"{confidence*100:.0f}% VaR ({time_horizon} day): ${var_dollar:,.0f} ({var_percentage:.2f}% of portfolio)")
+    
+    # Expected Shortfall (Conditional VaR) - average loss beyond VaR
+    print(f"\nExpected Shortfall (average loss beyond VaR):")
+    for confidence in confidence_levels:
+        percentile_index = int((1 - confidence) * n_simulations)
+        tail_losses = -sorted_changes[:percentile_index]  # Losses beyond VaR
+        expected_shortfall = np.mean(tail_losses)
+        es_percentage = expected_shortfall / portfolio_value * 100
+        
+        print(f"{confidence*100:.0f}% Expected Shortfall: ${expected_shortfall:,.0f} ({es_percentage:.2f}% of portfolio)")
+    
+    execution_time = time.time() - start_time
+    print(f"\nExecution time: {execution_time:.3f} seconds")
+    
+    # Visualization
+    plt.figure(figsize=(12, 8))
+    
+    # Histogram of portfolio changes
+    plt.hist(portfolio_changes, bins=100, alpha=0.7, density=True, color='lightblue', edgecolor='black')
+    
+    # Mark VaR levels
+    colors = ['red', 'darkred', 'purple']
+    for i, confidence in enumerate(confidence_levels):
+        var_line = -var_results[confidence]['dollar']
+        plt.axvline(var_line, color=colors[i], linestyle='-', linewidth=2, 
+                   label=f'{confidence*100:.0f}% VaR: ${var_results[confidence]["dollar"]:,.0f}')
+    
+    plt.axvline(0, color='green', linestyle='--', linewidth=1, label='Break-even')
+    plt.xlabel('Portfolio Change ($)')
+    plt.ylabel('Density')
+    plt.title(f'Distribution of Portfolio Changes ({time_horizon} day horizon)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    
+    # Add text box with key statistics
+    textstr = f'Portfolio: ${portfolio_value:,}\nMean Change: ${np.mean(portfolio_changes):,.0f}\nStd Dev: ${np.std(portfolio_changes):,.0f}'
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
+    plt.text(0.02, 0.98, textstr, transform=plt.gca().transAxes, fontsize=10,
+             verticalalignment='top', bbox=props)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    return var_results, portfolio_changes
+
+
+def dice_rolling_simulation(n_dice=2, dice_sides=6, n_rolls=10000, visualize=True):
+    """
+    Example 4: Dice Rolling Probability Analysis
+    
+    Simulate rolling multiple dice and analyze the distribution of sums.
+    Compare empirical results with theoretical probabilities.
+    
+    Args:
+        n_dice: Number of dice to roll
+        dice_sides: Number of sides on each die
+        n_rolls: Number of times to roll the dice
+    """
+    print("\n" + "="*50)
+    print("DICE ROLLING SIMULATION")
+    print("="*50)
+    
+    start_time = time.time()
+    
+    print(f"Rolling {n_dice} dice with {dice_sides} sides each")
+    print(f"Number of rolls: {n_rolls:,}")
+    
+    # Possible sum range
+    min_sum = n_dice  # All dice show 1
+    max_sum = n_dice * dice_sides  # All dice show maximum
+    possible_sums = list(range(min_sum, max_sum + 1))
+    
+    # Simulate dice rolls
+    # Generate all rolls at once for efficiency
+    rolls = np.random.randint(1, dice_sides + 1, size=(n_rolls, n_dice))
+    sums = np.sum(rolls, axis=1)  # Sum across dice for each roll
+    
+    # Count occurrences of each sum
+    sum_counts = {}
+    for s in possible_sums:
+        sum_counts[s] = np.sum(sums == s)
+    
+    # Calculate empirical probabilities
+    empirical_probs = {s: count/n_rolls for s, count in sum_counts.items()}
+    
+    # Calculate theoretical probabilities (for comparison)
+    # This is more complex for general case, so we'll use simulation for "theoretical"
+    # with a very large number of rolls
+    n_theoretical = 1000000
+    theoretical_rolls = np.random.randint(1, dice_sides + 1, size=(n_theoretical, n_dice))
+    theoretical_sums = np.sum(theoretical_rolls, axis=1)
+    theoretical_probs = {}
+    for s in possible_sums:
+        theoretical_probs[s] = np.sum(theoretical_sums == s) / n_theoretical
+    
+    execution_time = time.time() - start_time
+    
+    # Display results
+    print(f"\nResults:")
+    print(f"Possible sums: {min_sum} to {max_sum}")
+    print(f"Most common sum: {max(sum_counts, key=sum_counts.get)} (occurred {max(sum_counts.values())} times)")
+    
+    # Expected value calculations
+    empirical_mean = np.mean(sums)
+    theoretical_mean = n_dice * (dice_sides + 1) / 2
+    print(f"Empirical mean: {empirical_mean:.3f}")
+    print(f"Theoretical mean: {theoretical_mean:.3f}")
+    print(f"Difference: {abs(empirical_mean - theoretical_mean):.3f}")
+    
+    print(f"\nExecution time: {execution_time:.3f} seconds")
+    
+    # Display probability comparison table
+    print(f"\n{'Sum':<4} {'Count':<8} {'Empirical':<12} {'Theoretical':<12} {'Difference':<10}")
+    print("-" * 50)
+    total_diff = 0
+    for s in possible_sums:
+        emp_prob = empirical_probs[s]
+        theo_prob = theoretical_probs[s]
+        diff = abs(emp_prob - theo_prob)
+        total_diff += diff
+        print(f"{s:<4} {sum_counts[s]:<8} {emp_prob:<12.4f} {theo_prob:<12.4f} {diff:<10.4f}")
+    
+    print(f"\nTotal absolute difference: {total_diff:.4f}")
+    
+    # Visualization
+    if visualize:
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Bar chart of frequencies
+        sums_list = list(possible_sums)
+        counts_list = [sum_counts[s] for s in sums_list]
+        
+        ax1.bar(sums_list, counts_list, alpha=0.7, color='lightgreen', edgecolor='black')
+        ax1.set_xlabel('Sum of Dice')
+        ax1.set_ylabel('Frequency')
+        ax1.set_title(f'Frequency of Dice Sums\n({n_dice} dice, {dice_sides} sides, {n_rolls:,} rolls)')
+        ax1.grid(True, alpha=0.3)
+        
+        # Comparison of probabilities
+        emp_probs_list = [empirical_probs[s] for s in sums_list]
+        theo_probs_list = [theoretical_probs[s] for s in sums_list]
+        
+        x = np.arange(len(sums_list))
+        width = 0.35
+        
+        ax2.bar(x - width/2, emp_probs_list, width, label='Empirical', alpha=0.7, color='lightblue')
+        ax2.bar(x + width/2, theo_probs_list, width, label='Theoretical', alpha=0.7, color='orange')
+        
+        ax2.set_xlabel('Sum of Dice')
+        ax2.set_ylabel('Probability')
+        ax2.set_title('Empirical vs Theoretical Probabilities')
+        ax2.set_xticks(x)
+        ax2.set_xticklabels(sums_list)
+        ax2.legend()
+        ax2.grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        plt.show()
+    
+    return sums, sum_counts, empirical_probs
+
+
+def monte_carlo_integration(func_name='x_squared', a=0, b=1, n_samples=100000, visualize=True):
+    """
+    Example 5: Numerical Integration using Monte Carlo
+    
+    Estimate definite integrals using random sampling:
+    ∫[a,b] f(x) dx ≈ (b-a) * (1/N) * Σf(xi) where xi are random points in [a,b]
+    
+    Args:
+        func_name: Name of function to integrate ('x_squared', 'sin', 'exp_neg_x_squared', 'sqrt')
+        a: Lower integration limit
+        b: Upper integration limit
+        n_samples: Number of random samples
+    """
+    print("\n" + "="*50)
+    print("MONTE CARLO NUMERICAL INTEGRATION")
+    print("="*50)
+    
+    start_time = time.time()
+    
+    # Define functions and their analytical solutions
+    functions = {
+        'x_squared': {
+            'func': lambda x: x**2,
+            'analytical': lambda a, b: (b**3 - a**3) / 3,
+            'display': 'x²'
+        },
+        'sin': {
+            'func': lambda x: np.sin(x),
+            'analytical': lambda a, b: np.cos(a) - np.cos(b),
+            'display': 'sin(x)'
+        },
+        'exp_neg_x_squared': {
+            'func': lambda x: np.exp(-x**2),
+            'analytical': None,  # No simple closed form
+            'display': 'e^(-x²)'
+        },
+        'sqrt': {
+            'func': lambda x: np.sqrt(np.abs(x)),
+            'analytical': lambda a, b: (2/3) * (b**(3/2) - a**(3/2)) if a >= 0 else None,
+            'display': '√|x|'
+        }
+    }
+    
+    if func_name not in functions:
+        print(f"Unknown function: {func_name}")
+        return None
+    
+    func_info = functions[func_name]
+    f = func_info['func']
+    display_name = func_info['display']
+    
+    print(f"Integrating f(x) = {display_name} from {a} to {b}")
+    print(f"Number of samples: {n_samples:,}")
+    
+    # Generate random points in the interval [a, b]
+    x_random = np.random.uniform(a, b, n_samples)
+    
+    # Evaluate function at random points
+    y_values = f(x_random)
+    
+    # Monte Carlo estimate: (b-a) * average of function values
+    integral_estimate = (b - a) * np.mean(y_values)
+    
+    # Calculate analytical solution if available
+    analytical_result = None
+    if func_info['analytical'] is not None:
+        try:
+            analytical_result = func_info['analytical'](a, b)
+        except:
+            analytical_result = None
+    
+    execution_time = time.time() - start_time
+    
+    # Display results
+    print(f"\nResults:")
+    print(f"Monte Carlo estimate: {integral_estimate:.6f}")
+    
+    if analytical_result is not None:
+        error = abs(integral_estimate - analytical_result)
+        relative_error = error / abs(analytical_result) * 100 if analytical_result != 0 else float('inf')
+        print(f"Analytical result: {analytical_result:.6f}")
+        print(f"Absolute error: {error:.6f}")
+        print(f"Relative error: {relative_error:.4f}%")
+    else:
+        print("Analytical result: Not available in closed form")
+    
+    print(f"Execution time: {execution_time:.3f} seconds")
+    
+    # Convergence analysis - show how estimate improves with more samples
+    if n_samples >= 1000:
+        sample_sizes = np.logspace(2, np.log10(n_samples), 20).astype(int)
+        estimates = []
+        
+        for n in sample_sizes:
+            estimate = (b - a) * np.mean(y_values[:n])
+            estimates.append(estimate)
+        
+        print(f"\nConvergence Analysis:")
+        print(f"Samples: {sample_sizes[-1]:,} -> Estimate: {estimates[-1]:.6f}")
+    
+    # Visualization
+    if visualize:
+        fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+        
+        # Plot 1: Function and random sample points
+        x_plot = np.linspace(a, b, 1000)
+        y_plot = f(x_plot)
+        
+        axes[0,0].plot(x_plot, y_plot, 'b-', linewidth=2, label=f'f(x) = {display_name}')
+        
+        # Show subset of random points
+        n_points_to_show = min(500, n_samples)
+        indices = np.random.choice(n_samples, n_points_to_show, replace=False)
+        axes[0,0].scatter(x_random[indices], y_values[indices], alpha=0.5, s=1, color='red', label='Random samples')
+        
+        axes[0,0].axhline(y=0, color='k', linestyle='-', alpha=0.3)
+        axes[0,0].fill_between(x_plot, 0, y_plot, alpha=0.3, color='lightblue', label='Area under curve')
+        axes[0,0].set_xlabel('x')
+        axes[0,0].set_ylabel('f(x)')
+        axes[0,0].set_title(f'Function and Random Sample Points')
+        axes[0,0].legend()
+        axes[0,0].grid(True, alpha=0.3)
+        
+        # Plot 2: Histogram of function values
+        axes[0,1].hist(y_values, bins=50, alpha=0.7, density=True, color='lightgreen', edgecolor='black')
+        axes[0,1].axvline(np.mean(y_values), color='red', linestyle='--', linewidth=2, 
+                         label=f'Mean: {np.mean(y_values):.4f}')
+        axes[0,1].set_xlabel('f(x)')
+        axes[0,1].set_ylabel('Density')
+        axes[0,1].set_title('Distribution of Function Values')
+        axes[0,1].legend()
+        axes[0,1].grid(True, alpha=0.3)
+        
+        # Plot 3: Convergence plot
+        if n_samples >= 1000:
+            axes[1,0].semilogx(sample_sizes, estimates, 'b-', linewidth=2, label='Monte Carlo estimate')
+            if analytical_result is not None:
+                axes[1,0].axhline(analytical_result, color='red', linestyle='--', linewidth=2, 
+                                 label=f'Analytical: {analytical_result:.6f}')
+            axes[1,0].set_xlabel('Number of Samples')
+            axes[1,0].set_ylabel('Integral Estimate')
+            axes[1,0].set_title('Convergence of Monte Carlo Estimate')
+            axes[1,0].legend()
+            axes[1,0].grid(True, alpha=0.3)
+        
+        # Plot 4: Error vs sample size (if analytical solution exists)
+        if analytical_result is not None and n_samples >= 1000:
+            errors = [abs(est - analytical_result) for est in estimates]
+            axes[1,1].loglog(sample_sizes, errors, 'r-', linewidth=2, label='Absolute error')
+            # Theoretical 1/√N convergence rate
+            theoretical_rate = errors[0] * np.sqrt(sample_sizes[0] / sample_sizes)
+            axes[1,1].loglog(sample_sizes, theoretical_rate, 'k--', alpha=0.7, label='1/√N rate')
+            axes[1,1].set_xlabel('Number of Samples')
+            axes[1,1].set_ylabel('Absolute Error')
+            axes[1,1].set_title('Error vs Sample Size')
+            axes[1,1].legend()
+            axes[1,1].grid(True, alpha=0.3)
+        else:
+            axes[1,1].text(0.5, 0.5, 'Error analysis not available\n(no analytical solution)', 
+                          ha='center', va='center', transform=axes[1,1].transAxes, fontsize=12)
+            axes[1,1].set_title('Error Analysis')
+        
+        plt.tight_layout()
+        plt.show()
+    
+    return integral_estimate, analytical_result
+
+
+def run_all_examples():
+    """
+    Run all Monte Carlo examples with default parameters
+    """
+    print("RUNNING ALL MONTE CARLO EXAMPLES")
+    print("=" * 60)
+    
+    # Example 1: Pi estimation
+    pi_est, pi_error = monte_carlo_pi(n_samples=50000, visualize=True)
+    
+    # Example 2: Stock price simulation
+    prices, final_prices = stock_price_simulation(
+        S0=100, mu=0.08, sigma=0.25, T=1, 
+        n_simulations=1000, visualize=True
+    )
+    
+    # Example 3: Portfolio VaR
+    var_results, portfolio_changes = portfolio_var_calculation(
+        portfolio_value=1000000

@@ -1,0 +1,37 @@
+Source: https://chatgpt.com/c/67bf3382-6448-800a-9982-57dda49db030
+
+---------------------------------------------------------------------------------------------------
+
+is this how i see all the installed packages version in my requirements.txt file
+
+pip showGet-Content .\requirements.txt | ForEach-Object { pip show $_ | Select-Object Name,Version }
+
+Your command has a syntax issue. Here's the correct way to list the installed package versions based on the packages in your `requirements.txt` file:
+
+### Correct Command (PowerShell)
+```powershell
+Get-Content .\requirements.txt | ForEach-Object { pip show $_ } | Select-String "Name|Version"
+```
+
+### Explanation:
+- `Get-Content .\requirements.txt`: Reads the `requirements.txt` file line by line.
+- `ForEach-Object { pip show $_ }`: Runs `pip show` on each package.
+- `Select-String "Name|Version"`: Filters the output to show only lines containing "Name" or "Version".
+
+### Alternative Approach (Python)
+If you prefer a Python solution:
+```python
+import pkg_resources
+
+with open("requirements.txt") as f:
+    packages = f.read().splitlines()
+
+for package in packages:
+    try:
+        version = pkg_resources.get_distribution(package).version
+        print(f"{package}=={version}")
+    except pkg_resources.DistributionNotFound:
+        print(f"{package} is not installed")
+```
+
+This ensures you get the installed version of each package in your `requirements.txt` file. 🚀

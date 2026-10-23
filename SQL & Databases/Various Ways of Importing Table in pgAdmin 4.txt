@@ -1,0 +1,3 @@
+https://learnsql.com/blog/how-to-import-csv-to-postgresql/
+
+https://blog.n8n.io/import-csv-into-postgresql/

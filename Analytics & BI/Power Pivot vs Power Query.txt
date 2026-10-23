@@ -1,0 +1,31 @@
+How to use Power Pivot in Excel | Full Tutorial : https://youtu.be/rB_IiYbOo7w?si=JyIKWvJuVmB5SZdT
+How to use Microsoft Power Query : https://youtu.be/0aeZX1l4JT4?si=SD8aUxHFC3VMVOqD
+
+
+what is the similarities and differences between power pivot and power query ?
+
+Power Pivot and Power Query are both powerful features in Microsoft Excel designed to enhance data analysis capabilities, but they serve different purposes and have distinct functionalities. Here's a comparison of their similarities and differences:
+
+**Similarities:**
+
+1. **Integration with Excel**: Both Power Pivot and Power Query are integrated features of Microsoft Excel, available as add-ins within the Excel environment.
+
+2. **Data Transformation**: Both tools allow users to transform and manipulate data, although they do so in different ways. Power Query focuses on data transformation and cleansing during the data loading process, while Power Pivot focuses on data modeling and analysis after the data has been loaded.
+
+3. **Data Connectivity**: Both Power Pivot and Power Query offer connectivity to a wide range of data sources, including databases, text files, web sources, and more. They both enable users to import data from external sources into Excel for analysis.
+
+**Differences:**
+
+1. **Functionality**:
+   - **Power Query**: Power Query is primarily focused on data transformation and shaping. It provides a graphical user interface for easily performing tasks such as cleaning, filtering, merging, and transforming data from various sources before loading it into Excel or Power Pivot. Power Query operates on the data loading stage.
+   - **Power Pivot**: Power Pivot is focused on data modeling and analysis. It allows users to create relationships between tables, define calculated columns and measures using DAX (Data Analysis Expressions), and build sophisticated data models within Excel. Power Pivot operates on the data analysis stage.
+
+2. **Data Modeling vs. Data Transformation**:
+   - **Power Query**: Power Query is used for data preparation and transformation, including cleaning, shaping, and combining data from multiple sources before it's loaded into Excel or Power Pivot.
+   - **Power Pivot**: Power Pivot is used for data modeling and analysis after the data has been loaded. It enables users to create relationships between tables, define calculated columns and measures, and perform complex analysis using DAX.
+
+3. **User Interface**:
+   - **Power Query**: Power Query provides a user-friendly interface for visually designing data transformation steps. Users can apply a series of transformation steps through a series of menus and dialogs.
+   - **Power Pivot**: Power Pivot provides a user interface for building data models, creating relationships, and defining calculations using DAX. Users work primarily with the PivotTable Field List and the Power Pivot window within Excel.
+
+In summary, while both Power Pivot and Power Query are integrated features of Excel and offer data transformation capabilities, they serve different purposes and cater to different stages of the data analysis process. Power Query focuses on data preparation and cleansing, while Power Pivot focuses on data modeling and analysis within Excel.

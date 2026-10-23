@@ -1,0 +1,13 @@
+SHAP value explanation
+https://www.datacamp.com/tutorial/introduction-to-shap-values-machine-learning-interpretability
+
+https://twitter.com/mdancho84/status/1773674816307941831?t=fFoH3ODJA-KIdc_xn4JIKw&s=19
+
+
+what is the difference of using shap value plot and feature_importance score in the model?
+
+SHAP (SHapley Additive exPlanations) values provide a more nuanced understanding of feature importance by quantifying the impact of each feature on individual predictions. They capture the contribution of each feature to the model's output for each instance. Feature importance scores, on the other hand, typically provide a more general overview of the importance of each feature across the entire dataset. While feature importance scores can indicate which features are most influential overall, SHAP values offer insight into how each feature affects individual predictions, allowing for more detailed model interpretation.
+
+the feature importance scores that shows across the entire dataset that you are talkimg here is the one from sci-kit learn parameters right?
+
+Yes, typically feature importance scores from libraries like scikit-learn provide an overview of each feature's importance across the entire dataset. These scores are often calculated based on metrics such as information gain, Gini impurity, or permutation importance, depending on the algorithm used. They offer a global perspective on feature importance rather than capturing the impact of features on individual predictions like SHAP values do.

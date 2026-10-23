@@ -1,0 +1,51 @@
+Source: https://chatgpt.com/c/68403e6c-af38-800a-a7ba-188463169f2a
+
+---------------------------------------------------------------------------------------------------
+
+**Massively Parallel Processing (MPP)** databases are designed to scale out by distributing data and processing across many nodes in a cluster, each with its own CPU and memory. They are particularly useful for **analytics on large-scale data**, as they enable parallel query execution.
+
+---
+
+### ✅ Examples of MPP Databases
+
+| MPP Database                                  | Description                                                                         |
+| --------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **Amazon Redshift**                           | Cloud-native MPP DB based on ParAccel; highly integrated with AWS.                  |
+| **Google BigQuery**                           | Serverless MPP-like system built on Dremel and Colossus; abstracts compute/storage. |
+| **Snowflake**                                 | Cloud-native MPP architecture with decoupled compute and storage.                   |
+| **Azure Synapse Analytics (formerly SQL DW)** | Microsoft’s MPP cloud solution integrated with Azure.                               |
+| **Greenplum**                                 | Open-source MPP DB based on PostgreSQL; widely used in on-prem environments.        |
+| **Vertica**                                   | High-performance analytics MPP DB developed by HP (originally by Vertica Systems).  |
+| **Teradata**                                  | Enterprise-grade, on-prem/cloud MPP platform for complex analytics.                 |
+| **Netezza (IBM Db2 Warehouse)**               | MPP appliance/database acquired by IBM.                                             |
+
+---
+
+### 🧠 Are Modern Databases Based on the MPP Concept?
+
+Yes — **modern analytical databases**, especially cloud-based ones, are heavily inspired by or directly implement MPP architecture:
+
+* **Cloud-first data warehouses** like **BigQuery**, **Snowflake**, and **Redshift** are **inherently MPP systems**.
+* They scale horizontally, meaning performance increases by adding nodes.
+* **Separation of compute and storage** (e.g., Snowflake, BigQuery) is a modern evolution of MPP ideas.
+* **Distributed SQL engines** like **Databricks SQL**, **ClickHouse**, and **Trino (PrestoSQL)** also borrow MPP concepts even if not strictly MPP.
+
+---
+
+### 🆚 MPP vs Traditional RDBMS
+
+| Feature      | MPP                         | Traditional RDBMS              |
+| ------------ | --------------------------- | ------------------------------ |
+| **Scale**    | Horizontal (add nodes)      | Vertical (scale up)            |
+| **Use Case** | Analytical workloads (OLAP) | Transactional workloads (OLTP) |
+| **Examples** | Redshift, BigQuery          | MySQL, PostgreSQL, Oracle      |
+
+---
+
+### Summary
+
+* MPP systems **dominate the modern data analytics landscape**, especially in cloud data warehouses.
+* They are **not ideal for transactional workloads**, but **excellent for big data analytics**.
+* Most new **modern analytical databases are designed with MPP principles in mind** to scale efficiently and process large data volumes in parallel.
+
+Let me know if you want a comparison between specific tools like Snowflake vs BigQuery or Redshift vs Postgres!

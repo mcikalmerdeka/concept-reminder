@@ -1,0 +1,48 @@
+Here’s a comprehensive list of useful Excel shortcuts, including **Shift + F3** for the Insert Function menu:
+
+### Formulas
+1. **Shift + F3**: Open the Insert Function dialog while typing a formula.
+2. **Alt + =**: Automatically insert the SUM function.
+3. **Ctrl + `** (grave accent): Toggle between showing formulas and values.
+4. **F4**: Toggle absolute/relative references in a formula (e.g., A1 → $A$1).
+
+### Navigation
+5. **Ctrl + Arrow Keys**: Move to the edge of data regions.
+6. **Ctrl + Shift + Arrow Keys**: Select data to the edge of data regions.
+7. **Ctrl + Home**: Jump to the beginning (A1 cell).
+8. **Ctrl + End**: Jump to the last cell with data.
+
+### Selection
+9. **Ctrl + A**: Select the entire worksheet.
+10. **Shift + Space**: Select the entire row.
+11. **Ctrl + Space**: Select the entire column.
+12. **Ctrl + Shift + L**: Apply or remove filters.
+
+### Editing
+13. **F2**: Edit the selected cell.
+14. **Alt + Enter**: Insert a line break within a cell.
+15. **Ctrl + D**: Copy the contents of the cell above into the current cell.
+16. **Ctrl + R**: Copy the contents of the cell to the left into the current cell.
+
+### Formatting
+17. **Ctrl + 1**: Open the Format Cells dialog box.
+18. **Alt + H + H**: Open the fill color menu.
+19. **Ctrl + Shift + $**: Apply currency format.
+20. **Ctrl + Shift + %**: Apply percentage format.
+21. **Ctrl + Shift + :**: Insert the current time.
+22. **Ctrl + ;**: Insert the current date.
+
+### Data Manipulation
+23. **Alt + E + S + V**: Paste values only.
+24. **Alt + E + S + T**: Paste format only.
+25. **Ctrl + T**: Create a table from selected data.
+26. **Alt + H + O + I**: Auto-fit column width.
+
+### Workbook and Worksheet Management
+27. **Ctrl + N**: Create a new workbook.
+28. **Ctrl + S**: Save the workbook.
+29. **Ctrl + P**: Open the print menu.
+30. **Ctrl + Page Up/Page Down**: Move between worksheets.
+31. **Shift + F11**: Insert a new worksheet.
+
+These shortcuts will make you more efficient when working with formulas, navigation, data, and formatting in Excel!

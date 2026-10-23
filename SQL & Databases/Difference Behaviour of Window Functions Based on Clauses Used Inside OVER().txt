@@ -1,0 +1,178 @@
+Source: 
+
+---------------------------------------------------------------------------------------------------
+
+i thought using the window function on AVG() or SUM() can only be used if you want to calculate moving averages and cumulative sum, but actually it could also be used if we only want to see the averages and total sum only by not specifying the ORDER BY inside the OVER clause right?
+
+
+You're absolutely right — great observation!
+
+Using a **window function like `AVG()` or `SUM()`** with an `OVER()` clause **without an `ORDER BY`** can still be very useful, **even if you're not calculating moving averages or cumulative sums**.
+
+Here's how it works:
+
+### ✅ `OVER(PARTITION BY ...)` without `ORDER BY`
+
+This computes the aggregate (e.g., AVG, SUM) **per partition**, **but repeats the result across all rows in that partition**. This is often used for comparison or contextual insights at the row level.
+
+#### Example:
+
+```sql
+SELECT
+  department,
+  employee_name,
+  salary,
+  AVG(salary) OVER(PARTITION BY department) AS avg_dept_salary
+FROM employees;
+```
+
+This gives **each employee's salary alongside their department’s average salary**, without needing to GROUP BY and lose row-level detail.
+
+---
+
+### ✅ `OVER()` with no `PARTITION BY` and no `ORDER BY`
+
+This gives the **same aggregate across the entire table**, repeated on every row.
+
+#### Example:
+
+```sql
+SELECT
+  employee_name,
+  salary,
+  AVG(salary) OVER() AS avg_company_salary
+FROM employees;
+```
+
+You get **company-wide average salary** on every row — very handy for comparing individual values to the whole.
+
+---
+
+### So when do you need `ORDER BY`?
+
+You add `ORDER BY` to the `OVER()` clause **only when you want to compute ordered aggregates**, such as:
+
+* Moving averages
+* Cumulative sums (running totals)
+* Rankings
+
+#### Example:
+
+```sql
+SELECT
+  employee_name,
+  hire_date,
+  SUM(salary) OVER(ORDER BY hire_date) AS cumulative_salary
+FROM employees;
+```
+
+---
+
+So yes, **you can and should use window functions without `ORDER BY`** if you're just comparing within groups or showing repeated aggregates. Much more flexible than plain GROUP BY!
+
+---------------------------------------------------------------------------------------------------
+
+can you give example input and output data of those cases, like without any clauses inside the over, with partition by clause only, and with order by clause
+
+
+Absolutely! Let's walk through **three examples** using the same sample dataset, and show how the output differs when using:
+
+1. `OVER()` (no `PARTITION BY`, no `ORDER BY`)
+2. `OVER(PARTITION BY ...)`
+3. `OVER(ORDER BY ...)`
+
+---
+
+### 🧾 Sample Input Table: `employees`
+
+| employee\_id | employee\_name | department | salary | hire\_date |
+| ------------ | -------------- | ---------- | ------ | ---------- |
+| 1            | Alice          | HR         | 5000   | 2020-01-01 |
+| 2            | Bob            | HR         | 6000   | 2021-03-15 |
+| 3            | Charlie        | IT         | 7000   | 2020-06-10 |
+| 4            | Diana          | IT         | 8000   | 2022-09-01 |
+| 5            | Eva            | Sales      | 5500   | 2019-11-20 |
+
+---
+
+### ✅ Case 1: `AVG(salary) OVER()`
+
+**SQL:**
+
+```sql
+SELECT 
+  employee_name, 
+  salary,
+  AVG(salary) OVER() AS avg_company_salary
+FROM employees;
+```
+
+**Explanation:** Entire table is treated as one window.
+
+**Output:**
+
+| employee\_name | salary | avg\_company\_salary |
+| -------------- | ------ | -------------------- |
+| Alice          | 5000   | 6300                 |
+| Bob            | 6000   | 6300                 |
+| Charlie        | 7000   | 6300                 |
+| Diana          | 8000   | 6300                 |
+| Eva            | 5500   | 6300                 |
+
+---
+
+### ✅ Case 2: `AVG(salary) OVER(PARTITION BY department)`
+
+**SQL:**
+
+```sql
+SELECT 
+  employee_name, 
+  department,
+  salary,
+  AVG(salary) OVER(PARTITION BY department) AS avg_dept_salary
+FROM employees;
+```
+
+**Explanation:** Window is created per department.
+
+**Output:**
+
+| employee\_name | department | salary | avg\_dept\_salary |
+| -------------- | ---------- | ------ | ----------------- |
+| Alice          | HR         | 5000   | 5500              |
+| Bob            | HR         | 6000   | 5500              |
+| Charlie        | IT         | 7000   | 7500              |
+| Diana          | IT         | 8000   | 7500              |
+| Eva            | Sales      | 5500   | 5500              |
+
+---
+
+### ✅ Case 3: `SUM(salary) OVER(ORDER BY hire_date)`
+
+**SQL:**
+
+```sql
+SELECT 
+  employee_name,
+  hire_date,
+  salary,
+  SUM(salary) OVER(ORDER BY hire_date) AS cumulative_salary
+FROM employees;
+```
+
+**Explanation:** This computes a running total, ordered by hire date.
+
+**Output:**
+
+| employee\_name | hire\_date | salary | cumulative\_salary |
+| -------------- | ---------- | ------ | ------------------ |
+| Eva            | 2019-11-20 | 5500   | 5500               |
+| Alice          | 2020-01-01 | 5000   | 10500              |
+| Charlie        | 2020-06-10 | 7000   | 17500              |
+| Bob            | 2021-03-15 | 6000   | 23500              |
+| Diana          | 2022-09-01 | 8000   | 31500              |
+
+---
+
+These examples show how **just tweaking the `OVER()` clause** can completely change the behavior of the aggregate — super powerful for analytics.

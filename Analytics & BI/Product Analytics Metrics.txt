@@ -1,0 +1,140 @@
+Here are some of the most important and widely used metrics for product analytics, along with examples and their formulas:
+
+### 1. **Customer Acquisition Cost (CAC)**
+   - **What it Measures**: The cost associated with acquiring a new customer.
+   - **Formula**:
+   \[
+   \text{CAC} = \frac{\text{Total Marketing and Sales Costs}}{\text{Number of New Customers Acquired}}
+   \]
+   - **Example**: If a company spent $50,000 on marketing and sales in a month and acquired 500 new customers, the CAC would be:
+   \[
+   \text{CAC} = \frac{50,000}{500} = 100 \text{ USD per customer}
+   \]
+
+### 2. **Customer Lifetime Value (CLTV or LTV)**
+   - **What it Measures**: The total revenue a business expects from a customer over their lifetime.
+   - **Formula**:
+   \[
+   \text{CLTV} = \text{Average Purchase Value} \times \text{Average Purchase Frequency} \times \text{Customer Lifespan}
+   \]
+   - **Example**: If the average purchase value is $100, customers make 5 purchases per year, and the average customer lifespan is 3 years, then:
+   \[
+   \text{CLTV} = 100 \times 5 \times 3 = 1,500 \text{ USD}
+   \]
+
+### 3. **Churn Rate**
+   - **What it Measures**: The percentage of customers who stop using a product/service during a specific period.
+   - **Formula**:
+   \[
+   \text{Churn Rate} = \frac{\text{Number of Customers Lost During a Period}}{\text{Total Number of Customers at the Start of the Period}} \times 100
+   \]
+   - **Example**: If you had 1,000 customers at the start of the month and lost 50, your churn rate would be:
+   \[
+   \text{Churn Rate} = \frac{50}{1,000} \times 100 = 5\%
+   \]
+
+### 4. **Retention Rate**
+   - **What it Measures**: The percentage of customers who continue to use a product over a given period.
+   - **Formula**:
+   \[
+   \text{Retention Rate} = \frac{\text{Customers at End of Period} - \text{New Customers Acquired}}{\text{Total Customers at Start of Period}} \times 100
+   \]
+   - **Example**: If a company had 1,000 customers at the start, gained 200 new ones, and ended with 1,100 customers, then:
+   \[
+   \text{Retention Rate} = \frac{1,100 - 200}{1,000} \times 100 = 90\%
+   \]
+
+### 5. **Monthly Active Users (MAU)**
+   - **What it Measures**: The number of unique users who engage with the product in a given month.
+   - **Example**: If 20,000 unique users logged in and engaged with the product at least once in a month, then the MAU is **20,000**.
+
+### 6. **Daily Active Users (DAU)**
+   - **What it Measures**: The number of unique users who engage with the product daily.
+   - **Example**: If 3,000 unique users interact with your product every day, your DAU is **3,000**.
+
+### 7. **DAU/MAU Ratio (Stickiness)**
+   - **What it Measures**: The ratio of daily active users to monthly active users, indicating how often users return to the product.
+   - **Formula**:
+   \[
+   \text{DAU/MAU Ratio} = \frac{\text{DAU}}{\text{MAU}} \times 100
+   \]
+   - **Example**: If you have 3,000 DAUs and 20,000 MAUs:
+   \[
+   \text{DAU/MAU Ratio} = \frac{3,000}{20,000} \times 100 = 15\%
+   \]
+   A higher DAU/MAU ratio means users engage frequently.
+
+### 8. **Average Revenue Per User (ARPU)**
+   - **What it Measures**: The revenue generated per user in a given period.
+   - **Formula**:
+   \[
+   \text{ARPU} = \frac{\text{Total Revenue}}{\text{Number of Users}}
+   \]
+   - **Example**: If your total revenue for the month is $500,000, and you have 20,000 users:
+   \[
+   \text{ARPU} = \frac{500,000}{20,000} = 25 \text{ USD}
+   \]
+
+### 9. **Conversion Rate**
+   - **What it Measures**: The percentage of users who complete a desired action (like making a purchase, signing up, etc.).
+   - **Formula**:
+   \[
+   \text{Conversion Rate} = \frac{\text{Conversions}}{\text{Total Visitors or Users}} \times 100
+   \]
+   - **Example**: If 1,000 visitors come to your website and 50 make a purchase:
+   \[
+   \text{Conversion Rate} = \frac{50}{1,000} \times 100 = 5\%
+   \]
+
+### 10. **Average Session Duration**
+   - **What it Measures**: The average amount of time users spend on your product or platform in one session.
+   - **Formula**:
+   \[
+   \text{Average Session Duration} = \frac{\text{Total Session Time}}{\text{Number of Sessions}}
+   \]
+   - **Example**: If users spent a total of 10,000 minutes across 2,000 sessions:
+   \[
+   \text{Average Session Duration} = \frac{10,000}{2,000} = 5 \text{ minutes}
+   \]
+
+These metrics are essential for understanding user behavior, product performance, and customer engagement, which are critical for decision-making in product development and marketing strategies.
+
+
+-----------------------------------------------------------
+
+NPS (Net Promoter Score) is a popular customer satisfaction metric that measures how likely customers are to recommend a company, product, or service to others. It helps gauge overall customer loyalty and satisfaction by categorizing respondents into three groups based on their likelihood to recommend:
+
+1. **Promoters** (score 9-10): Loyal customers who are likely to refer others and contribute to growth.
+2. **Passives** (score 7-8): Satisfied but unenthusiastic customers who are vulnerable to competitors.
+3. **Detractors** (score 0-6): Unhappy customers who may negatively impact brand reputation through negative word-of-mouth.
+
+### Formula to Calculate NPS:
+NPS is calculated using the following formula:
+
+\[
+\text{NPS} = \% \text{Promoters} - \% \text{Detractors}
+\]
+
+Where:
+- **% Promoters** = (Number of Promoters / Total Respondents) * 100
+- **% Detractors** = (Number of Detractors / Total Respondents) * 100
+
+The NPS score is expressed as a number between -100 and +100.
+
+### Example:
+Let's say you conducted a survey with 100 respondents, and the results are as follows:
+- 60 people gave a score of 9 or 10 (Promoters),
+- 30 people gave a score of 7 or 8 (Passives),
+- 10 people gave a score between 0 and 6 (Detractors).
+
+The calculation would be:
+- % Promoters = (60 / 100) * 100 = 60%
+- % Detractors = (10 / 100) * 100 = 10%
+
+Now, applying the NPS formula:
+
+\[
+\text{NPS} = 60\% - 10\% = 50
+\]
+
+So, the NPS in this example would be **50**, which is generally considered a good score.

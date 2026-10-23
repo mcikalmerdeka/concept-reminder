@@ -1,0 +1,60 @@
+Source: https://huggingface.co/chat/conversation/696ea68d01ee504d2794718b
+
+------------------------------------------------------------------------------------------------
+
+Great! I found your Hugging Face Space. Now let me help you get your API token and set up the sync.
+
+## Getting Your Hugging Face API Token:
+
+1. Go to your Hugging Face settings: https://huggingface.co/settings/tokens
+2. Click on "New token" 
+3. Give it a name like "GitHub Sync"
+4. Select "Write" role (this gives permission to push to your Spaces)
+5. Click "Generate a token"
+6. **Copy the token immediately** - you won't be able to see it again!
+
+## Setting Up GitHub Action for Your Space:
+
+Here's the exact GitHub Action configuration for your specific Space:
+
+```yaml
+name: Sync to Hugging Face Hub
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: git push https://mcikalmerdeka:$HF_TOKEN@huggingface.co/spaces/mcikalmerdeka/context-engineering-visualizer main
+```
+
+## Steps to Complete:
+
+1. **Add the GitHub Action:**
+   - In your GitHub repo (`mcikalmerdeka/context-engineering-visualizer`), create `.github/workflows/sync.yml`
+   - Paste the content above
+
+2. **Add HF_TOKEN as GitHub Secret:**
+   - Go to your GitHub repo settings
+   - Navigate to "Secrets and variables" → "Actions"
+   - Click "New repository secret"
+   - Name: `HF_TOKEN`
+   - Value: Your Hugging Face API token
+
+3. **First-time setup:**
+   ```bash
+   git remote add space https://huggingface.co/spaces/mcikalmerdeka/context-engineering-visualizer
+   git push --force space main
+   ```
+
+After this setup, any push to your GitHub repo's main branch will automatically sync to your Hugging Face Space!

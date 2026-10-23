@@ -1,0 +1,44 @@
+Example with Bytes-like Object
+
+# Example for "PG Receivable : Durianpay Evermos 2023"
+raw_excels_durianpay_evermos = raw_excels_dict["PG Receivable : Durianpay Evermos 2023"]
+
+dataframes = []
+for raw_excel_data in raw_excels_durianpay_evermos:
+    try:
+        # Convert bytes-like object to a BytesIO object
+        excel_bytes = io.BytesIO(raw_excel_data)
+        
+        # Read the excel file into a pandas DataFrame
+        df = pd.read_excel(excel_bytes, sheet_name="details")
+        
+        # Append to the list of dataframes
+        dataframes.append(df)
+    except Exception as e:
+        print(f"Error loading DataFrame from raw Excel data: {e}")
+
+# Now you have a list of dataframes
+final_df = pd.concat(dataframes, ignore_index=True)
+
+
+------------------------------------------------------------------
+Example with File Path
+
+import pandas as pd
+
+# Example for "PG Receivable : Durianpay Evermos 2023"
+raw_excels_durianpay_evermos = raw_excels_dict["PG Receivable : Durianpay Evermos 2023"]
+
+dataframes = []
+for raw_excel_path in raw_excels_durianpay_evermos:
+    try:
+        # Read the excel file into a pandas DataFrame
+        df = pd.read_excel(raw_excel_path, sheet_name="details")
+        
+        # Append to the list of dataframes
+        dataframes.append(df)
+    except Exception as e:
+        print(f"Error loading DataFrame from raw Excel file at {raw_excel_path}: {e}")
+
+# Now you have a list of dataframes
+final_df = pd.concat(dataframes, ignore_index=True)

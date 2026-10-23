@@ -1,0 +1,43 @@
+Source: https://chat.deepseek.com/a/chat/s/d21824c3-3c2b-4e84-aeb9-27a95639ddf1
+
+---------------------------------------------------------------------------------------------------
+does split terminal in vscode actually created a new terminal where i can run my process?
+
+Yes, when you split the terminal in **VS Code**, it creates a **new, independent terminal instance** where you can run separate processes. Each split terminal operates independently, with its own shell session, environment, and command history. Here's how it works:
+
+---
+
+### Key Features of Split Terminals:
+1. **Independent Processes**:
+   - Each split terminal runs in its own shell (e.g., PowerShell, bash, zsh, etc.).
+   - You can run different commands or processes in each split (e.g., a server in one and a build script in another).
+
+2. **Visual Layout**:
+   - Terminals are split horizontally or vertically (right-click the terminal panel or use shortcuts like `Ctrl+\` for vertical splits or `Ctrl+Shift+5` for horizontal splits).
+   - You can resize splits by dragging the divider.
+
+3. **Customization**:
+   - Each split can use a **different shell type** (e.g., one for WSL and another for PowerShell).
+   - You can even navigate to different directories in each split.
+
+---
+
+### Example Workflow:
+1. **Split the Terminal**:
+   - Use the **Split Terminal** button (⚡ icon) or the keyboard shortcut `Ctrl+Shift+5` (Windows/Linux) / `Cmd+Shift+5` (macOS).
+   
+2. **Run Commands**:
+   - In **Terminal 1**: Run `npm start` (frontend server).
+   - In **Terminal 2**: Run `npm run build` (build process).
+   - In **Terminal 3**: Run a Python script or Git commands.
+
+---
+
+### Pro Tips:
+- **Keyboard Shortcuts**: Press `Ctrl+Shift+`` (backtick) to toggle the terminal panel or create a new terminal.
+- **Kill Individual Terminals**: Use the trash can icon next to each split to close it.
+- **Navigate Between Splits**: Use `Ctrl+PageUp`/`Ctrl+PageDown` (Windows/Linux) or `Cmd+Option+Left/Right` (macOS).
+
+---
+
+In summary, **split terminals in VS Code are fully functional, isolated environments**—perfect for multitasking without cluttering a single terminal. 🚀

@@ -1,0 +1,30 @@
+Data wrangling and data preprocessing are closely related concepts, but they're not exactly the same. Let me explain both and clarify how your examples fit in:
+
+Data Wrangling:
+This term refers to the process of cleaning, structuring, and enriching raw data into a desired format for better decision making in less time. It involves:
+1. Discovering the data
+2. Structuring it
+3. Cleaning it
+4. Enriching it
+5. Validating it
+6. Publishing it
+
+Data Preprocessing:
+This is a component of data wrangling, focusing specifically on cleaning and transforming raw data before it's used in analysis. It typically includes:
+1. Cleaning data
+2. Handling missing values
+3. Encoding categorical variables
+4. Normalizing and scaling features
+
+Your examples:
+- Outlier handling
+- Filtering out null and duplicate values
+- Feature scaling
+
+These activities are indeed part of both data wrangling and data preprocessing. They fall under the "cleaning" and "transforming" aspects of data preparation.
+
+The key difference is that data wrangling is a broader term that encompasses the entire process of preparing data for analysis, including steps like data discovery and enrichment. Data preprocessing is more focused on the technical aspects of cleaning and transforming the data.
+
+In practice, many data scientists and analysts use these terms somewhat interchangeably, especially in the context of tasks like the ones you mentioned. Both terms would be appropriate to describe those activities, though "data preprocessing" might be slightly more precise for that specific set of tasks.
+
+Would you like me to elaborate on any specific aspect of data wrangling or preprocessing?

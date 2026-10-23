@@ -1,0 +1,244 @@
+Source : https://github.com/rubiagatra/swe-for-ds
+
+---------------------------------------------------------------------------------------------------
+
+**Logging**
+
+import logging
+import uuid
+
+# Create a custom formatter that includes a UUID
+class CustomFormatter(logging.Formatter):
+    def format(self, record):
+        # Add unique ID and process ID to the record
+        record.log_id = str(uuid.uuid4())[:8]
+        return super().format(record)
+
+# Configure the logger
+logging.basicConfig(
+    filename='app.log',
+    level=logging.DEBUG,
+    format='%(asctime)s - ID:%(log_id)s - %(name)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)d] - Process:%(process)d - Thread:%(threadName)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+# Apply custom formatter to root logger
+for handler in logging.getLogger().handlers:
+    handler.setFormatter(CustomFormatter(logging.getLogger().handlers[0].formatter._fmt))
+
+# Create a logger instance
+logger = logging.getLogger(__name__)
+
+# Define a function to divide two numbers
+def divide_numbers(a, b):
+    try:
+        result = a / b
+        logger.info(f"Successfully divided {a} by {b} = {result}")
+        return result
+    except ZeroDivisionError as e:
+        logger.error(f"Division by zero error: {str(e)}", exc_info=True)
+        raise
+    except Exception as e:
+        logger.exception(f"Unexpected error while dividing {a} by {b}")
+        raise
+
+# Example usage
+try:
+    divide_numbers(10, 10)
+except Exception as e:
+    print(f"An error occurred: {e}")
+
+---------------------------------------------------------------------------------------------------
+
+**Debugging**
+
+import pdb
+
+# Function to calculate a complex result
+def calculate_complex(x, y):
+    result = 0
+    for i in range(x):
+        result += i * y
+    return result
+
+# Main function to demonstrate debugging
+def demonstrate_debug():
+    # First breakpoint
+    pdb.set_trace()
+    
+    # Basic arithmetic
+    numbers = [2, 4, 6, 8]
+    tambah = 3 + 5
+    kali = 2 * tambah
+    
+    # List comprehension
+    squares = [x**2 for x in numbers]
+    
+    # Function call
+    complex_result = calculate_complex(5, 3)
+    
+    # Dictionary operations
+    data = {
+        'numbers': numbers,
+        'tambah': tambah,
+        'kali': kali,
+        'squares': squares,
+        'complex': complex_result
+    }
+    
+    # Second breakpoint
+    pdb.set_trace()
+    
+    # Final calculations
+    final_result = sum(squares) + complex_result
+    return final_result
+
+if __name__ == "__main__":
+    result = demonstrate_debug()
+    print(f"Final result: {result}")
+
+---------------------------------------------------------------------------------------------------
+
+Debugging explanation:
+
+Let me explain this Python debugging code:
+
+This code demonstrates the usage of Python's built-in debugger (pdb). Here's what the code does step by step:
+
+1. First, it imports the Python debugger:
+```python
+import pdb
+```
+
+2. Then it sets a breakpoint:
+```python
+pdb.set_trace()
+```
+
+3. After that, it performs some simple calculations:
+```python
+tambah = 3 + 5      # adds 3 and 5
+kali = 2 * tambah   # multiplies the result by 2
+print(kali)         # prints the final result
+```
+
+To use this code:
+
+1. Run the script in your terminal or VS Code's integrated terminal:
+```bash
+python app_debug.py
+```
+
+2. When the code hits `pdb.set_trace()`, it will pause execution and open an interactive debugger. You can then:
+- Type `n` to go to the next line
+- Type `c` to continue execution
+- Type `p variable_name` to print a variable's value (e.g., `p tambah`)
+- Type `l` to see where you are in the code
+- Type `h` to see all available commands
+- Type `q` to quit the debugger
+
+Common PDB Commands:
+| Command | Description |
+|---------|-------------|
+| n | Next line |
+| s | Step into function |
+| c | Continue execution |
+| l | List source code |
+| p variable | Print variable value |
+| h | Help |
+| q | Quit debugger |
+
+This is particularly useful when you want to:
+- Inspect variable values during execution
+- Step through code line by line
+- Find bugs in your code
+- Understand the flow of your program
+
+The final output of this code (after continuing through the debugger) will be `16` because `3 + 5 = 8`, then `2 * 8 = 16`.
+
+---------------------------------------------------------------------------------------------------
+
+Debugging explanation (2):
+
+I'll enhance the code to demonstrate more debugging capabilities with pdb. Here's an expanded version:
+
+```python
+import pdb
+
+def calculate_complex(x, y):
+    result = 0
+    for i in range(x):
+        result += i * y
+    return result
+
+def demonstrate_debug():
+    # First breakpoint
+    pdb.set_trace()
+    
+    # Basic arithmetic
+    numbers = [2, 4, 6, 8]
+    tambah = 3 + 5
+    kali = 2 * tambah
+    
+    # List comprehension
+    squares = [x**2 for x in numbers]
+    
+    # Function call
+    complex_result = calculate_complex(5, 3)
+    
+    # Dictionary operations
+    data = {
+        'numbers': numbers,
+        'tambah': tambah,
+        'kali': kali,
+        'squares': squares,
+        'complex': complex_result
+    }
+    
+    # Second breakpoint
+    pdb.set_trace()
+    
+    # Final calculations
+    final_result = sum(squares) + complex_result
+    return final_result
+
+if __name__ == "__main__":
+    result = demonstrate_debug()
+    print(f"Final result: {result}")
+```
+
+This enhanced version includes:
+
+1. A custom function `calculate_complex`
+2. Multiple data types (lists, dictionaries)
+3. List comprehension
+4. Multiple breakpoints
+5. Function calls
+6. More complex calculations
+
+To use this enhanced debugger:
+
+1. Run the script in VS Code's integrated terminal:
+```bash
+python app_debug.py
+```
+
+2. At each breakpoint, you can try these additional pdb commands:
+
+- `w` : Shows the context of the current line (where you are in the call stack)
+- `a` : Print the argument list of the current function
+- `s` : Step into function calls
+- `r` : Continue execution until the current function returns
+- `b line_number` : Set a breakpoint at line number
+- `ll` : List all source code in the current function
+- `whatis variable` : Print the type of a variable
+- `pp variable` : Pretty print a variable
+- `dir()` : List all available variables
+
+3. Try these debugging scenarios:
+   - Step into the `calculate_complex` function using `s`
+   - Inspect the `numbers` list and `squares` list
+   - Check the contents of the `data` dictionary using `pp data`
+   - Watch how variables change between the first and second breakpoint
+
+This enhanced version gives you more opportunities to practice different debugging scenarios and commands while working with various Python data structures and operations.

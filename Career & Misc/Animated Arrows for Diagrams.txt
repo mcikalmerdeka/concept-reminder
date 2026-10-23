@@ -1,0 +1,72 @@
+Several sources:
+- Here's The Secret How To Create These Animated Diagrams (https://youtu.be/JRwTCKjc37o?si=_RtLhKAOXbKUtY9D)
+
+- Animate your draw.io connectors in Atlassian Confluence (https://youtu.be/MLlal_jRoXQ?si=J3f-zHywj6S_X5fq)
+
+- Drawio Flow Animation (https://youtu.be/F32QuqDhMqQ?si=ZBXIdThrcRucXbxK)
+
+- Top 6 Tools to Turn Code into Beautiful Diagrams (https://youtu.be/jCd6XfWLZsg?si=fta707icH2YQFkfb)
+
+
+Looking at this ML pipeline diagram, while the original shows static arrows, I can help you create an animated version using modern web technologies. The best approaches would be:
+
+1. SVG Animation
+- SVG combined with CSS animations or SMIL animations can create smooth, scalable animated paths
+- Perfect for technical diagrams like this CI/CD pipeline
+- Works well for the dashed arrow animations you're looking for
+
+2. HTML5 Canvas
+- Good for more complex animations
+- Requires JavaScript for animation control
+- Better performance for many moving elements
+
+Let me create a simple example of how you could animate those dashed arrows using SVG:
+
+
+
+```svg
+<svg viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Container boxes -->
+  <rect x="50" y="20" width="100" height="60" rx="5" fill="#fff" stroke="#2196F3"/>
+  <rect x="250" y="20" width="100" height="60" rx="5" fill="#fff" stroke="#2196F3"/>
+  
+  <!-- Animated dashed arrow -->
+  <path d="M 150 50 L 250 50" 
+        fill="none" 
+        stroke="#FF5722" 
+        stroke-width="2"
+        stroke-dasharray="5,5">
+    <animate attributeName="stroke-dashoffset"
+             from="10"
+             to="0"
+             dur="1s"
+             repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Labels -->
+  <text x="100" y="50" text-anchor="middle" alignment-baseline="middle" fill="#2196F3">Step 1</text>
+  <text x="300" y="50" text-anchor="middle" alignment-baseline="middle" fill="#2196F3">Step 2</text>
+</svg>
+
+```
+
+Here's how you can create diagrams like this:
+
+1. Tools you can use:
+- Draw.io (diagrams.net) - Has animation export options
+- Adobe Animate - Professional tool for complex animations
+- SVG + CSS/JavaScript - For web-based animations
+- Figma - With plugins for animation
+- LottieFiles - For more complex animations
+
+2. For the specific pipeline diagram style:
+- Start with a tool like Draw.io to create the basic structure
+- Export as SVG
+- Add animations using CSS or JavaScript
+- You can use CSS `@keyframes` or libraries like GSAP for more complex animations
+
+3. Popular web-based animation libraries:
+- GSAP (GreenSock Animation Platform)
+- anime.js
+- Three.js (for 3D animations)
+- Lottie (for After Effects animations)

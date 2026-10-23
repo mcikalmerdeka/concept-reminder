@@ -1,0 +1,55 @@
+Seaborn provides various color palettes that you can use to customize the colors in your plots. Here are some examples of color palettes in Seaborn:
+
+1. **Deep:**
+```python
+sns.set_palette("deep")
+```
+
+2. **Color Brewer Palettes:**
+```python
+sns.set_palette("Set1")  # or "Set2", "Set3"
+```
+
+3. **Dark Color Palette:**
+```python
+sns.set_palette("dark")
+```
+
+4. **Pastel Color Palette:**
+```python
+sns.set_palette("pastel")
+```
+
+5. **Muted Color Palette:**
+```python
+sns.set_palette("muted")
+```
+
+6. **Bright Color Palette:**
+```python
+sns.set_palette("bright")
+```
+
+7. **Cubehelix Palette:**
+```python
+sns.set_palette("cubehelix")
+```
+
+8. **Sequential Color Palette:**
+```python
+sns.set_palette("viridis")  # or "plasma", "inferno", "magma", etc.
+```
+
+9. **Diverging Color Palette:**
+```python
+sns.set_palette("coolwarm")  # or "RdBu_r", "BrBG", "PiYG", etc.
+```
+
+You can set the palette globally for all plots using `sns.set_palette`, or you can pass the `palette` parameter directly to individual plot functions.
+
+For example:
+```python
+sns.boxplot(x="category", y="value", hue="Risk_Flag", data=df, palette="Set1")
+```
+
+Feel free to explore and choose the one that suits your visualization preferences. You can also create custom palettes if you have specific color requirements.

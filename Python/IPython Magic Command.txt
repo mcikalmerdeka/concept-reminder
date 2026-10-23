@@ -1,0 +1,51 @@
+official source :
+https://ipython.readthedocs.io/en/stable/interactive/magics.html
+
+example : fast create a new text file
+%%writefile test.txt
+Hello, this is a quick test file.
+This is the second line of the file.
+
+%%writefile -a test.txt
+This is more text being appended to test.txt
+And another line here.
+
+explanation:
+
+The approach you're using with `%%writefile` is called a "magic command" or "IPython magic". This specific command is part of IPython, which is an interactive Python shell, and is commonly used in Jupyter Notebooks.
+
+The `%%` at the beginning indicates that this is a cell magic command, which operates on the entire cell rather than just a single line.
+
+As for other uses of the `%%` formatting, it's important to note that this isn't Python syntax per se, but rather a feature of IPython/Jupyter. Here are some other common cell magics that use the `%%` prefix:
+
+1. `%%time`: Time the execution of the entire cell.
+
+2. `%%timeit`: Run a cell multiple times to get more accurate timing.
+
+3. `%%html`: Render the cell contents as HTML.
+
+4. `%%javascript`: Run the cell contents as JavaScript.
+
+5. `%%latex`: Render the cell contents as LaTeX.
+
+6. `%%sh` or `%%bash`: Run the cell contents as a shell script.
+
+7. `%%sql`: Run SQL commands (requires appropriate extensions).
+
+8. `%%matplotlib inline`: Set up matplotlib to work interactively in the notebook.
+
+9. `%%cython`: Compile and run Cython code.
+
+10. `%%capture`: Capture the output of the cell (stdout/stderr) for later use.
+
+These magic commands are specific to the IPython environment and won't work in a standard Python script or interpreter. They're designed to enhance the interactive coding experience, particularly in Jupyter Notebooks.
+
+To see a full list of available magic commands in your IPython environment, you can run the following command:
+
+```python
+%lsmagic
+```
+
+This will show you both line magics (starting with `%`) and cell magics (starting with `%%`) that are available in your current environment.
+
+Remember, while these magic commands are powerful tools in interactive environments, they're not part of standard Python syntax and won't work outside of IPython/Jupyter contexts.

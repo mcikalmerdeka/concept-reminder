@@ -1,0 +1,216 @@
+Source: https://claude.ai/chat/fbd76026-a0d0-4984-81de-e19abf043987
+
+------------------------------------------------------------------------------------------------
+
+I'll search for information comparing LangGraph and Agno agent frameworks for you.Let me search for some code examples to supplement this comparison.Based on my search results, I can provide you with a comprehensive comparison between LangGraph and Agno agent frameworks, along with practical examples.
+
+## LangGraph vs Agno: Key Comparison
+
+### **Architecture & Design Philosophy**
+
+**LangGraph:**
+- Uses a graph-based approach where you build nodes and connect them via agents, providing stricter engineering control over workflows
+- Models an AI agent's logic as a graph of nodes and edges, allowing for reasoning, tool calls, and memory with native support for loops, branching, memory, persistence, and multi-agent workflows
+- Models agents as finite state machines, where each node represents a reasoning or tool-use step, and transitions are determined by outputs
+
+**Agno:**
+- Provides a high-level abstraction for defining agents, enclosing the agent's entire reasoning loop into one upper class
+- Offers composable, high-performance solutions with direct, unified interfaces to 23+ model providers, multiple memory strategies, and toolchains
+- Designed with a laser focus on performance and minimalism, built for multimodal tasks handling text, images, audio, and video natively
+
+### **Performance**
+
+**Agno's Performance Advantage:**
+- Agent creation in Agno clocks in at about 2μs per agent, which is ~10,000x faster than LangGraph, and Agno agents use just ~3.75 KiB of memory on average—~50x less than LangGraph agents
+- However, this speed difference is primarily because Agno defers setting up the HTTPS transport during agent creation, while LangGraph eagerly instantiates it; when amortized over a couple of requests it's not even a rounding error
+
+### **Use Cases & Best Fit**
+
+**When to use LangGraph:**
+- More suitable for complex multi-agent workflows that might not fit a standard pattern
+- Best for complex AI research projects and architecture experimentation
+- Preferable when AI agents are complex and iterative, requiring advanced logic
+
+**When to use Agno:**
+- Useful when the AI agent is used for measuring KPIs in production, such as financial reporting agents
+- Best for production in performance-critical apps, especially with multimodal features
+- Better for speed, low memory use, multimodal capabilities, and flexibility with models and tools
+
+### **Multi-Agent Support**
+
+**LangGraph:**
+- Allows you to build out nodes, connect them to various supervisors, and visualize how different teams interact, making it the most flexible when building multi-agent systems at scale
+
+**Agno:**
+- Has a Team class for multi-agent systems supporting three primary modes: route (team leader acts as router), coordinate, and collaborate modes for dynamic conversations between agents
+
+## Code Examples
+
+### **LangGraph Example**
+
+Here's a basic LangGraph agent with tools:
+
+```python
+# Install dependencies
+# pip install langgraph langchain-openai python-dotenv
+
+import os
+from langgraph.graph import StateGraph, MessagesState
+from langchain_openai import ChatOpenAI
+from langchain_core.tools import tool
+
+# Define a custom tool
+@tool
+def multiply(a: int, b: int) -> int:
+    """Multiply two numbers."""
+    return a * b
+
+# Initialize the model
+model = ChatOpenAI(model="gpt-4")
+model_with_tools = model.bind_tools([multiply])
+
+# Define the agent node
+def agent_node(state: MessagesState):
+    response = model_with_tools.invoke(state["messages"])
+    return {"messages": [response]}
+
+# Define the tool node
+def tool_node(state: MessagesState):
+    # Execute tool calls from the last message
+    last_message = state["messages"][-1]
+    tool_calls = last_message.tool_calls
+    
+    # Process tool calls (simplified)
+    results = []
+    for tool_call in tool_calls:
+        result = multiply.invoke(tool_call["args"])
+        results.append(result)
+    
+    return {"messages": results}
+
+# Build the graph
+workflow = StateGraph(MessagesState)
+workflow.add_node("agent", agent_node)
+workflow.add_node("tools", tool_node)
+
+# Add conditional edges
+workflow.add_conditional_edges(
+    "agent",
+    lambda state: "tools" if state["messages"][-1].tool_calls else "end"
+)
+workflow.add_edge("tools", "agent")
+workflow.set_entry_point("agent")
+
+# Compile the graph
+app = workflow.compile()
+
+# Run the agent
+result = app.invoke({"messages": [("user", "What is 25 multiplied by 4?")]})
+```
+
+### **Agno Example**
+
+Here's a basic Agno agent with tools:
+
+```python
+# Install dependencies
+# pip install agno openai duckduckgo-search
+
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.tools.yfinance import YFinanceTools
+
+# Simple single agent
+simple_agent = Agent(
+    model=OpenAIChat(id="gpt-4o"),
+    tools=[DuckDuckGoTools()],
+    instructions=["Always include sources", "Be concise"],
+    markdown=True,
+    show_tool_calls=True
+)
+
+# Use the agent
+simple_agent.print_response("What are the latest AI developments?", stream=True)
+
+# Multi-agent team example
+web_agent = Agent(
+    name="Web Agent",
+    role="Search the web for information",
+    model=OpenAIChat(id="gpt-4o"),
+    tools=[DuckDuckGoTools()],
+    instructions="Always include sources",
+    markdown=True,
+)
+
+finance_agent = Agent(
+    name="Finance Agent",
+    role="Get financial data",
+    model=OpenAIChat(id="gpt-4o"),
+    tools=[YFinanceTools(stock_price=True, analyst_recommendations=True)],
+    instructions="Use tables to display data",
+    markdown=True,
+)
+
+# Create a team with a leader agent
+agent_team = Agent(
+    team=[web_agent, finance_agent],
+    model=OpenAIChat(id="gpt-4o"),
+    instructions=["Always include sources", "Use tables to display data"],
+    markdown=True,
+)
+
+# Use the team
+agent_team.print_response("What's the current stock price of NVDA and recent news about it?")
+```
+
+### **Custom Tool Example (Agno)**
+
+```python
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
+# Define a custom tool as a simple Python function
+def calculate_savings(monthly_cost: float, solar_savings_percent: float) -> dict:
+    """Calculate potential savings from solar panels."""
+    monthly_savings = monthly_cost * (solar_savings_percent / 100)
+    annual_savings = monthly_savings * 12
+    
+    return {
+        "monthly_savings": monthly_savings,
+        "annual_savings": annual_savings,
+        "ten_year_savings": annual_savings * 10
+    }
+
+# Create agent with custom tool
+agent = Agent(
+    model=OpenAIChat(id="gpt-4o"),
+    tools=[calculate_savings],
+    instructions=[
+        "Help users understand their potential solar energy savings",
+        "Always show calculations in a clear format"
+    ],
+    markdown=True
+)
+
+agent.print_response(
+    "I pay $150 per month for electricity. Calculate my savings if solar reduces costs by 70%"
+)
+```
+
+## Summary
+
+**Choose LangGraph if you need:**
+- Complex, customizable workflow control
+- Graph-based state management
+- Advanced multi-agent orchestration with custom topologies
+- Research or experimentation with agent architectures
+
+**Choose Agno if you need:**
+- Fast agent instantiation and low memory footprint
+- Simple, clean API for quick development
+- Production-ready performance
+- Multimodal agent capabilities
+- Less boilerplate code
+
+Both frameworks are excellent choices, and the decision depends on whether you need complex graph-based control flows (LangGraph) or simpler linear sequences with better performance (Agno).

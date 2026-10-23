@@ -1,0 +1,40 @@
+Source : https://youtu.be/5rGTE8LcVEs?si=DwgHLyWKgfMS6srL
+
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Access the API key from environment variables
+api_key: str = os.getenv("ANTHROPIC_API_KEY")
+
+# Print to verify (optional)
+print(api_key)
+
+-------------------------------------------------------
+
+from anthropic import Anthropic
+client = Anthropic(
+    api_key=api_key
+)
+
+------------------------------------------------------------
+
+from anthropic import BadRequestError
+
+try: 
+    our_first_message: Message | str = client.messages.create(
+        model="claude-3-5-sonnet-20241022",
+        max_tokens=1000,
+        messages=[
+            {"role" : "user",
+            "content" : "testing anthropic api, please respond with hello or something if this works"}
+        ]
+    )
+
+    print(our_first_message.content[0].text)
+
+except BadRequestError as e: 
+    #Print the error message
+    print(e.args[0])  # This should display the error message only

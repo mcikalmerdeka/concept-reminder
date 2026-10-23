@@ -1,0 +1,145 @@
+Source : https://chat.deepseek.com/a/chat/s/3c831f58-9e29-4022-87d5-9ffc2385c072
+
+---------------------------------------------------------------------------------------------------
+
+Let's break down the differences between ARMA, ARIMA, and SARIMA models and provide Python examples for each:
+
+---
+
+### **1. ARMA (AutoRegressive Moving Average)**
+- **Purpose**: For stationary time series (no trend/seasonality)
+- **Components**:
+  - **AR(p)**: Uses `p` past values
+  - **MA(q)**: Uses `q` past forecast errors
+- **Equation**: 
+  ```y_t = c + Σ(ϕ_i * y_{t-i}) + Σ(θ_j * ε_{t-j}) + ε_t```
+
+---
+
+### **2. ARIMA (AutoRegressive Integrated Moving Average)**
+- **Purpose**: Adds differencing to ARMA for non-stationary data (handles trends)
+- **Components**:
+  - **I(d)**: Differencing order `d`
+  - ARIMA = AR + I + MA
+- **Equation**: 
+  ```Δ^d y_t = c + Σ(ϕ_i * Δ^d y_{t-i}) + Σ(θ_j * ε_{t-j}) + ε_t```
+
+---
+
+### **3. SARIMA (Seasonal ARIMA)**
+- **Purpose**: Adds seasonal components to ARIMA (handles trends + seasonality)
+- **Components**:
+  - **Seasonal Order (P, D, Q, s)**: Seasonal AR, differencing, MA, and period (e.g., 12 for monthly)
+- **Equation**: Combines non-seasonal and seasonal terms.
+
+---
+
+### Python Code Examples
+
+#### **ARMA Example**
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+
+# Generate synthetic stationary data
+np.random.seed(0)
+n = 200
+ar_params = [0.7]  # AR(1) coefficient
+ma_params = [0.4]  # MA(1) coefficient
+y = np.zeros(n)
+noise = np.random.normal(0, 1, n)
+
+for t in range(1, n):
+    y[t] = ar_params[0] * y[t-1] + ma_params[0] * noise[t-1] + noise[t]
+
+# Fit ARMA(1,1) model
+model = ARIMA(y, order=(1, 0, 1))  # ARMA = ARIMA(p,0,q)
+result = model.fit()
+
+# Forecast
+forecast = result.get_forecast(steps=20)
+mean = forecast.predicted_mean
+conf_int = forecast.conf_int()
+
+# Plot
+plt.plot(y, label='Data')
+plt.plot(range(n, n+20), mean, color='red', label='Forecast')
+plt.fill_between(range(n, n+20), conf_int.iloc[:,0], conf_int.iloc[:,1], color='pink')
+plt.legend()
+plt.show()
+```
+
+---
+
+#### **ARIMA Example**
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+
+# Generate data with trend
+np.random.seed(0)
+n = 200
+time = np.arange(n)
+y = 0.1 * time + np.random.normal(0, 1, n)  # Linear trend + noise
+
+# Fit ARIMA(1,1,1) to handle trend (d=1)
+model = ARIMA(y, order=(1, 1, 1))
+result = model.fit()
+
+# Forecast
+forecast = result.get_forecast(steps=20)
+mean = forecast.predicted_mean
+conf_int = forecast.conf_int()
+
+# Plot
+plt.plot(y, label='Data')
+plt.plot(range(n, n+20), mean, color='red', label='Forecast')
+plt.fill_between(range(n, n+20), conf_int.iloc[:,0], conf_int.iloc[:,1], color='pink')
+plt.legend()
+plt.show()
+```
+
+---
+
+#### **SARIMA Example**
+```python
+import matplotlib.pyplot as plt
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.datasets import get_rdataset
+
+# Load AirPassengers dataset
+data = get_rdataset('AirPassengers').data
+y = data['value'].values.astype(float)
+
+# Fit SARIMA(1,1,1)(1,1,1,12) for monthly seasonality
+model = SARIMAX(y, order=(1,1,1), seasonal_order=(1,1,1,12))
+result = model.fit()
+
+# Forecast
+forecast = result.get_forecast(steps=24)
+mean = forecast.predicted_mean
+conf_int = forecast.conf_int()
+
+# Plot
+plt.figure(figsize=(10, 5))
+plt.plot(y, label='Historical Data')
+plt.plot(range(len(y), len(y)+24), mean, color='red', label='Forecast')
+plt.fill_between(range(len(y), len(y)+24), conf_int.iloc[:,0], conf_int.iloc[:,1], color='pink')
+plt.legend()
+plt.title('SARIMA Forecast for AirPassengers')
+plt.show()
+```
+
+---
+
+### **Key Takeaways**
+1. **ARMA**: Use for stationary data (no trend/seasonality).
+2. **ARIMA**: Extends ARMA with differencing to handle trends.
+3. **SARIMA**: Adds seasonal parameters to ARIMA for periodic patterns.
+
+To run these in Google Colab:
+1. Copy-paste the code into a cell.
+2. Run the cell (may take a few seconds for model fitting).
+3. Adjust parameters (`order` and `seasonal_order`) for your data.

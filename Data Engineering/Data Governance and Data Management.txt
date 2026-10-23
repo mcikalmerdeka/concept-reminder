@@ -1,0 +1,49 @@
+**Data governance** and **data management** are closely related concepts, but they focus on different aspects of handling data within an organization.
+
+### Data Governance:
+Data governance is a high-level framework that defines how data is managed, controlled, and protected within an organization. It encompasses the policies, procedures, and standards that ensure data is accurate, secure, and used responsibly.
+
+**Key Components of Data Governance:**
+1. **Data Policies:** Guidelines and rules that dictate how data should be managed and used.
+2. **Data Stewardship:** Assigning roles and responsibilities to individuals or teams to oversee data management practices.
+3. **Data Quality Management:** Ensuring data accuracy, consistency, and reliability.
+4. **Data Security:** Protecting data from unauthorized access and breaches.
+5. **Compliance:** Ensuring data practices comply with relevant laws, regulations, and standards.
+6. **Data Lifecycle Management:** Managing data from creation to disposal, including archiving and deletion.
+
+**Objectives of Data Governance:**
+- Ensure data integrity and accuracy.
+- Protect data privacy and security.
+- Improve data accessibility and usability.
+- Ensure compliance with legal and regulatory requirements.
+- Enhance decision-making through reliable data.
+
+### Data Management:
+Data management is the practical implementation of data governance policies and involves the processes and technologies used to collect, store, organize, and maintain data.
+
+**Key Components of Data Management:**
+1. **Data Collection:** Gathering data from various sources.
+2. **Data Storage:** Storing data in databases, data warehouses, data lakes, etc.
+3. **Data Integration:** Combining data from different sources to provide a unified view.
+4. **Data Processing:** Transforming raw data into a usable format through cleaning, validation, and enrichment.
+5. **Data Maintenance:** Regularly updating and maintaining data to ensure its accuracy and relevance.
+6. **Data Access and Retrieval:** Providing tools and mechanisms for users to access and retrieve data.
+7. **Data Backup and Recovery:** Ensuring data is backed up and can be recovered in case of loss or corruption.
+8. **Data Analytics:** Using tools and techniques to analyze data for insights and decision-making.
+
+**Objectives of Data Management:**
+- Efficiently handle large volumes of data.
+- Ensure data is readily available and accessible.
+- Maintain data accuracy and consistency.
+- Support data-driven decision-making processes.
+- Optimize data storage and retrieval processes.
+
+### Relationship Between Data Governance and Data Management:
+- **Data governance** sets the policies, standards, and guidelines for data handling.
+- **Data management** implements these policies and standards through practical processes and technologies.
+
+### Example:
+- **Data Governance:** An organization implements a policy that all customer data must be encrypted and only accessible by authorized personnel.
+- **Data Management:** The IT team uses specific encryption software to encrypt the data and sets up access controls to ensure only authorized users can access it.
+
+In summary, data governance provides the strategic oversight and framework for data usage, while data management focuses on the operational execution of these strategies to ensure data is effectively managed and utilized.

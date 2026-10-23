@@ -1,0 +1,9 @@
+The activation function in artificial neural networks is typically chosen to be non-linear for several important reasons:
+
+1. **Expressive Power:** Non-linear activation functions allow neural networks to model complex relationships in data. If the activation function were linear, no matter how many layers a neural network had, it could be collapsed into a single layer, as the composition of linear functions is still a linear function. Non-linear activation functions introduce non-linearity, enabling neural networks to learn and approximate more complex, non-linear mappings between inputs and outputs.
+
+2. **Gradient Descent Optimization:** Non-linear activation functions introduce the non-linearity required for the gradient descent optimization algorithm to work effectively. The backpropagation algorithm, commonly used for training neural networks, relies on the gradient of the loss function with respect to the weights. The chain rule of calculus, which is fundamental to backpropagation, requires the activation function to be non-linear to propagate the error gradients through the network.
+
+3. **Representation Power:** Non-linear activation functions increase the representation power of the neural network. This means that the network can learn and represent a broader range of functions, enabling it to capture more intricate patterns and features in the data.
+
+Common non-linear activation functions used in neural networks include the sigmoid, hyperbolic tangent (tanh), and rectified linear unit (ReLU). Each of these functions introduces non-linearity to the network, allowing it to learn and generalize more effectively across a variety of tasks.

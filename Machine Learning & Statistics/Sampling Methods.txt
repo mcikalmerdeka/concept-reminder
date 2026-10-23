@@ -1,0 +1,147 @@
+Sampling methods are techniques used to select a subset of individuals or observations from a larger population. Here are some common sampling methods with examples:
+
+### 1. Simple Random Sampling
+
+In simple random sampling, every member of the population has an equal chance of being selected.
+
+**Example:**
+Suppose you have a list of 1000 students in a university and you want to select a sample of 100 students. You could assign a number to each student and use a random number generator to select 100 unique numbers.
+
+```python
+import random
+
+population = list(range(1, 1001))  # Representing student IDs from 1 to 1000
+sample_size = 100
+sample = random.sample(population, sample_size)
+print(sample)
+```
+
+### 2. Systematic Sampling
+
+In systematic sampling, you select every k-th member of the population, starting from a randomly chosen starting point.
+
+**Example:**
+If you have a list of 1000 students and want to select a sample of 100 students, you can select every 10th student after a random start.
+
+```python
+import numpy as np
+
+population = np.array(range(1, 1001))  # Representing student IDs from 1 to 1000
+sample_size = 100
+k = len(population) // sample_size
+start = np.random.randint(0, k)
+
+sample = population[start::k]
+print(sample)
+```
+
+### 3. Stratified Sampling
+
+In stratified sampling, you divide the population into strata (subgroups) and take a proportional sample from each stratum.
+
+**Example:**
+Suppose the university has 60% undergraduate and 40% graduate students. To get a representative sample of 100 students, you could sample 60 undergraduates and 40 graduates.
+
+```python
+import pandas as pd
+
+# Example population dataframe
+population = pd.DataFrame({
+    'student_id': range(1, 1001),
+    'type': ['undergraduate'] * 600 + ['graduate'] * 400
+})
+
+stratified_sample = population.groupby('type', group_keys=False).apply(lambda x: x.sample(frac=0.1))
+print(stratified_sample)
+```
+
+### 4. Cluster Sampling
+
+In cluster sampling, you divide the population into clusters, randomly select some clusters, and then sample all members of the selected clusters.
+
+**Example:**
+Suppose you divide the university into 20 clusters based on dormitories. You randomly select 5 dormitories and survey all students in those dormitories.
+
+```python
+import pandas as pd
+import random
+
+# Example population dataframe
+clusters = pd.DataFrame({
+    'student_id': range(1, 1001),
+    'dormitory': [f'Dorm {i//50 + 1}' for i in range(1000)]
+})
+
+selected_dorms = random.sample(list(clusters['dormitory'].unique()), 5)
+cluster_sample = clusters[clusters['dormitory'].isin(selected_dorms)]
+print(cluster_sample)
+```
+
+### 5. Convenience Sampling
+
+Convenience sampling involves selecting samples that are easiest to reach.
+
+**Example:**
+Surveying students who are in the library at a specific time.
+
+```python
+# This is often ad-hoc and not necessarily implemented in code. Here's a conceptual example:
+library_students = ['Student ' + str(i) for i in range(1, 201)]
+sample_size = 50
+convenience_sample = random.sample(library_students, sample_size)
+print(convenience_sample)
+```
+
+### 6. Quota Sampling
+
+In quota sampling, you ensure that certain characteristics are represented to a specified extent in the sample.
+
+**Example:**
+Ensuring that a sample of 100 students includes 50 males and 50 females.
+
+```python
+import pandas as pd
+
+# Example population dataframe
+population = pd.DataFrame({
+    'student_id': range(1, 1001),
+    'gender': ['male'] * 500 + ['female'] * 500
+})
+
+male_sample = population[population['gender'] == 'male'].sample(50)
+female_sample = population[population['gender'] == 'female'].sample(50)
+quota_sample = pd.concat([male_sample, female_sample])
+print(quota_sample)
+```
+
+### 7. Snowball Sampling
+
+In snowball sampling, existing study subjects recruit future subjects from among their acquaintances.
+
+**Example:**
+Surveying members of a rare disease group where existing participants refer others with the same condition.
+
+```python
+# This is often done manually and iteratively rather than in a straightforward code example.
+# Here's a conceptual Python implementation:
+
+# Initial seed participants
+seed_participants = ['Person 1', 'Person 2']
+
+# Dictionary to hold the network of referrals
+referrals = {
+    'Person 1': ['Person 3', 'Person 4'],
+    'Person 2': ['Person 5'],
+    'Person 3': ['Person 6', 'Person 7'],
+    # etc.
+}
+
+# Collecting the sample (conceptually)
+snowball_sample = seed_participants.copy()
+for person in seed_participants:
+    snowball_sample.extend(referrals.get(person, []))
+
+print(snowball_sample)
+```
+
+Each of these methods has its advantages and use cases, depending on the study's goals, population characteristics, and resource constraints.

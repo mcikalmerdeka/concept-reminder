@@ -1,0 +1,104 @@
+Source : https://chatgpt.com/c/67402bbb-e550-800a-90bc-d2771d47f0ac
+
+------------------------------------------------------------
+
+To check the details of your database server, including the port, username, and other connection information, in **pgAdmin** or **DBeaver**, follow these steps:
+
+---
+
+### **In pgAdmin:**
+
+1. **Open pgAdmin and Navigate to Your Database**  
+   - Launch pgAdmin and expand the **Servers** section in the navigation pane.
+   - Right-click on the server name you want to check and select **Properties**.
+
+2. **Check Server Properties:**
+   - A properties window will appear with several tabs.
+   - In the **General** tab:
+     - **Host/Address**: The IP address or hostname of the server.
+     - **Port**: The port on which the database server is running (default is `5432` for PostgreSQL).
+   - In the **Connection** tab:
+     - **Username**: The username used to connect to the database.
+     - **Password**: This may not be visible for security reasons, but you can update it here if needed.
+     - **Maintenance database**: The default database to connect to.
+
+3. **Save or Update Details:**
+   - If you need to make changes, update the fields and click **Save**.
+
+---
+
+### **In DBeaver:**
+
+1. **Open DBeaver and Navigate to Database Connections**  
+   - Open DBeaver and look for the **Database Navigator** on the left.
+   - Right-click on the connection you want to check and select **Edit Connection**.
+
+2. **Review Connection Settings:**
+   - In the connection configuration window, check the following tabs:
+     - **Main** tab:
+       - **Host**: The server address (IP or hostname).
+       - **Port**: The port number.
+       - **Database**: The name of the database you are connecting to.
+     - **Authentication** tab:
+       - **Username**: The database username.
+       - **Password**: The password (may be masked for security reasons).
+   - You can test the connection using the **Test Connection** button to ensure the details are correct.
+
+3. **Save or Modify Details:**
+   - Update any required fields and click **Finish** to save the configuration.
+
+---
+
+### **Additional Notes:**
+
+- **Passwords** are often stored securely and may not be directly visible in these tools. If you don't remember your password, you might need to reset it or retrieve it from another secure source.
+- You can also check these details in the database configuration files (e.g., `pg_hba.conf` or `postgresql.conf`) if you have access to the server directly.
+
+-----------------------------------------------------------
+
+if i have the database on the pgadmin and i just intalled dbeaver, to access the same server so that i can have all the avaiable databases that i created periously in pgadmin to dbeaver, i need to fill the same information as the ones that in pgadmin right?
+
+Yes, that's correct! To access the same server and have all your previously created databases from pgAdmin available in DBeaver, you'll need to use the **same connection information** (host, port, username, password, and default database) that you use in pgAdmin.
+
+Here's how you can replicate the connection from pgAdmin to DBeaver:
+
+---
+
+### **Steps:**
+
+1. **Get the Connection Details from pgAdmin:**
+   - Open pgAdmin and right-click on the server name in the navigation pane.
+   - Select **Properties** to view the connection details:
+     - **Host/Address**: The server's hostname or IP address.
+     - **Port**: The port number (usually `5432` for PostgreSQL).
+     - **Username**: The user you use to log in.
+     - **Password**: (If you don't know it, reset it or check where it was saved).
+     - **Maintenance Database**: Often `postgres` by default, unless changed.
+
+2. **Create a New Connection in DBeaver:**
+   - Launch DBeaver and click the **New Database Connection** button (usually a plug icon).
+   - Select **PostgreSQL** from the list of database types and click **Next**.
+
+3. **Fill in the Connection Details:**
+   - Enter the details from pgAdmin into the appropriate fields:
+     - **Host**: Paste the host/address.
+     - **Port**: Use the same port number.
+     - **Database**: Use the default database (e.g., `postgres`) or any database you've been using.
+     - **Username**: The same username from pgAdmin.
+     - **Password**: Enter the password.
+
+4. **Test the Connection:**
+   - Click the **Test Connection** button to ensure the connection works.
+   - If successful, click **Finish** to save the connection.
+
+5. **Access All Databases:**
+   - Once the connection is established, DBeaver will list all databases on the server that your user has permission to access in the **Database Navigator** pane.
+   - Expand the connection to see and interact with the databases.
+
+---
+
+### **Important Notes:**
+
+- If you used specific roles or credentials for different databases in pgAdmin, you might need to create separate connections in DBeaver with those respective credentials.
+- If you’re unsure of the password, you can reset it on the PostgreSQL server using a query like `ALTER USER username WITH PASSWORD 'newpassword';` (requires superuser privileges).
+s
